@@ -21,7 +21,7 @@ bucket_name = "wxchat"
 # 环境变量配置（用于鉴权）
 [vars]
 # 访问密码（明文，直接在Cloudflare Workers控制台配置）
-ACCESS_PASSWORD = "wxchat2024"
+ACCESS_PASSWORD = "1234"
 # JWT密钥（用于会话管理）
 JWT_SECRET = "your-super-secret-jwt-key-change-this-in-production"
 # 会话过期时间（小时）
