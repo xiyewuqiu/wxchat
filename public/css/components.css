@@ -28,14 +28,14 @@
 
 .message-content {
     background-color: #ffffff;
-    padding: 0.625rem 0.875rem;
+    padding: 0.5rem 0.75rem; /* 减少内边距，更紧凑 */
     border-radius: 0.5rem;
     margin-bottom: 0.375rem;
     /* 强化换行设置 */
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
     word-break: break-word !important;
-    line-height: 1.5;
+    line-height: 1.4; /* 稍微减少行高 */
     font-size: 1rem;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     transition: none;
@@ -55,7 +55,7 @@
 
 /* 普通文本消息保持紧凑 - 高优先级 */
 .message-content .text-message:not(.markdown-rendered) {
-    padding: 0.375rem 0 !important; /* 给普通文本消息也添加垂直内边距 */
+    padding: 0.25rem 0 !important; /* 减少垂直内边距，更紧凑 */
     margin: 0 !important;
     font-weight: 400;
     letter-spacing: 0.01em;
@@ -66,7 +66,7 @@
 
 /* Markdown消息可以有额外的内边距 - 高优先级 */
 .message-content .text-message.markdown-rendered {
-    padding: 0.375rem 28px 0.375rem 0 !important; /* 右边留出按钮空间 */
+    padding: 0.25rem 28px 0.25rem 0 !important; /* 减少内边距，右边留出按钮空间 */
     font-weight: 400;
     letter-spacing: 0.01em;
 }
