@@ -128,8 +128,15 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
+        /* 强化移动端换行设置 */
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        word-break: break-word !important;
+        /* 确保容器不会超出父元素 */
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        /* 防止内容溢出 */
+        overflow: hidden !important;
     }
 
     /* 手机设备上的文本消息优化 */
@@ -142,6 +149,16 @@
         line-height: 1.5 !important; /* 改善行高 */
         min-height: 1.5em !important; /* 确保最小高度 */
         display: block !important;
+        /* 移动端强化换行设置 */
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        word-break: break-word !important;
+        /* 确保长URL和字符串换行 */
+        hyphens: auto !important;
+        /* 确保宽度限制 */
+        max-width: 100% !important;
+        box-sizing: border-box !important;
     }
 
     .message-content .text-message.markdown-rendered {
@@ -266,6 +283,14 @@
         line-height: 1.5 !important;
         min-height: 1.4em !important;
         display: block !important;
+        /* 超小屏幕强化换行设置 */
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        word-break: break-word !important;
+        hyphens: auto !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
     }
 
     .message-content .text-message.markdown-rendered {

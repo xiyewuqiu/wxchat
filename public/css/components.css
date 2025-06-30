@@ -31,7 +31,10 @@
     padding: 0.625rem 0.875rem;
     border-radius: 0.5rem;
     margin-bottom: 0.375rem;
-    word-wrap: break-word;
+    /* 强化换行设置 */
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    word-break: break-word !important;
     line-height: 1.5;
     font-size: 1rem;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
@@ -43,6 +46,11 @@
     -moz-user-select: text;
     -ms-user-select: text;
     user-select: text;
+    /* 确保容器宽度限制 */
+    max-width: 100%;
+    box-sizing: border-box;
+    /* 防止内容溢出 */
+    overflow: hidden;
 }
 
 /* 普通文本消息保持紧凑 - 高优先级 */
@@ -145,12 +153,19 @@
     color: inherit !important;
     /* 确保文字有足够的行高和间距 */
     line-height: 1.5;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
+    /* 强制换行设置 - 关键修复 */
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    word-break: break-word !important;
+    /* 确保长URL和长字符串也能换行 */
+    hyphens: auto;
     /* 防止文字被隐藏 */
     overflow: visible;
     /* 确保最小尺寸 */
     min-height: 1.2em;
+    /* 确保容器宽度限制 */
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 /* Markdown渲染样式 */
