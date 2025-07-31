@@ -232,6 +232,12 @@ async function updateCache(request) {
 
 // 消息处理（用于与主线程通信）
 self.addEventListener('message', event => {
+  const allowedOrigins = ['https://trusted-origin.com']; // Replace with your trusted origin(s)
+  if (!allowedOrigins.includes(event.origin)) {
+    console.warn('⚠️ 拒绝来自不受信任来源的消息:', event.origin);
+    return;
+  }
+  
   const { type, data } = event.data;
   
   switch (type) {
