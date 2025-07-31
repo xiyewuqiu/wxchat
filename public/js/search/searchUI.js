@@ -1,4 +1,4 @@
- // 搜索UI模块 - 提供搜索界面和交互功能
+// 搜索UI模块 - 提供搜索界面和交互功能
 
 const SearchUI = {
     // 组件状态
@@ -517,10 +517,11 @@ const SearchUI = {
     showSearchError(message) {
         const searchStatus = document.getElementById('searchStatus');
         if (searchStatus) {
+            const sanitizedMessage = this.sanitizeHTML(message);
             searchStatus.innerHTML = `
                 <div class="search-error">
                     <div class="error-icon">⚠️</div>
-                    <div class="error-text">搜索失败: ${message}</div>
+                    <div class="error-text">搜索失败: ${sanitizedMessage}</div>
                     <button class="retry-btn" onclick="SearchUI.executeSearch('${this.currentQuery}')">重试</button>
                 </div>
             `;
@@ -659,6 +660,13 @@ const SearchUI = {
                 icon.textContent = filters.classList.contains('expanded') ? '▲' : '▼';
             }
         }
+    },
+
+    // Sanitize HTML to prevent XSS
+    sanitizeHTML(html) {
+        const tempDiv = document.createElement('div');
+        tempDiv.textContent = html;
+        return tempDiv.innerHTML;
     }
 };
 

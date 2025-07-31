@@ -58,7 +58,7 @@ const CONFIG = {
     AI: {
         ENABLED: true,
         API_BASE_URL: 'https://api.siliconflow.cn/v1',
-        API_KEY: 'sk-jcjftvgfaismslthkpdnsabzpkpidqatyajoesdowcutyoyh',
+        API_KEY: process.env.AI_API_KEY, // Use environment variable for API key
         MODEL: 'deepseek-ai/DeepSeek-R1',
         MAX_TOKENS: 4000,
         TEMPERATURE: 0.7,
@@ -71,7 +71,7 @@ const CONFIG = {
     // AI图片生成配置
     IMAGE_GEN: {
         ENABLED: true,
-        API_KEY: 'sk-cowojsuuakqrsaizlldlimbhewnokgjhvczjnwwydxnvrczv',
+        API_KEY: process.env.IMAGE_GEN_API_KEY, // Use environment variable for API key
         MODEL: 'Kwai-Kolors/Kolors',
         DEFAULT_SIZE: '1024x1024',
         DEFAULT_STEPS: 20,

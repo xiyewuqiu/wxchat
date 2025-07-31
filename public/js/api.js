@@ -261,9 +261,13 @@ const API = {
             link.download = fileName;
             link.style.display = 'none';
 
-            document.body.appendChild(link);
+            // Ensure the link is appended to a safe container
+            const container = document.createElement('div');
+            container.style.display = 'none';
+            container.appendChild(link);
+            document.body.appendChild(container);
             link.click();
-            document.body.removeChild(link);
+            document.body.removeChild(container);
 
             // 清理URL对象
             window.URL.revokeObjectURL(downloadUrl);

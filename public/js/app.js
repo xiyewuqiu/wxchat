@@ -254,10 +254,19 @@ class WeChatApp {
 
     // 显示初始化错误
     showInitError(error) {
+        const escapeHtml = (unsafe) => {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        };
+
         const errorMessage = `
             <div style="text-align: center; padding: 2rem; color: #ff4757;">
                 <h2>😵 应用启动失败</h2>
-                <p>${error.message}</p>
+                <p>${escapeHtml(error.message)}</p>
                 <button onclick="location.reload()" style="
                     background: #07c160; 
                     color: white; 

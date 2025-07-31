@@ -3,7 +3,7 @@
 const Auth = {
     // 配置
     config: {
-        TOKEN_KEY: 'wxchat_auth_token',
+        TOKEN_KEY: process.env.TOKEN_KEY || 'wxchat_auth_token', // Use environment variable
         LOGIN_ATTEMPTS_KEY: 'wxchat_login_attempts',
         MAX_ATTEMPTS: 5,
         ATTEMPT_RESET_TIME: 15 * 60 * 1000, // 15分钟
