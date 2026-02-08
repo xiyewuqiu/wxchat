@@ -170,7 +170,7 @@ const UI = {
                 const { r2Key, safeId } = message._needsImageLoad;
                 // 使用setTimeout确保DOM完全插入后再加载图片
                 setTimeout(() => {
-                    this.loadImageAsync(r2Key, safeId);
+                    ImageLoader.load(r2Key, safeId);
                 }, 10);
             }
         });
@@ -185,24 +185,9 @@ const UI = {
         }
     },
     
-    // 创建消息DOM元素
+    // 创建消息DOM元素（委托给 MessageRenderer）
     createMessageElement(message, currentDeviceId) {
-        const isOwn = message.device_id === currentDeviceId;
-        const time = Utils.formatTime(message.timestamp);
-        const deviceName = isOwn ? '我的设备' : '其他设备';
-
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${isOwn ? 'own' : 'other'}`;
-        messageDiv.dataset.messageId = message.id;
-        messageDiv.dataset.timestamp = message.timestamp;
-
-        if (message.type === CONFIG.MESSAGE_TYPES.TEXT) {
-            messageDiv.innerHTML = this.renderTextMessageContent(message, deviceName, time);
-        } else if (message.type === CONFIG.MESSAGE_TYPES.FILE) {
-            messageDiv.innerHTML = this.renderFileMessageContent(message, deviceName, time);
-        }
-
-        return messageDiv;
+        return MessageRenderer.createMessageElement(message, currentDeviceId);
     },
 
     // 找到消息的正确插入位置
@@ -242,102 +227,30 @@ const UI = {
         return '';
     },
     
-    // 渲染文本消息内容
+    // 渲染文本消息内容（委托给 MessageRenderer）
     renderTextMessageContent(message, deviceName, time) {
-        const hasMarkdown = Utils.markdown.hasMarkdownSyntax(message.content);
-        const messageId = `msg-${message.id}`;
-
-        // 默认显示渲染后的内容（如果有markdown语法）
-        const displayContent = hasMarkdown
-            ? Utils.markdown.renderToHtml(message.content)
-            : this.escapeHtml(message.content);
-
-        const textMessageClass = hasMarkdown ? 'text-message markdown-rendered' : 'text-message';
-        const toggleButton = hasMarkdown
-            ? `<button class="markdown-toggle" onclick="UI.toggleMarkdownView('${messageId}')" title="切换源码/渲染视图">📝</button>`
-            : '';
-
-        return `<div class="message-content"><div class="${textMessageClass}" id="${messageId}" data-original="${this.escapeHtml(message.content)}" data-rendered="${displayContent.replace(/"/g, '&quot;')}" data-is-rendered="${hasMarkdown ? 'true' : 'false'}">${displayContent}${toggleButton}</div></div><div class="message-meta"><span>${deviceName}</span><span class="message-time">${time}</span></div>`;
+        return MessageRenderer.renderTextMessageContent(message, deviceName, time);
     },
 
     // 渲染文本消息（保留用于兼容性）
     renderTextMessage(message, isOwn, deviceName, time) {
-        const hasMarkdown = Utils.markdown.hasMarkdownSyntax(message.content);
-        const messageId = `msg-${message.id}`;
-
-        // 默认显示渲染后的内容（如果有markdown语法）
-        const displayContent = hasMarkdown
-            ? Utils.markdown.renderToHtml(message.content)
-            : this.escapeHtml(message.content);
-
-        const textMessageClass = hasMarkdown ? 'text-message markdown-rendered' : 'text-message';
-        const toggleButton = hasMarkdown
-            ? `<button class="markdown-toggle" onclick="UI.toggleMarkdownView('${messageId}')" title="切换源码/渲染视图">📝</button>`
-            : '';
-
-        return `<div class="message ${isOwn ? 'own' : 'other'} fade-in"><div class="message-content"><div class="${textMessageClass}" id="${messageId}" data-original="${this.escapeHtml(message.content)}" data-rendered="${displayContent.replace(/"/g, '&quot;')}" data-is-rendered="${hasMarkdown ? 'true' : 'false'}">${displayContent}${toggleButton}</div></div><div class="message-meta"><span>${deviceName}</span><span class="message-time">${time}</span></div></div>`;
+        const content = MessageRenderer.renderTextMessageContent(message, 
+            isOwn ? '我的设备' : '其他设备', 
+            Utils.formatTime(message.timestamp));
+        return `<div class="message ${isOwn ? 'own' : 'other'} fade-in">${content}</div>`;
     },
     
-    // 渲染文件消息内容
+    // 渲染文件消息内容（委托给 MessageRenderer）
     renderFileMessageContent(message, deviceName, time) {
-        const fileIcon = Utils.getFileIcon(message.mime_type, message.original_name);
-        const fileSize = Utils.formatFileSize(message.file_size);
-        const isImage = Utils.isImageFile(message.mime_type);
-
-        let imagePreview = '';
-        if (isImage) {
-            // 创建安全的ID（移除特殊字符）
-            const safeId = this.createSafeId(message.r2_key);
-            const imageId = `img-${safeId}`;
-
-            imagePreview = `<div class="image-preview" id="preview-${safeId}">
-                <div class="image-loading" id="loading-${safeId}">
-                    <div class="loading-spinner">⏳</div>
-                    <span>加载图片中...</span>
-                </div>
-                <img id="${imageId}" alt="${this.escapeHtml(message.original_name)}" style="display: none;" />
-                <div class="image-error" id="error-${safeId}" style="display: none;">
-                    <span>🖼️ 图片加载失败</span>
-                    <button onclick="UI.retryLoadImage('${message.r2_key}', '${safeId}')" class="retry-btn">重试</button>
-                </div>
-            </div>`;
-
-            // 标记需要异步加载图片（在DOM插入后执行）
-            message._needsImageLoad = { r2Key: message.r2_key, safeId: safeId };
-        }
-
-        return `<div class="message-content"><div class="file-message"><div class="file-info"><div class="file-icon">${fileIcon}</div><div class="file-details"><div class="file-name">${this.escapeHtml(message.original_name)}</div><div class="file-size">${fileSize}</div></div><button class="download-btn" onclick="API.downloadFile('${message.r2_key}', '${this.escapeHtml(message.original_name)}')">⬇️ 下载</button></div>${imagePreview}</div></div><div class="message-meta"><span>${deviceName}</span><span class="message-time">${time}</span></div>`;
+        return MessageRenderer.renderFileMessageContent(message, deviceName, time);
     },
 
     // 渲染文件消息（保留用于兼容性）
     renderFileMessage(message, isOwn, deviceName, time) {
-        const fileIcon = Utils.getFileIcon(message.mime_type, message.original_name);
-        const fileSize = Utils.formatFileSize(message.file_size);
-        const isImage = Utils.isImageFile(message.mime_type);
-
-        let imagePreview = '';
-        if (isImage) {
-            // 创建安全的ID（移除特殊字符）
-            const safeId = this.createSafeId(message.r2_key);
-            const imageId = `img-${safeId}`;
-
-            imagePreview = `<div class="image-preview" id="preview-${safeId}">
-                <div class="image-loading" id="loading-${safeId}">
-                    <div class="loading-spinner">⏳</div>
-                    <span>加载图片中...</span>
-                </div>
-                <img id="${imageId}" alt="${this.escapeHtml(message.original_name)}" style="display: none;" />
-                <div class="image-error" id="error-${safeId}" style="display: none;">
-                    <span>🖼️ 图片加载失败</span>
-                    <button onclick="UI.retryLoadImage('${message.r2_key}', '${safeId}')" class="retry-btn">重试</button>
-                </div>
-            </div>`;
-
-            // 标记需要异步加载图片（在DOM插入后执行）
-            message._needsImageLoad = { r2Key: message.r2_key, safeId: safeId };
-        }
-
-        return `<div class="message ${isOwn ? 'own' : 'other'} fade-in"><div class="message-content"><div class="file-message"><div class="file-info"><div class="file-icon">${fileIcon}</div><div class="file-details"><div class="file-name">${this.escapeHtml(message.original_name)}</div><div class="file-size">${fileSize}</div></div><button class="download-btn" onclick="API.downloadFile('${message.r2_key}', '${this.escapeHtml(message.original_name)}')">⬇️ 下载</button></div>${imagePreview}</div></div><div class="message-meta"><span>${deviceName}</span><span class="message-time">${time}</span></div></div>`;
+        const content = MessageRenderer.renderFileMessageContent(message, 
+            isOwn ? '我的设备' : '其他设备', 
+            Utils.formatTime(message.timestamp));
+        return `<div class="message ${isOwn ? 'own' : 'other'} fade-in">${content}</div>`;
     },
     
     // 添加新消息到列表（增量方式）
@@ -368,7 +281,7 @@ const UI = {
             const { r2Key, safeId } = message._needsImageLoad;
             // 使用setTimeout确保DOM完全插入后再加载图片
             setTimeout(() => {
-                this.loadImageAsync(r2Key, safeId);
+                ImageLoader.load(r2Key, safeId);
             }, 10);
         }
 
@@ -597,11 +510,9 @@ const UI = {
         return this.elements.messageText.value.trim();
     },
     
-    // 转义HTML
+    // 转义HTML（委托给 MessageRenderer）
     escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
+        return MessageRenderer.escapeHtml(text);
     },
     
     // 显示错误消息 - 弹窗已禁用，避免移动端遮挡输入框
@@ -750,137 +661,34 @@ const UI = {
         }, duration);
     },
 
-    // 添加消息状态指示器
+    // 添加消息状态指示器（委托给 MessageRenderer）
     addMessageStatus(messageElement, status) {
-        const metaElement = messageElement.querySelector('.message-meta');
-        if (metaElement) {
-            const statusSpan = document.createElement('span');
-            statusSpan.className = `message-status status-${status}`;
-
-            switch (status) {
-                case 'sending':
-                    statusSpan.textContent = '⏳';
-                    break;
-                case 'sent':
-                    statusSpan.textContent = '✓';
-                    break;
-                case 'failed':
-                    statusSpan.textContent = '✗';
-                    break;
-            }
-
-            metaElement.appendChild(statusSpan);
-        }
+        MessageRenderer.addMessageStatus(messageElement, status);
     },
 
-    // 更新消息时间显示格式
+    // 更新消息时间显示格式（委托给 MessageRenderer）
     updateMessageTime(messageElement, timestamp) {
-        const timeElement = messageElement.querySelector('.message-meta span:last-child');
-        if (timeElement) {
-            timeElement.innerHTML = `<span class="message-time">${Utils.formatTime(timestamp)}</span>`;
-        }
+        MessageRenderer.updateMessageTime(messageElement, timestamp);
     },
 
-    // 切换Markdown视图
+    // 切换Markdown视图（委托给 MarkdownHandler）
     toggleMarkdownView(messageId) {
-        const messageElement = document.getElementById(messageId);
-        if (!messageElement) return;
-
-        const isCurrentlyRendered = messageElement.dataset.isRendered === 'true';
-        const originalContent = messageElement.dataset.original;
-        const renderedContent = messageElement.dataset.rendered.replace(/&quot;/g, '"');
-
-        // 清除现有内容
-        messageElement.innerHTML = '';
-
-        if (isCurrentlyRendered) {
-            // 切换到源码视图
-            const textNode = document.createTextNode(originalContent);
-            messageElement.appendChild(textNode);
-            messageElement.className = 'text-message';
-            messageElement.dataset.isRendered = 'false';
-        } else {
-            // 切换到渲染视图
-            messageElement.innerHTML = renderedContent;
-            messageElement.className = 'text-message markdown-rendered';
-            messageElement.dataset.isRendered = 'true';
-        }
-
-        // 重新添加切换按钮
-        const toggleButton = document.createElement('button');
-        toggleButton.className = 'markdown-toggle';
-        toggleButton.onclick = () => this.toggleMarkdownView(messageId);
-        toggleButton.title = '切换源码/渲染视图';
-        toggleButton.textContent = '📝';
-        messageElement.appendChild(toggleButton);
+        MarkdownHandler.toggleView(messageId);
     },
 
-    // 创建安全的ID（移除特殊字符）
+    // 创建安全的ID（委托给 MessageRenderer）
     createSafeId(str) {
-        return str.replace(/[^a-zA-Z0-9-_]/g, '');
+        return MessageRenderer.createSafeId(str);
     },
 
-    // 异步加载图片
+    // 异步加载图片（委托给 ImageLoader）
     async loadImageAsync(r2Key, safeId) {
-        try {
-            // 如果没有提供safeId，则生成一个
-            if (!safeId) {
-                safeId = this.createSafeId(r2Key);
-            }
-
-            // 获取相关元素
-            const loadingElement = document.getElementById(`loading-${safeId}`);
-            const imageElement = document.getElementById(`img-${safeId}`);
-            const errorElement = document.getElementById(`error-${safeId}`);
-
-            if (!loadingElement || !imageElement || !errorElement) {
-                console.warn('图片元素未找到:', r2Key);
-                return;
-            }
-
-            // 显示加载状态
-            loadingElement.style.display = 'flex';
-            imageElement.style.display = 'none';
-            errorElement.style.display = 'none';
-
-            // 获取图片blob URL
-            const blobUrl = await API.getImageBlobUrl(r2Key);
-
-            // 设置图片源并等待加载完成
-            await new Promise((resolve, reject) => {
-                imageElement.onload = resolve;
-                imageElement.onerror = reject;
-                imageElement.src = blobUrl;
-            });
-
-            // 显示图片，隐藏加载状态
-            loadingElement.style.display = 'none';
-            imageElement.style.display = 'block';
-
-        } catch (error) {
-            console.error('图片加载失败:', error);
-
-            // 显示错误状态
-            const safeIdToUse = safeId || this.createSafeId(r2Key);
-            const loadingElement = document.getElementById(`loading-${safeIdToUse}`);
-            const imageElement = document.getElementById(`img-${safeIdToUse}`);
-            const errorElement = document.getElementById(`error-${safeIdToUse}`);
-
-            if (loadingElement) loadingElement.style.display = 'none';
-            if (imageElement) imageElement.style.display = 'none';
-            if (errorElement) errorElement.style.display = 'flex';
-        }
+        await ImageLoader.load(r2Key, safeId);
     },
 
-    // 重试加载图片
+    // 重试加载图片（委托给 ImageLoader）
     async retryLoadImage(r2Key, safeId) {
-        // 清除可能存在的缓存
-        if (typeof API !== 'undefined' && API.revokeImageBlobUrl) {
-            API.revokeImageBlobUrl(r2Key);
-        }
-
-        // 重新加载
-        await this.loadImageAsync(r2Key, safeId);
+        await ImageLoader.retry(r2Key, safeId);
     },
 
     // 确保顶部加载指示器存在
