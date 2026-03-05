@@ -1,5 +1,5 @@
 /* ============================================
-   Base Reset & Foundation Styles
+   Base Reset & Foundation
    ============================================ */
 
 *,
@@ -14,6 +14,7 @@ html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html, body {
@@ -27,14 +28,14 @@ html, body {
   background: var(--bg-app);
   color: var(--color-gray-900);
   font-size: 16px;
-  line-height: var(--leading-normal);
+  line-height: 1.5;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
   overscroll-behavior: none;
 }
 
-/* Interactive Elements Reset */
+/* ---- Interactive Elements ---- */
 button {
   border: none;
   background: none;
@@ -44,6 +45,8 @@ button {
   color: inherit;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+  padding: 0;
+  line-height: inherit;
 }
 
 input, textarea, select {
@@ -53,6 +56,8 @@ input, textarea, select {
   font-size: inherit;
   -webkit-appearance: none;
   appearance: none;
+  background: none;
+  color: inherit;
 }
 
 a {
@@ -60,52 +65,44 @@ a {
   color: inherit;
 }
 
-ul, ol {
-  list-style: none;
-}
+ul, ol { list-style: none; }
 
 img {
   max-width: 100%;
   height: auto;
   display: block;
+  -webkit-user-drag: none;
 }
 
-/* Text Selection */
+/* ---- Text Selection ---- */
 ::selection {
-  background: var(--color-primary-200);
-  color: var(--color-gray-900);
+  background: rgba(7, 193, 96, 0.2);
+  color: inherit;
 }
 
-::-moz-selection {
-  background: var(--color-primary-200);
-  color: var(--color-gray-900);
-}
+/* ---- Focus ---- */
+:focus { outline: none; }
 
-/* Focus Styles */
 :focus-visible {
   outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+  outline-offset: 1px;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar {
-  width: 4px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
+/* ---- Scrollbar (thin, unobtrusive) ---- */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-gray-300);
-  border-radius: var(--radius-full);
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-gray-400);
+@media (prefers-color-scheme: dark) {
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+  }
 }
 
-/* Selectable Content */
+/* ---- Selectable Content ---- */
 .selectable,
 input, textarea,
 .text-message, .message-content,
@@ -117,9 +114,14 @@ input, textarea,
   -webkit-touch-callout: default;
 }
 
-/* iOS Tap Highlight */
-@supports (-webkit-touch-callout: none) {
-  * {
-    -webkit-tap-highlight-color: transparent;
-  }
+/* ---- Utility ---- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
 }

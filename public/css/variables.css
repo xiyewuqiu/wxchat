@@ -188,7 +188,9 @@
 
     --color-success-bg: rgba(16, 185, 129, 0.15);
     --color-danger-bg: rgba(255, 71, 87, 0.15);
+    --color-danger-border: #5c2626;
     --color-warning-bg: rgba(255, 176, 32, 0.15);
+    --color-warning-border: #5c4a1a;
 
     --shadow-xs: none;
     --shadow-sm: none;

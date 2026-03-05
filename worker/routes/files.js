@@ -17,13 +17,7 @@ files.post('/upload', async (c) => {
       }, 400)
     }
 
-    // 检查文件大小限制（10MB）
-    if (file.size > 10 * 1024 * 1024) {
-      return c.json({
-        success: false,
-        error: '文件大小不能超过10MB'
-      }, 400)
-    }
+    // 文件大小不限制
 
     // 生成唯一的文件名
     const timestamp = Date.now()
