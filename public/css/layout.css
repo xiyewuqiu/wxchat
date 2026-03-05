@@ -39,98 +39,83 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: var(--space-4) var(--space-3);
+  padding: 12px 16px;
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: 12px;
   background: var(--bg-chat);
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-  will-change: scroll-position;
-  contain: layout style;
 }
 
 .message-list::-webkit-scrollbar {
-  width: 3px;
-}
-
-.message-list::-webkit-scrollbar-track {
+  width: 0;
   background: transparent;
-}
-
-.message-list::-webkit-scrollbar-thumb {
-  background: var(--color-primary-200);
-  border-radius: var(--radius-full);
 }
 
 /* ---- Input Area ---- */
 .input-container {
   border-top: 1px solid var(--color-gray-200);
-  padding: var(--space-2) var(--space-3);
+  padding: 8px 10px;
   background: var(--bg-input);
   position: sticky;
   bottom: 0;
   z-index: var(--z-sticky);
-  min-height: var(--input-min-height);
   display: flex;
   align-items: center;
-  padding-bottom: calc(var(--space-2) + var(--safe-bottom));
+  padding-bottom: calc(8px + var(--safe-bottom));
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
-  transition: transform var(--duration-normal) var(--ease-default);
 }
 
 /* ---- Loading States ---- */
 .loading {
   text-align: center;
-  color: var(--color-primary);
-  padding: var(--space-12) var(--space-8);
-  font-size: var(--text-lg);
-  font-weight: var(--font-medium);
+  color: var(--color-gray-500);
+  padding: 48px 32px;
+  font-size: 15px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-4);
+  gap: 12px;
 }
 
 .loading-spinner {
-  font-size: var(--text-2xl);
+  font-size: 24px;
   animation: spin 1s linear infinite;
 }
 
 .empty-state {
   text-align: center;
   color: var(--color-gray-500);
-  padding: var(--space-12) var(--space-8);
+  padding: 48px 32px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-4);
+  gap: 12px;
 }
 
 .empty-icon {
-  font-size: 3.5rem;
-  opacity: 0.5;
-  filter: grayscale(0.3);
+  font-size: 48px;
+  opacity: 0.4;
 }
 
 .empty-state p {
-  font-size: var(--text-base);
-  font-weight: var(--font-medium);
+  font-size: 14px;
   color: var(--color-gray-500);
   margin: 0;
 }
 
 /* ---- Animations ---- */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes messageSlideIn {
-  from { opacity: 0; transform: translateY(16px) scale(0.96); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes spin {
@@ -145,7 +130,7 @@
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  50% { opacity: 0.5; }
 }
 
 @keyframes slideUp {
@@ -159,17 +144,11 @@
 }
 
 .fade-in {
-  animation: fadeIn var(--duration-fast) var(--ease-out);
+  animation: fadeIn 200ms ease-out;
 }
 
 .shimmer {
   background: linear-gradient(90deg, var(--color-gray-100) 25%, var(--color-gray-200) 50%, var(--color-gray-100) 75%);
   background-size: 200px 100%;
   animation: shimmer 1.5s infinite;
-}
-
-/* ---- Performance ---- */
-.message {
-  will-change: transform, opacity;
-  contain: layout style paint;
 }
