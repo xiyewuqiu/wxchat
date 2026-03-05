@@ -295,18 +295,7 @@ const AIHandler = {
         const messageDiv = document.createElement('div');
         messageDiv.className = 'message ai fade-in streaming';
         messageDiv.dataset.messageId = `streaming-${Date.now()}`;
-        messageDiv.innerHTML = `
-            <div class="message-content" style="background: linear-gradient(135deg, #1e90ff, #4169e1); color: white; padding: 12px; border-radius: 8px; position: relative;">
-                <div style="font-size: 12px; opacity: 0.8; margin-bottom: 4px;">🤖 AI助手 (实时回复中...)</div>
-                <div class="streaming-content" style="min-height: 20px; line-height: 1.5;">
-                    <span class="typing-cursor" style="animation: blink 1s infinite;">▋</span>
-                </div>
-            </div>
-            <div class="message-meta">
-                <span>AI助手</span>
-                <span class="message-time">${new Date().toLocaleTimeString()}</span>
-            </div>
-        `;
+        messageDiv.innerHTML = `<div class="message-content" style="background: linear-gradient(135deg, #1e90ff, #4169e1); color: white; padding: 12px; border-radius: 8px; position: relative;"><div style="font-size: 12px; opacity: 0.8; margin-bottom: 4px;">🤖 AI助手 (实时回复中...)</div><div class="streaming-content" style="min-height: 20px; line-height: 1.5;"><span class="typing-cursor" style="animation: blink 1s infinite;">▋</span></div></div><div class="message-meta"><span>AI助手</span> <span class="message-time">${new Date().toLocaleTimeString()}</span></div>`;
 
         // 添加打字动画样式
         if (!document.getElementById('streaming-styles')) {
@@ -395,16 +384,7 @@ const AIHandler = {
         const messageDiv = document.createElement('div');
         messageDiv.className = 'message ai fade-in';
         messageDiv.dataset.messageId = message.id;
-        messageDiv.innerHTML = `
-            <div class="message-content" style="background: #1e90ff; color: white; padding: 12px; border-radius: 8px;">
-                <div style="font-size: 12px; opacity: 0.8; margin-bottom: 4px;">🤖 AI助手</div>
-                <div id="ai-msg-${message.id}">${message.content || '正在处理...'}</div>
-            </div>
-            <div class="message-meta">
-                <span>AI助手</span>
-                <span class="message-time">${new Date().toLocaleTimeString()}</span>
-            </div>
-        `;
+        messageDiv.innerHTML = `<div class="message-content" style="background: #1e90ff; color: white; padding: 12px; border-radius: 8px;"><div style="font-size: 12px; opacity: 0.8; margin-bottom: 4px;">🤖 AI助手</div><div id="ai-msg-${message.id}">${message.content || '正在处理...'}</div></div><div class="message-meta"><span>AI助手</span> <span class="message-time">${new Date().toLocaleTimeString()}</span></div>`;
 
         messageList.appendChild(messageDiv);
         messageList.scrollTop = messageList.scrollHeight;

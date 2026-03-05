@@ -37,22 +37,7 @@ const MessageRenderer = {
             ? `<button class="markdown-toggle" onclick="MarkdownHandler.toggleView('${messageId}')" title="切换源码/渲染视图">📝</button>`
             : '';
 
-        return `
-            <div class="message-content">
-                <div class="${textMessageClass}" 
-                     id="${messageId}" 
-                     data-original="${this.escapeHtml(message.content)}" 
-                     data-rendered="${displayContent.replace(/"/g, '&quot;')}" 
-                     data-is-rendered="${hasMarkdown ? 'true' : 'false'}">
-                    ${displayContent}
-                    ${toggleButton}
-                </div>
-            </div>
-            <div class="message-meta">
-                <span>${deviceName}</span>
-                <span class="message-time">${time}</span>
-            </div>
-        `;
+        return `<div class="message-content"><div class="${textMessageClass}" id="${messageId}" data-original="${this.escapeHtml(message.content)}" data-rendered="${displayContent.replace(/"/g, '&quot;')}" data-is-rendered="${hasMarkdown ? 'true' : 'false'}">${displayContent}${toggleButton}</div></div><div class="message-meta"><span>${deviceName}</span> <span class="message-time">${time}</span></div>`;
     },
 
     // 渲染文件消息内容
@@ -63,53 +48,13 @@ const MessageRenderer = {
 
         let imagePreview = '';
         if (isImage) {
-            // 创建安全的ID（移除特殊字符）
             const safeId = this.createSafeId(message.r2_key);
             const imageId = `img-${safeId}`;
-
-            imagePreview = `
-                <div class="image-preview" id="preview-${safeId}">
-                    <div class="image-loading" id="loading-${safeId}">
-                        <div class="loading-spinner">⏳</div>
-                        <span>加载图片中...</span>
-                    </div>
-                    <img id="${imageId}" 
-                         alt="${this.escapeHtml(message.original_name)}" 
-                         style="display: none;" />
-                    <div class="image-error" id="error-${safeId}" style="display: none;">
-                        <span>🖼️ 图片加载失败</span>
-                        <button onclick="ImageLoader.retry('${message.r2_key}', '${safeId}')" 
-                                class="retry-btn">重试</button>
-                    </div>
-                </div>
-            `;
-
-            // 标记需要异步加载图片（在DOM插入后执行）
+            imagePreview = `<div class="image-preview" id="preview-${safeId}"><div class="image-loading" id="loading-${safeId}"><div class="loading-spinner">⏳</div><span>加载图片中...</span></div><img id="${imageId}" alt="${this.escapeHtml(message.original_name)}" style="display: none;" /><div class="image-error" id="error-${safeId}" style="display: none;"><span>🖼️ 图片加载失败</span><button onclick="ImageLoader.retry('${message.r2_key}', '${safeId}')" class="retry-btn">重试</button></div></div>`;
             message._needsImageLoad = { r2Key: message.r2_key, safeId: safeId };
         }
 
-        return `
-            <div class="message-content">
-                <div class="file-message">
-                    <div class="file-info">
-                        <div class="file-icon">${fileIcon}</div>
-                        <div class="file-details">
-                            <div class="file-name">${this.escapeHtml(message.original_name)}</div>
-                            <div class="file-size">${fileSize}</div>
-                        </div>
-                        <button class="download-btn" 
-                                onclick="API.downloadFile('${message.r2_key}', '${this.escapeHtml(message.original_name)}')">
-                            ⬇️ 下载
-                        </button>
-                    </div>
-                    ${imagePreview}
-                </div>
-            </div>
-            <div class="message-meta">
-                <span>${deviceName}</span>
-                <span class="message-time">${time}</span>
-            </div>
-        `;
+        return `<div class="message-content"><div class="file-message"><div class="file-info"><div class="file-icon">${fileIcon}</div><div class="file-details"><div class="file-name">${this.escapeHtml(message.original_name)}</div><div class="file-size">${fileSize}</div></div><button class="download-btn" onclick="API.downloadFile('${message.r2_key}', '${this.escapeHtml(message.original_name)}')">⬇️ 下载</button></div>${imagePreview}</div></div><div class="message-meta"><span>${deviceName}</span> <span class="message-time">${time}</span></div>`;
     },
 
     // 转义HTML

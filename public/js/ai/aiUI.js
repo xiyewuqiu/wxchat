@@ -62,25 +62,7 @@ const AIUI = {
         const time = Utils.formatTime(message.timestamp);
         const thinkingId = `thinking-content-${message.id}`;
         
-        return `
-            <div class="message-content ai-thinking-message">
-                <div class="ai-thinking-header">
-                    <span class="ai-thinking-indicator">${CONFIG.AI.THINKING_INDICATOR}</span>
-                    <button class="ai-thinking-toggle" data-target="${thinkingId}" title="展开/折叠思考过程">
-                        <svg viewBox="0 0 24 24" width="12" height="12">
-                            <path fill="currentColor" d="M7,10L12,15L17,10H7Z"/>
-                        </svg>
-                    </button>
-                </div>
-                <div class="ai-thinking-content collapsed" id="${thinkingId}">
-                    <div class="thinking-text">${message.content}</div>
-                </div>
-            </div>
-            <div class="message-meta">
-                <span>${CONFIG.AI.RESPONSE_INDICATOR}</span>
-                <span class="message-time">${time}</span>
-            </div>
-        `;
+        return `<div class="message-content ai-thinking-message"><div class="ai-thinking-header"><span class="ai-thinking-indicator">${CONFIG.AI.THINKING_INDICATOR}</span><button class="ai-thinking-toggle" data-target="${thinkingId}" title="展开/折叠思考过程"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M7,10L12,15L17,10H7Z"/></svg></button></div><div class="ai-thinking-content collapsed" id="${thinkingId}"><div class="thinking-text">${message.content}</div></div></div><div class="message-meta"><span>${CONFIG.AI.RESPONSE_INDICATOR}</span> <span class="message-time">${time}</span></div>`;
     },
     
     // 渲染AI响应消息
@@ -106,23 +88,7 @@ const AIUI = {
         const aiIndicator = message.isError ? '❌' : '🤖';
         const typingIndicator = !displayContent ? '<span class="ai-typing-indicator">▋</span>' : '';
 
-        return `
-            <div class="message-content ai-response-message">
-                <div class="ai-response-header">
-                    <span class="ai-response-indicator">${aiIndicator} ${CONFIG.AI.RESPONSE_INDICATOR}</span>
-                </div>
-                <div class="${textMessageClass}" id="${messageId}"
-                     data-original="${this.escapeHtml(message.content || '')}"
-                     data-rendered="${displayContent.replace(/"/g, '&quot;')}"
-                     data-is-rendered="${hasMarkdown ? 'true' : 'false'}">
-                    ${displayContent}${typingIndicator}${toggleButton}
-                </div>
-            </div>
-            <div class="message-meta">
-                <span>${CONFIG.AI.RESPONSE_INDICATOR}</span>
-                <span class="message-time">${time}</span>
-            </div>
-        `;
+        return `<div class="message-content ai-response-message"><div class="ai-response-header"><span class="ai-response-indicator">${aiIndicator} ${CONFIG.AI.RESPONSE_INDICATOR}</span></div><div class="${textMessageClass}" id="${messageId}" data-original="${this.escapeHtml(message.content || '')}" data-rendered="${displayContent.replace(/"/g, '&quot;')}" data-is-rendered="${hasMarkdown ? 'true' : 'false'}">${displayContent}${typingIndicator}${toggleButton}</div></div><div class="message-meta"><span>${CONFIG.AI.RESPONSE_INDICATOR}</span> <span class="message-time">${time}</span></div>`;
     },
 
     // 渲染简单AI消息（降级处理）
@@ -131,20 +97,7 @@ const AIUI = {
         const content = this.escapeHtml(message.content || '正在处理...');
         const indicator = message.isThinking ? '🤔 思考中' : '🤖 AI助手';
 
-        return `
-            <div class="message-content ai-response-message">
-                <div class="ai-response-header">
-                    <span class="ai-response-indicator">${indicator}</span>
-                </div>
-                <div class="text-message" id="ai-msg-${message.id}">
-                    ${content}
-                </div>
-            </div>
-            <div class="message-meta">
-                <span>AI助手</span>
-                <span class="message-time">${time}</span>
-            </div>
-        `;
+        return `<div class="message-content ai-response-message"><div class="ai-response-header"><span class="ai-response-indicator">${indicator}</span></div><div class="text-message" id="ai-msg-${message.id}">${content}</div></div><div class="message-meta"><span>AI助手</span> <span class="message-time">${time}</span></div>`;
     },
 
     // 更新思考过程内容
