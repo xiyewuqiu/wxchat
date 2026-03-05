@@ -1,0 +1,195 @@
+/* ============================================
+   Design System - CSS Variables & Tokens
+   极致现代设计系统
+   ============================================ */
+
+:root {
+  /* ---- Color Palette ---- */
+  --color-primary: #07c160;
+  --color-primary-light: #38d97a;
+  --color-primary-dark: #059748;
+  --color-primary-50: rgba(7, 193, 96, 0.05);
+  --color-primary-100: rgba(7, 193, 96, 0.1);
+  --color-primary-200: rgba(7, 193, 96, 0.2);
+  --color-primary-300: rgba(7, 193, 96, 0.3);
+
+  --color-accent: #1e90ff;
+  --color-accent-light: #4da6ff;
+  --color-accent-dark: #1570cc;
+  --color-accent-50: rgba(30, 144, 255, 0.05);
+  --color-accent-100: rgba(30, 144, 255, 0.1);
+  --color-accent-200: rgba(30, 144, 255, 0.2);
+
+  --color-danger: #ff4757;
+  --color-danger-light: #ff6b7a;
+  --color-danger-dark: #e63e4d;
+  --color-danger-bg: #fff2f0;
+  --color-danger-border: #ffccc7;
+
+  --color-warning: #ffb020;
+  --color-warning-bg: #fffbe6;
+  --color-warning-border: #ffe58f;
+
+  --color-success: #10b981;
+  --color-success-bg: #f0fdf4;
+
+  /* ---- Neutral Colors ---- */
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-gray-50: #fafafa;
+  --color-gray-100: #f5f5f5;
+  --color-gray-200: #eeeeee;
+  --color-gray-300: #e0e0e0;
+  --color-gray-400: #bdbdbd;
+  --color-gray-500: #9e9e9e;
+  --color-gray-600: #757575;
+  --color-gray-700: #616161;
+  --color-gray-800: #424242;
+  --color-gray-900: #1a1a1a;
+
+  /* ---- Background Colors ---- */
+  --bg-app: #ededed;
+  --bg-chat: #ededed;
+  --bg-input: #f7f7f7;
+  --bg-card: var(--color-white);
+  --bg-overlay: rgba(0, 0, 0, 0.5);
+  --bg-glass: rgba(255, 255, 255, 0.85);
+  --bg-glass-strong: rgba(255, 255, 255, 0.95);
+
+  /* ---- Message Bubbles ---- */
+  --bubble-own: #95ec69;
+  --bubble-own-text: var(--color-black);
+  --bubble-other: var(--color-white);
+  --bubble-other-text: var(--color-gray-900);
+  --bubble-ai: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --bubble-ai-text: var(--color-white);
+  --bubble-thinking-bg: #f8f9fa;
+  --bubble-thinking-text: #6c757d;
+
+  /* ---- Typography ---- */
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial,
+    sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', 'Consolas',
+    'Monaco', 'Courier New', monospace;
+
+  --text-xs: 0.6875rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.9375rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  --leading-tight: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+
+  /* ---- Spacing ---- */
+  --space-0: 0;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+
+  /* ---- Border Radius ---- */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-full: 9999px;
+
+  /* ---- Shadows ---- */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.06);
+  --shadow-glow: 0 0 20px var(--color-primary-200);
+  --shadow-glow-accent: 0 0 20px var(--color-accent-200);
+
+  /* ---- Transitions ---- */
+  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-spring: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 350ms;
+
+  /* ---- Z-Index Scale ---- */
+  --z-base: 0;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-overlay: 500;
+  --z-modal: 1000;
+  --z-popover: 1500;
+  --z-toast: 2000;
+  --z-max: 9999;
+
+  /* ---- Layout ---- */
+  --app-max-width: 480px;
+  --input-min-height: 44px;
+  --header-height: 0px;
+
+  /* ---- Safe Areas ---- */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+
+  /* ---- Viewport ---- */
+  --vh: 1vh;
+}
+
+/* ---- Dark Mode ---- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-app: #111111;
+    --bg-chat: #111111;
+    --bg-input: #1e1e1e;
+    --bg-card: #1e1e1e;
+    --bg-overlay: rgba(0, 0, 0, 0.7);
+    --bg-glass: rgba(30, 30, 30, 0.9);
+    --bg-glass-strong: rgba(30, 30, 30, 0.98);
+
+    --bubble-own: #1f7a3f;
+    --bubble-own-text: #ffffff;
+    --bubble-other: #2a2a2a;
+    --bubble-other-text: #e0e0e0;
+    --bubble-thinking-bg: #2a2a2a;
+    --bubble-thinking-text: #9e9e9e;
+
+    --color-gray-50: #1a1a1a;
+    --color-gray-100: #222222;
+    --color-gray-200: #333333;
+    --color-gray-300: #444444;
+    --color-gray-400: #666666;
+    --color-gray-500: #888888;
+    --color-gray-600: #aaaaaa;
+    --color-gray-700: #cccccc;
+    --color-gray-800: #e0e0e0;
+    --color-gray-900: #f0f0f0;
+
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.4);
+    --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.5);
+  }
+}

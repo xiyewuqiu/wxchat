@@ -258,18 +258,31 @@ const Utils = {
         return element;
     },
     
-    // 显示通知 - 已禁用，避免移动端弹窗遮挡输入框
+    // 显示轻量级 toast 通知（顶部弹出，不遮挡输入框）
     showNotification(message, type = 'info') {
-        // 只在控制台输出，不显示任何弹窗或通知
         console.log(`[${type.toUpperCase()}] ${message}`);
 
-        // 所有通知功能已禁用，避免遮挡输入框
-        // if ('Notification' in window && Notification.permission === 'granted') {
-        //     new Notification('微信文件传输助手', {
-        //         body: message,
-        //         icon: '/favicon.ico'
-        //     });
-        // }
+        // 移除已有的 toast
+        const existing = document.querySelector('.toast-notification');
+        if (existing) {
+            existing.remove();
+        }
+
+        const toast = document.createElement('div');
+        toast.className = `toast-notification toast-${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        // 触发动画
+        requestAnimationFrame(() => {
+            toast.classList.add('show');
+        });
+
+        // 自动消失
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, type === 'error' ? 3000 : 2000);
     },
     
     // 请求通知权限

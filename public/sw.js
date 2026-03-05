@@ -1,9 +1,9 @@
 // 微信文件传输助手 Service Worker
 // 提供离线缓存和后台同步功能
 
-const CACHE_NAME = 'wxchat-v1.0.0';
-const STATIC_CACHE_NAME = 'wxchat-static-v1.0.0';
-const DYNAMIC_CACHE_NAME = 'wxchat-dynamic-v1.0.0';
+const CACHE_NAME = 'wxchat-v2.0.0';
+const STATIC_CACHE_NAME = 'wxchat-static-v2.0.0';
+const DYNAMIC_CACHE_NAME = 'wxchat-dynamic-v2.0.0';
 
 // 需要缓存的静态资源
 const STATIC_ASSETS = [
@@ -11,12 +11,15 @@ const STATIC_ASSETS = [
   '/index.html',
   '/login.html',
   '/manifest.json',
-  '/css/reset.css',
-  '/css/main.css',
-  '/css/components.css',
-  '/css/responsive.css',
-  '/css/auth.css',
-  '/css/ios-fixes.css',
+  '/css/variables.css',
+  '/css/base.css',
+  '/css/layout.css',
+  '/css/messages.css',
+  '/css/input.css',
+  '/css/ai-chat.css',
+  '/css/modals.css',
+  '/css/auth-page.css',
+  '/css/mobile.css',
   '/js/config.js',
   '/js/utils.js',
   '/js/auth.js',

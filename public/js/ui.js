@@ -515,78 +515,19 @@ const UI = {
         return MessageRenderer.escapeHtml(text);
     },
     
-    // 显示错误消息 - 弹窗已禁用，避免移动端遮挡输入框
+    // 显示错误消息
     showError(message) {
         Utils.showNotification(message, 'error');
-
-        // 错误弹窗已禁用，避免遮挡输入框，只在控制台输出
         console.error('UI错误:', message);
-
-        // const errorDiv = document.createElement('div');
-        // errorDiv.className = 'error-message';
-        // errorDiv.textContent = message;
-        // errorDiv.style.cssText = `
-        //     position: fixed;
-        //     top: 20px;
-        //     left: 50%;
-        //     transform: translateX(-50%);
-        //     background: #ff4757;
-        //     color: white;
-        //     padding: 10px 20px;
-        //     border-radius: 5px;
-        //     z-index: 1000;
-        //     animation: fadeIn 0.3s ease-out;
-        // `;
-        //
-        // document.body.appendChild(errorDiv);
-        //
-        // setTimeout(() => {
-        //     errorDiv.remove();
-        // }, 3000);
     },
     
-    // 显示成功消息 - 弹窗已禁用，避免移动端遮挡输入框
+    // 显示成功消息
     showSuccess(message) {
         Utils.showNotification(message, 'success');
-
-        // 成功弹窗已禁用，避免遮挡输入框，只在控制台输出
-        console.log('UI成功:', message);
-
-        // if (message.includes('\n')) {
-        //     const successDiv = document.createElement('div');
-        //     successDiv.className = 'success-message';
-        //     successDiv.innerHTML = message.replace(/\n/g, '<br>');
-        //     successDiv.style.cssText = `
-        //         position: fixed;
-        //         top: 20px;
-        //         left: 50%;
-        //         transform: translateX(-50%);
-        //         background: #07c160;
-        //         color: white;
-        //         padding: 15px 25px;
-        //         border-radius: 8px;
-        //         z-index: 1000;
-        //         animation: fadeIn 0.3s ease-out;
-        //         max-width: 400px;
-        //         text-align: center;
-        //         box-shadow: 0 4px 12px rgba(7, 193, 96, 0.3);
-        //         font-size: 14px;
-        //         line-height: 1.5;
-        //     `;
-        //
-        //     document.body.appendChild(successDiv);
-        //
-        //     setTimeout(() => {
-        //         successDiv.remove();
-        //     }, 5000);
-        // }
     },
 
     // 设置连接状态
     setConnectionStatus(status) {
-        console.log(`连接状态: ${status}`);
-
-        // 创建或更新连接状态指示器
         let statusElement = document.querySelector('.connection-status');
 
         if (!statusElement) {
@@ -595,7 +536,6 @@ const UI = {
             document.body.appendChild(statusElement);
         }
 
-        // 更新状态显示
         const isOnline = status === 'connected';
         const isConnecting = status === 'connecting';
 
@@ -606,13 +546,6 @@ const UI = {
             statusElement.textContent = isOnline ? '已连接' : '离线模式';
             statusElement.className = `connection-status ${isOnline ? 'online' : 'offline'}`;
         }
-
-        // 连接状态通知已禁用，避免移动端弹窗遮挡输入框
-        // if (status === 'disconnected' && navigator.onLine) {
-        //     Utils.showNotification('连接已断开，正在重连...', 'warning');
-        // } else if (!navigator.onLine) {
-        //     Utils.showNotification('已切换到离线模式，部分功能可能受限', 'warning');
-        // }
     },
 
     // 显示上传状态
