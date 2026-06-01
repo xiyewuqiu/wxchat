@@ -151,8 +151,10 @@
 }
 
 .message.own .text-message.markdown-rendered a {
-  color: #1a6a1a;
+  color: #0d5e0d;
   text-decoration: underline;
+  font-weight: 600;
+  text-underline-offset: 2px;
 }
 
 .text-message.markdown-rendered hr {
@@ -161,33 +163,38 @@
   margin: 0.5em 0;
 }
 
-/* ---- Markdown Toggle ---- */
+/* ---- Markdown Toggle - 更易发现 ---- */
 .markdown-toggle {
   position: absolute;
   bottom: 4px;
   right: 4px;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   background: rgba(0, 0, 0, 0.06);
   border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 9px;
+  font-size: 10px;
   opacity: 0;
   z-index: 1;
   -webkit-user-select: none;
   user-select: none;
-  transition: opacity var(--duration-fast) ease;
+  transition: opacity var(--duration-fast) ease, transform var(--duration-fast) ease;
+  transform: scale(0.8);
 }
 
-.message-content:hover .markdown-toggle {
+.message-content:hover .markdown-toggle,
+.message-content:focus-within .markdown-toggle {
   opacity: 0.6;
+  transform: scale(1);
 }
 
-.markdown-toggle:hover {
+.markdown-toggle:hover,
+.markdown-toggle:focus-visible {
   opacity: 1 !important;
   background: rgba(0, 0, 0, 0.12);
+  transform: scale(1.1);
 }
 
 .message.own .markdown-toggle {
@@ -199,33 +206,58 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
-  color: var(--color-gray-500);
-  padding: 2px 2px 0;
-  line-height: 1;
+  padding: 2px 4px 0;
+  font-size: 10px;
+  color: var(--color-gray-400);
+  white-space: nowrap;
 }
 
-.message.own .message-meta {
-  justify-content: flex-end;
-}
-
-.message.other .message-meta {
-  justify-content: flex-start;
-}
-
-.message-time {
-  font-size: 11px;
-  color: var(--color-gray-500);
+.message-meta .message-time {
+  color: var(--color-gray-400);
+  font-size: 10px;
 }
 
 .message-status {
-  font-size: 11px;
-  opacity: 0.8;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 10px;
 }
 
-.status-sending { color: var(--color-warning); }
-.status-sent { color: var(--color-success); }
-.status-failed { color: var(--color-danger); }
+.message-status.status-sent {
+  color: var(--color-gray-400);
+}
+
+.message-status.status-sending {
+  color: var(--color-warning);
+}
+
+.message-status.status-failed {
+  color: var(--color-danger);
+}
+
+.message-status.status-read {
+  color: var(--color-success);
+}
+
+/* ---- 消息发送失败重试按钮 ---- */
+.message-retry-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  border-radius: 50%;
+  font-size: 10px;
+  cursor: pointer;
+  transition: transform 150ms ease;
+}
+
+.message-retry-btn:active {
+  transform: scale(1.2);
+}
 
 /* ---- File Message ---- */
 .file-message {

@@ -49,9 +49,41 @@
   overscroll-behavior: contain;
 }
 
+/* 消息列表滚动条 - 细但可见 */
 .message-list::-webkit-scrollbar {
-  width: 0;
+  width: 4px;
   background: transparent;
+}
+
+.message-list::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 4px 0;
+}
+
+.message-list::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
+  min-height: 30px;
+}
+
+.message-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+@media (prefers-color-scheme: dark) {
+  .message-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+  }
+  .message-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* 大屏适配 */
+@media (min-width: 769px) {
+  .message-list {
+    max-height: calc(100vh - 160px);
+  }
 }
 
 /* ---- Input Area ---- */
@@ -89,22 +121,118 @@
 .empty-state {
   text-align: center;
   color: var(--color-gray-500);
-  padding: 48px 32px;
+  padding: 60px 32px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
+  animation: fadeIn 300ms ease-out;
 }
 
 .empty-icon {
-  font-size: 48px;
-  opacity: 0.4;
+  font-size: 56px;
+  opacity: 0.5;
+  margin-bottom: 4px;
 }
 
 .empty-state p {
   font-size: 14px;
   color: var(--color-gray-500);
   margin: 0;
+  line-height: 1.6;
+}
+
+.empty-state .empty-hint {
+  font-size: 12px;
+  color: var(--color-gray-400);
+  margin-top: 4px;
+}
+
+/* ---- Connection Status ---- */
+.connection-status {
+  position: fixed;
+  top: 8px;
+  right: 8px;
+  z-index: var(--z-toast);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: var(--font-medium);
+  opacity: 0;
+  transform: translateY(-12px);
+  transition: opacity var(--duration-normal) var(--ease-out),
+              transform var(--duration-normal) var(--ease-out);
+  pointer-events: none;
+}
+
+.connection-status.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.connection-status.online {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.connection-status.offline {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  animation: pulse 2s infinite;
+}
+
+.connection-status.connecting {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.connection-status.reconnecting {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+  animation: pulse 1.5s infinite;
+}
+
+/* ---- Toast Notification ---- */
+.toast-notification {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-120%);
+  z-index: var(--z-toast);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: var(--font-medium);
+  opacity: 0;
+  transition: transform 300ms var(--ease-bounce),
+              opacity 200ms ease;
+  pointer-events: none;
+  max-width: calc(100% - 32px);
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+}
+
+.toast-notification.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.toast-notification.toast-success {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.toast-notification.toast-error {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  border: 1px solid var(--color-danger-border);
+}
+
+.toast-notification.toast-info {
+  background: var(--color-accent-100);
+  color: var(--color-accent-dark);
+  border: 1px solid var(--color-accent-200);
 }
 
 /* ---- Animations ---- */
@@ -151,4 +279,40 @@
   background: linear-gradient(90deg, var(--color-gray-100) 25%, var(--color-gray-200) 50%, var(--color-gray-100) 75%);
   background-size: 200px 100%;
   animation: shimmer 1.5s infinite;
+}
+
+/* ---- 顶部加载指示器 ---- */
+.top-loading-indicator {
+  text-align: center;
+  padding: 8px;
+  font-size: 12px;
+  color: var(--color-gray-400);
+  animation: fadeIn 200ms ease-out;
+}
+
+/* ---- 日期分隔线 ---- */
+.date-separator {
+  text-align: center;
+  padding: 12px 0 8px;
+  font-size: 12px;
+  color: var(--color-gray-400);
+  position: relative;
+}
+
+.date-separator::before,
+.date-separator::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: calc(50% - 60px);
+  height: 1px;
+  background: var(--color-gray-200);
+}
+
+.date-separator::before { left: 0; }
+.date-separator::after { right: 0; }
+
+.date-separator span {
+  background: var(--bg-chat);
+  padding: 0 12px;
 }

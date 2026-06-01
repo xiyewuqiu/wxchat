@@ -82,7 +82,8 @@
   bottom: 3px;
   transform: scale(0);
   opacity: 0;
-  transition: transform 150ms ease, opacity 150ms ease;
+  transition: transform 200ms var(--ease-bounce), opacity 150ms ease;
+  will-change: transform, opacity;
 }
 
 .send-button.show {
@@ -91,12 +92,59 @@
 }
 
 .send-button:active:not(:disabled) {
-  transform: scale(0.9);
+  transform: scale(0.85);
+  transition-duration: 50ms;
 }
 
 .send-button:disabled {
   background: var(--color-gray-300);
   cursor: not-allowed;
+}
+
+/* ---- AI 模式指示器 ---- */
+.ai-mode-indicator {
+  position: absolute;
+  top: -11px;
+  right: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  animation: slideDown 250ms var(--ease-out);
+  box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
+}
+
+/* ---- Function Button ---- */
+.function-button {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gray-500);
+  flex-shrink: 0;
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  transform: scale(1);
+  opacity: 1;
+  transition: transform 200ms var(--ease-bounce), opacity 150ms ease;
+}
+
+.function-button.show {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.function-button:not(.show) {
+  transform: scale(0);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.function-button:active {
+  color: var(--color-primary);
 }
 
 .send-icon {
@@ -108,46 +156,62 @@
   animation: spin 1s linear infinite;
 }
 
-/* ---- Function Button (inside input, right) ---- */
-.function-button {
-  background: var(--color-primary);
-  color: var(--color-white);
-  border-radius: 6px;
-  width: 30px;
-  height: 30px;
+/* ---- 拖拽上传覆盖层 ---- */
+.drag-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  background: rgba(7, 193, 96, 0.06);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  position: absolute;
-  right: 3px;
-  bottom: 3px;
-  z-index: 10;
-  pointer-events: auto;
-  transition: transform 150ms ease, opacity 150ms ease;
 }
 
-.function-button.show {
-  transform: scale(1);
+.drag-overlay.active {
   opacity: 1;
   pointer-events: auto;
 }
 
-.function-button.hide {
-  transform: scale(0);
-  opacity: 0;
-  pointer-events: none;
+.drag-content {
+  text-align: center;
+  color: var(--color-primary);
+  transform: scale(0.95);
+  transition: transform 200ms var(--ease-bounce);
 }
 
-.function-button:active:not(:disabled) {
-  transform: scale(0.9);
+.drag-overlay.active .drag-content {
+  transform: scale(1);
 }
 
-.function-icon {
-  width: 14px;
-  height: 14px;
-  color: white;
-  transition: transform 200ms ease;
+.drag-content .drag-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.drag-content .drag-text {
+  font-size: 16px;
+  font-weight: var(--font-medium);
+}
+
+.drag-content .drag-hint {
+  font-size: 12px;
+  color: var(--color-gray-500);
+  margin-top: 4px;
+}
+
+/* ---- 键盘弹出适配 ---- */
+body.keyboard-open .input-container {
+  position: sticky;
+  bottom: 0;
+}
+
+body.keyboard-open .message-list {
+  padding-bottom: 8px;
 }
 
 /* ---- Upload Status ---- */
