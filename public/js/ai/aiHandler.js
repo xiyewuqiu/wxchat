@@ -73,24 +73,20 @@ const AIHandler = {
     
     // 处理AI消息
     async handleAIMessage(content) {
-        if (this.isProcessing) {
-            return;
-        }
-        
+        if (this.isProcessing) return;
         this.isProcessing = true;
-        
-        try {
 
+        try {
             // 清理消息内容（移除AI标识符）
             const cleanContent = this.cleanAIMessage(content);
 
-            // 发送用户消息（标记为AI消息）
+            // 发送用户消息
             await this.sendUserAIMessage(cleanContent);
 
             // 创建流式显示的AI响应元素
             const streamingElement = this.createStreamingAIMessage();
 
-            // 调用AI API，实现真正的流式显示
+            // 调用AI API，流式显示
             const result = await AIAPI.streamChat(cleanContent, {
                 onResponse: (chunk, fullResponse) => {
                     this.updateStreamingMessage(streamingElement, fullResponse);
@@ -100,21 +96,19 @@ const AIHandler = {
             // 标记流式显示完成
             this.completeStreamingMessage(streamingElement);
 
-            // 等待一小会儿让用户看到完整的流式效果
+            // 等用户看完流式效果
             await new Promise(resolve => setTimeout(resolve, 1000));
 
-            // 移除临时的流式元素
+            // 移除临时流式元素
             if (streamingElement && streamingElement.parentNode) {
                 streamingElement.parentNode.removeChild(streamingElement);
             }
 
-            // 存储最终的AI响应到数据库，触发SSE推送显示持久化消息
+            // 存储最终AI响应到数据库，触发SSE推送
             await this.storeAIResponse(result.response || '抱歉，我无法生成回答。');
 
-
-
         } catch (error) {
-            console.error('AIHandler: AI消息处理失败', error);
+            console.error('[AIHandler] AI消息处理失败:', error);
             await this.handleAIError(error);
         } finally {
             this.isProcessing = false;
@@ -122,156 +116,36 @@ const AIHandler = {
             this.currentResponseMessageId = null;
         }
     },
-    
+
     // 清理AI消息内容
     cleanAIMessage(content) {
-        return content
-            .replace(/^🤖\s*/, '')  // 移除开头的AI图标
-            .replace(/\s*🤖\s*$/, '') // 移除结尾的AI图标
-            .trim();
+        return content.replace(/^🤖\s*/, '').replace(/\s*🤖\s*$/, '').trim();
     },
-    
+
     // 发送用户AI消息
     async sendUserAIMessage(content) {
         const deviceId = Utils.getDeviceId();
-        
-        // 创建AI用户消息
-        const message = {
-            type: CONFIG.MESSAGE_TYPES.TEXT,
-            content: content,
-            device_id: deviceId,
-            timestamp: new Date().toISOString(),
-            isAI: true // 标记为AI相关消息
-        };
-        
-        // 通过API发送消息
         await API.sendMessage(content, deviceId);
-        
-        // 立即刷新消息列表
-        if (window.MessageHandler && typeof MessageHandler.loadMessages === 'function') {
+        if (window.MessageHandler) {
             await MessageHandler.loadMessages(true);
         }
-    },
-    
-    // 显示思考过程
-    async showThinkingProcess() {
-        const thinkingId = `thinking-${Date.now()}`;
-        this.currentThinkingMessageId = thinkingId;
-
-        try {
-            // 通过API存储思考消息到数据库
-            const response = await fetch('/api/ai/message', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-                },
-                body: JSON.stringify({
-                    content: '🤔 AI正在思考...',
-                    deviceId: 'ai-system',
-                    type: 'ai_thinking'
-                })
-            });
-
-            if (response.ok) {
-                const result = await response.json();
-
-                // 触发消息刷新
-                if (window.MessageHandler && typeof MessageHandler.loadMessages === 'function') {
-                    await MessageHandler.loadMessages(true);
-                }
-
-                return result.data.id; // 返回数据库中的真实ID
-            } else {
-                console.error('AIHandler: 思考消息存储失败');
-                // 降级到前端显示
-                return this.showThinkingProcessFallback();
-            }
-        } catch (error) {
-            console.error('AIHandler: 思考消息API调用失败', error);
-            // 降级到前端显示
-            return this.showThinkingProcessFallback();
-        }
-    },
-
-    // 降级方案：前端显示思考过程
-    showThinkingProcessFallback() {
-        const thinkingId = `thinking-${Date.now()}`;
-        this.currentThinkingMessageId = thinkingId;
-
-        // 直接添加到DOM作为备用方案
-        this.addMessageDirectly({
-            id: thinkingId,
-            type: 'ai_thinking',
-            content: '🤔 AI正在思考...',
-            device_id: 'ai-system',
-            timestamp: new Date().toISOString(),
-            isThinking: true
-        });
-
-        return thinkingId;
-    },
-    
-    // 更新思考过程
-    updateThinking(thinkingId, thinking) {
-        if (window.UI && typeof UI.updateAIThinking === 'function') {
-            UI.updateAIThinking(thinkingId, thinking);
-        }
-    },
-    
-    // 完成思考过程
-    completeThinking(thinkingId, thinking) {
-        // 开始显示AI响应
-        this.startAIResponse();
-    },
-    
-    // 开始AI响应
-    async startAIResponse() {
-        const responseId = `response-${Date.now()}`;
-        this.currentResponseMessageId = responseId;
-
-        // 创建响应消息元素
-        const responseMessage = {
-            id: responseId,
-            type: 'ai_response', // 直接使用字符串
-            content: '',
-            device_id: 'ai-system',
-            timestamp: new Date().toISOString(),
-            isAIResponse: true
-        };
-
-        // 添加到UI
-        if (window.UI && typeof UI.addAIMessage === 'function') {
-            UI.addAIMessage(responseMessage);
-        } else {
-            console.error('AIHandler: UI.addAIMessage 方法不可用');
-            // 尝试直接添加到DOM作为备用方案
-            this.addMessageDirectly(responseMessage);
-        }
-
-        return responseId;
     },
 
     // 存储AI响应到数据库
     async storeAIResponse(content) {
         try {
-
-            // 使用API模块的sendAIMessage方法
             if (window.API && typeof API.sendAIMessage === 'function') {
                 const result = await API.sendAIMessage(content, 'ai-system', 'ai_response');
-
-                // 触发消息刷新，显示新的AI响应
-                if (window.MessageHandler && typeof MessageHandler.loadMessages === 'function') {
+                if (window.MessageHandler) {
                     await MessageHandler.loadMessages(true);
                 }
-
                 return result.id;
             } else {
                 throw new Error('API.sendAIMessage 方法不可用');
             }
         } catch (error) {
-            console.error('AIHandler: 存储AI响应时出错', error);
-            // 降级处理：直接在前端显示
+            console.error('[AIHandler] 存储AI响应失败:', error);
+            // 降级：直接前端显示
             this.addMessageDirectly({
                 id: `response-${Date.now()}`,
                 type: 'ai_response',
@@ -389,37 +263,17 @@ const AIHandler = {
         messageList.appendChild(messageDiv);
         messageList.scrollTop = messageList.scrollHeight;
 
-
         return messageDiv;
     },
-    
-    // 更新AI响应
-    updateResponse(chunk, fullResponse) {
-        if (this.currentResponseMessageId && window.UI && typeof UI.updateAIResponse === 'function') {
-            UI.updateAIResponse(this.currentResponseMessageId, chunk, fullResponse);
+
+    // 处理AI错误
+    async handleAIError(error) {
+        console.error('[AIHandler] AI错误:', error);
+        if (window.UI && typeof UI.showError === 'function') {
+            UI.showError(error.message || 'AI处理失败，请稍后重试');
         }
-    },
-    
-    // 完成AI响应
-    async completeAIResponse(result) {
-
-        try {
-            // 将最终的AI响应存储到数据库
-            const response = await fetch('/api/ai/message', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-                },
-                body: JSON.stringify({
-                    content: result.response || '抱歉，我无法生成回答。',
-                    deviceId: 'ai-system',
-                    type: 'ai_response'
-                })
-            });
-
-            if (response.ok) {
-                const apiResult = await response.json();
+    }
+};
 
                 // 触发消息刷新，显示完整的对话
                 if (window.MessageHandler && typeof MessageHandler.loadMessages === 'function') {

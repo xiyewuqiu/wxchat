@@ -1,17 +1,16 @@
-import { Hono } from 'hono'
+﻿import { Hono } from 'hono'
+import { MessageService } from '../services/messageService.js'
 
 const realtime = new Hono()
 
 // Server-Sent Events 实时通信
 realtime.get('/events', async (c) => {
   const deviceId = c.req.query('deviceId')
-
   if (!deviceId) {
     return c.json({ error: '设备ID不能为空' }, 400)
   }
 
   try {
-    // 设置SSE响应头
     const headers = new Headers({
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
@@ -20,75 +19,71 @@ realtime.get('/events', async (c) => {
       'Access-Control-Allow-Headers': 'Cache-Control'
     })
 
-    // 创建可读流
     const { readable, writable } = new TransformStream()
     const writer = writable.getWriter()
     const encoder = new TextEncoder()
+    let isClosed = false
 
-    // 发送SSE消息的辅助函数
     const sendSSE = (data, event = 'message') => {
-      const message = `event: ${event}\ndata: ${data}\n\n`
-      writer.write(encoder.encode(message))
+      if (isClosed) return
+      try {
+        const message = `event: ${event}\ndata: ${data}\n\n`
+        writer.write(encoder.encode(message))
+      } catch (error) {
+        // 流已关闭，忽略
+      }
     }
 
     // 发送连接确认
-    sendSSE('connected', 'connection')
+    sendSSE(JSON.stringify({ status: 'connected', deviceId }), 'connection')
 
-    // 定期发送心跳
-    const heartbeat = setInterval(() => {
-      try {
-        sendSSE('ping', 'heartbeat')
-      } catch (error) {
-        clearInterval(heartbeat)
-      }
+    // 心跳检测（每30秒）
+    const heartbeatTimer = setInterval(() => {
+      sendSSE('ping', 'heartbeat')
     }, 30000)
 
-    // 监听新消息
-    const checkMessages = setInterval(async () => {
+    // 轮询新消息（每3秒，比之前5秒更灵敏）
+    const messageCheckTimer = setInterval(async () => {
+      if (isClosed) return
       try {
         const { DB } = c.env
-        if (!DB) {
-          return
-        }
+        if (!DB) return
 
-        const stmt = DB.prepare(`
-          SELECT COUNT(*) as count
-          FROM messages
-          WHERE timestamp > datetime('now', '-10 seconds')
-        `)
-        const result = await stmt.first()
-
-        if (result && result.count > 0) {
-          sendSSE(JSON.stringify({ newMessages: result.count }), 'message')
+        const count = await MessageService.getRecentMessageCount(DB, 5)
+        if (count > 0) {
+          sendSSE(JSON.stringify({ newMessages: count }), 'message')
         }
       } catch (error) {
-        // 静默处理SSE消息检查失败
+        // 静默处理
       }
-    }, 5000)
+    }, 3000)
 
-    // 处理连接关闭
+    // 流关闭清理
     const cleanup = () => {
-      clearInterval(heartbeat)
-      clearInterval(checkMessages)
-      try {
-        writer.close()
-      } catch (error) {
-        // 静默处理writer关闭失败
-      }
+      if (isClosed) return
+      isClosed = true
+      clearInterval(heartbeatTimer)
+      clearInterval(messageCheckTimer)
+      try { writer.close() } catch (e) { /* 忽略 */ }
     }
 
-    // 设置超时清理（防止连接泄漏）
-    const timeout = setTimeout(cleanup, 300000) // 5分钟超时
+    // Worker 最长执行 30 秒，设置 25 秒超时提前关闭
+    const timeout = setTimeout(() => {
+      sendSSE(JSON.stringify({ reason: 'timeout', reconnect: true }), 'timeout')
+      cleanup()
+    }, 25000)
 
     // 监听中断信号
-    c.req.signal?.addEventListener('abort', () => {
-      clearTimeout(timeout)
-      cleanup()
-    })
+    if (c.req.signal) {
+      c.req.signal.addEventListener('abort', () => {
+        clearTimeout(timeout)
+        cleanup()
+      })
+    }
 
     return new Response(readable, { headers })
-
   } catch (error) {
+    console.error('[Realtime] SSE连接失败:', error)
     return c.json({
       success: false,
       error: `SSE连接失败: ${error.message}`
@@ -102,51 +97,45 @@ realtime.get('/poll', async (c) => {
     const { DB } = c.env
     const deviceId = c.req.query('deviceId')
     const lastMessageId = c.req.query('lastMessageId') || '0'
-    const timeout = parseInt(c.req.query('timeout') || '30') // 30秒超时
+    const timeout = Math.min(
+      parseInt(c.req.query('timeout') || '30'),
+      25 // 最长25秒，适配Worker限制
+    )
 
     if (!deviceId) {
       return c.json({ error: '设备ID不能为空' }, 400)
     }
-
     if (!DB) {
       return c.json({ error: '数据库未绑定' }, 500)
     }
 
     const startTime = Date.now()
-    const maxWaitTime = Math.min(timeout * 1000, 30000) // 最大30秒
+    const maxWaitTime = timeout * 1000
 
-    // 轮询检查新消息
     while (Date.now() - startTime < maxWaitTime) {
-      const stmt = DB.prepare(`
-        SELECT COUNT(*) as count
-        FROM messages
-        WHERE id > ?
-      `)
-      const result = await stmt.bind(lastMessageId).first()
+      const count = await MessageService.getNewMessageCount(DB, lastMessageId)
 
-      if (result && result.count > 0) {
-        // 有新消息，立即返回
+      if (count > 0) {
         return c.json({
           success: true,
           hasNewMessages: true,
-          newMessageCount: result.count,
+          newMessageCount: count,
           timestamp: new Date().toISOString()
         })
       }
 
-      // 等待1秒后再次检查
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      // 等待1.5秒后再次检查（比之前1秒更友好，减少DB压力）
+      await new Promise(resolve => setTimeout(resolve, 1500))
     }
 
-    // 超时，返回无新消息
     return c.json({
       success: true,
       hasNewMessages: false,
       newMessageCount: 0,
       timestamp: new Date().toISOString()
     })
-
   } catch (error) {
+    console.error('[Realtime] 长轮询失败:', error)
     return c.json({
       success: false,
       error: error.message

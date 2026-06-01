@@ -7,6 +7,7 @@ import filesRoutes from './routes/files.js'
 import searchRoutes from './routes/search.js'
 import syncRoutes from './routes/sync.js'
 import realtimeRoutes from './routes/realtime.js'
+import { errorHandler, notFoundHandler } from './middleware/errorHandler.js'
 
 const app = new Hono()
 
@@ -21,7 +22,7 @@ app.use('*', cors({
 app.route('/api/auth', authRoutes)
 
 // 应用鉴权中间件到所有路由
-app.use('*', authMiddleware)
+app.use('/api/*', authMiddleware)
 
 // 挂载API路由（需要认证）
 app.route('/api/messages', messagesRoutes)
@@ -29,6 +30,10 @@ app.route('/api/files', filesRoutes)
 app.route('/api/search', searchRoutes)
 app.route('/api', syncRoutes)
 app.route('/api', realtimeRoutes)
+
+// 统一错误处理
+app.onError(errorHandler)
+app.notFound(notFoundHandler)
 
 // 静态文件服务 - 使用getAssetFromKV
 app.get('*', async (c) => {
@@ -38,7 +43,6 @@ app.get('*', async (c) => {
       waitUntil: c.executionCtx.waitUntil.bind(c.executionCtx),
     })
   } catch (e) {
-    // 如果找不到文件，返回index.html
     try {
       return await getAssetFromKV(c.env, {
         request: new Request(new URL('/index.html', c.req.url).toString()),

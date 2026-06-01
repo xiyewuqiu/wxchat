@@ -1,38 +1,27 @@
-import { Hono } from 'hono'
+﻿import { Hono } from 'hono'
+import { MessageService } from '../services/messageService.js'
+import { validateParams } from '../middleware/errorHandler.js'
 
 const messages = new Hono()
 
-// 获取消息列表
+// 获取消息列表（支持分页）
 messages.get('/', async (c) => {
   try {
     const { DB } = c.env
-    const limit = c.req.query('limit') || 50
-    const offset = c.req.query('offset') || 0
+    const limit = c.req.query('limit') || '50'
+    const offset = c.req.query('offset') || '0'
 
-    const stmt = DB.prepare(`
-      SELECT
-        m.id,
-        m.type,
-        m.content,
-        m.device_id,
-        m.timestamp,
-        f.original_name,
-        f.file_size,
-        f.mime_type,
-        f.r2_key
-      FROM messages m
-      LEFT JOIN files f ON m.file_id = f.id
-      ORDER BY m.timestamp ASC
-    `)
-
-    const result = await stmt.all()
+    const result = await MessageService.getMessages(DB, { limit, offset })
 
     return c.json({
       success: true,
-      data: result.results,
-      total: result.results.length
+      data: result.data,
+      total: result.total,
+      limit: result.limit,
+      offset: result.offset
     })
   } catch (error) {
+    console.error('[Messages] 获取消息列表失败:', error)
     return c.json({
       success: false,
       error: error.message
@@ -46,29 +35,20 @@ messages.post('/', async (c) => {
     const { DB } = c.env
     const { content, deviceId, type = 'text' } = await c.req.json()
 
-    if (!content || !deviceId) {
-      return c.json({
-        success: false,
-        error: '内容和设备ID不能为空'
-      }, 400)
-    }
+    validateParams({ content, deviceId }, ['content', 'deviceId'])
 
-    const stmt = DB.prepare(`
-      INSERT INTO messages (type, content, device_id)
-      VALUES (?, ?, ?)
-    `)
-
-    const result = await stmt.bind(type, content, deviceId).run()
+    const result = await MessageService.createMessage(DB, { type, content, deviceId })
 
     return c.json({
       success: true,
-      data: { id: result.meta.last_row_id }
+      data: { id: result.id }
     })
   } catch (error) {
+    const status = error.status || 500
     return c.json({
       success: false,
       error: error.message
-    }, 500)
+    }, status)
   }
 })
 

@@ -32,61 +32,49 @@ class WeChatApp {
             // 请求通知权限 - 已禁用，避免移动端弹窗遮挡输入框
             // await Utils.requestNotificationPermission();
 
-            // 初始化各个模块
-            UI.init();
-            FileUpload.init();
-
-            // 初始化功能组件 - 确保在UI初始化之后
-            if (typeof FunctionMenu !== 'undefined') {
-                FunctionMenu.init();
-                // 将组件暴露到全局
-                window.FunctionMenu = FunctionMenu;
-            }
-
-            if (typeof FunctionButton !== 'undefined') {
-                FunctionButton.init();
-                // 将组件暴露到全局，供UI模块使用
-                window.FunctionButton = FunctionButton;
-            }
-
-            // 初始化PWA功能
-            if (typeof PWA !== 'undefined') {
-                PWA.init();
-            }
-
-            // 初始化AI模块
-            if (typeof AIUI !== 'undefined') {
-                AIUI.init();
-                window.AIUI = AIUI;
-            }
-
-            if (typeof AIHandler !== 'undefined') {
-                const aiInitSuccess = AIHandler.init();
-                if (aiInitSuccess) {
-                    window.AIHandler = AIHandler;
+            // 模块初始化辅助函数
+            const initModule = (name, module, initFn) => {
+                try {
+                    if (typeof module !== 'undefined') {
+                        const result = initFn ? initFn() : module.init();
+                        window[name] = module;
+                        return result;
+                    }
+                    console.warn(`[App] 模块 ${name} 未加载`);
+                    return false;
+                } catch (error) {
+                    console.error(`[App] 模块 ${name} 初始化失败:`, error);
+                    return false;
                 }
+            };
+
+            // 基础UI模块
+            UI.init();
+
+            // 核心功能组件
+            initModule('FunctionMenu', typeof FunctionMenu !== 'undefined' ? FunctionMenu : null);
+            initModule('FunctionButton', typeof FunctionButton !== 'undefined' ? FunctionButton : null);
+            initModule('FileUpload', typeof FileUpload !== 'undefined' ? FileUpload : null, () => FileUpload.init());
+
+            // PWA
+            initModule('PWA', typeof PWA !== 'undefined' ? PWA : null);
+
+            // AI 模块
+            if (initModule('AIUI', typeof AIUI !== 'undefined' ? AIUI : null)) {
+                const aiHandlerOk = initModule('AIHandler', typeof AIHandler !== 'undefined' ? AIHandler : null,
+                    () => AIHandler.init());
             }
 
-            // 初始化AI图片生成模块
-            if (typeof ImageGenUI !== 'undefined') {
-                ImageGenUI.init();
-                window.ImageGenUI = ImageGenUI;
+            // AI图片生成模块
+            if (initModule('ImageGenUI', typeof ImageGenUI !== 'undefined' ? ImageGenUI : null)) {
+                initModule('ImageGenHandler', typeof ImageGenHandler !== 'undefined' ? ImageGenHandler : null,
+                    () => ImageGenHandler.init());
             }
 
-            if (typeof ImageGenHandler !== 'undefined') {
-                ImageGenHandler.init();
-                window.ImageGenHandler = ImageGenHandler;
-            }
-
-            // 初始化搜索模块
-            if (typeof SearchUI !== 'undefined') {
-                SearchUI.init();
-                window.SearchUI = SearchUI;
-            }
-
-            if (typeof SearchHandler !== 'undefined') {
-                SearchHandler.init();
-                window.SearchHandler = SearchHandler;
+            // 搜索模块
+            if (initModule('SearchUI', typeof SearchUI !== 'undefined' ? SearchUI : null)) {
+                initModule('SearchHandler', typeof SearchHandler !== 'undefined' ? SearchHandler : null,
+                    () => SearchHandler.init());
             }
 
             // 设置初始连接状态
@@ -158,7 +146,7 @@ class WeChatApp {
         };
 
         window.addEventListener('resize', Utils.debounce(handleViewportChange, 100));
-    }
+    },
 
     // 检查浏览器兼容性
     checkBrowserCompatibility() {

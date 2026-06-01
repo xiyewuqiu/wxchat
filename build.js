@@ -33,7 +33,18 @@ const requiredFiles = [
     'public/js/realtime.js',
     'public/js/pwa.js',
     'public/js/app.js',
-    'worker/index.js'
+    'worker/index.js',
+    'worker/auth.js',
+    'worker/middleware/errorHandler.js',
+    'worker/services/database.js',
+    'worker/services/messageService.js',
+    'worker/services/fileService.js',
+    'worker/services/deviceService.js',
+    'worker/routes/messages.js',
+    'worker/routes/files.js',
+    'worker/routes/realtime.js',
+    'worker/routes/search.js',
+    'worker/routes/sync.js'
 ];
 
 let allFilesExist = true;

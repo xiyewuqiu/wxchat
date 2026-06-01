@@ -1,41 +1,56 @@
-// API 接口封装
+﻿// API 接口封装 - 重构版：加 AbortController 超时，改 getMessages 静默失败为透传
 
 const API = {
-    // 通用请求方法
+    // 通用请求方法（支持超时）
     async request(url, options = {}) {
-        const defaultOptions = {
-            headers: {
-                'Content-Type': 'application/json',
-            },
+        const { timeout = 15000, ...fetchOptions } = options;
+
+        const defaultHeaders = {
+            'Content-Type': 'application/json',
         };
 
-        // 添加认证头
-        const authHeaders = Auth ? Auth.addAuthHeader(defaultOptions.headers) : defaultOptions.headers;
+        const authHeaders = Auth ? Auth.addAuthHeader(defaultHeaders) : defaultHeaders;
 
         const config = {
-            ...defaultOptions,
-            ...options,
+            ...fetchOptions,
             headers: {
                 ...authHeaders,
-                ...options.headers,
+                ...(fetchOptions.headers || {}),
             },
         };
-        
+
+        // 支持超时控制
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+
         try {
-            const response = await fetch(url, config);
-            
+            const response = await fetch(url, {
+                ...config,
+                signal: controller.signal,
+            });
+
+            clearTimeout(timeoutId);
+
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                const error = new Error(`HTTP ${response.status}: ${response.statusText}`);
+                error.status = response.status;
+                throw error;
             }
-            
+
             const contentType = response.headers.get('content-type');
             if (contentType && contentType.includes('application/json')) {
                 return await response.json();
             }
-            
+
             return response;
         } catch (error) {
-            console.error('API请求失败:', error);
+            clearTimeout(timeoutId);
+
+            if (error.name === 'AbortError') {
+                throw new Error(`请求超时: ${url}`);
+            }
+
+            console.error('[API] 请求失败:', url, error.message);
             throw error;
         }
     },
@@ -44,10 +59,7 @@ const API = {
     async get(url, params = {}) {
         const urlParams = new URLSearchParams(params);
         const fullUrl = urlParams.toString() ? `${url}?${urlParams}` : url;
-        
-        return this.request(fullUrl, {
-            method: 'GET',
-        });
+        return this.request(fullUrl, { method: 'GET' });
     },
     
     // POST 请求
@@ -60,24 +72,20 @@ const API = {
     
     // 文件上传请求
     async upload(url, formData) {
-        // 对于FormData，不设置Content-Type让浏览器自动设置
-        const defaultOptions = {};
-
-        // 添加认证头
         const authHeaders = Auth ? Auth.addAuthHeader({}) : {};
 
-        const config = {
-            ...defaultOptions,
-            method: 'POST',
-            headers: {
-                ...authHeaders,
-                // 不设置Content-Type，让浏览器为FormData自动设置multipart/form-data
-            },
-            body: formData,
-        };
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 60000); // 文件上传60秒超时
 
         try {
-            const response = await fetch(url, config);
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { ...authHeaders },
+                body: formData,
+                signal: controller.signal,
+            });
+
+            clearTimeout(timeoutId);
 
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -87,101 +95,70 @@ const API = {
             if (contentType && contentType.includes('application/json')) {
                 return await response.json();
             }
-
             return response;
         } catch (error) {
-            console.error('文件上传请求失败:', error);
+            clearTimeout(timeoutId);
+            if (error.name === 'AbortError') {
+                throw new Error('文件上传超时');
+            }
             throw error;
         }
     },
     
-    // 获取消息列表
+    // 获取消息列表（修复：不再静默返回空数组，让调用方处理错误）
     async getMessages(limit = CONFIG.UI.MESSAGE_LOAD_LIMIT, offset = 0) {
-        try {
-            const response = await this.get(CONFIG.API.ENDPOINTS.MESSAGES, {
-                limit,
-                offset
-            });
+        const response = await this.get(CONFIG.API.ENDPOINTS.MESSAGES, { limit, offset });
 
-            if (response && response.success) {
-                return response.data || [];
-            } else {
-                throw new Error(response?.error || CONFIG.ERRORS.LOAD_MESSAGES_FAILED);
-            }
-        } catch (error) {
-            console.error('获取消息失败:', error);
-            // 静默处理所有错误，返回空数组，让UI显示空状态
-            console.log('API错误，返回空消息列表以避免显示加载状态');
-            return [];
+        if (response && response.success) {
+            return response.data || [];
         }
+
+        // 不再静默返回空数组，抛出错误让调用方处理
+        throw new Error(response?.error || CONFIG.ERRORS.LOAD_MESSAGES_FAILED);
     },
     
     // 发送文本消息
     async sendMessage(content, deviceId) {
-        try {
-            const response = await this.post(CONFIG.API.ENDPOINTS.MESSAGES, {
-                content,
-                deviceId
-            });
+        const response = await this.post(CONFIG.API.ENDPOINTS.MESSAGES, { content, deviceId });
 
-            if (response.success) {
-                return response.data;
-            } else {
-                throw new Error(response.error || CONFIG.ERRORS.MESSAGE_SEND_FAILED);
-            }
-        } catch (error) {
-            console.error('发送消息失败:', error);
-            throw new Error(CONFIG.ERRORS.MESSAGE_SEND_FAILED);
+        if (response.success) {
+            return response.data;
         }
+        throw new Error(response.error || CONFIG.ERRORS.MESSAGE_SEND_FAILED);
     },
 
     // 发送AI消息
     async sendAIMessage(content, deviceId = 'ai-system', type = 'ai_response') {
-        try {
-            const response = await this.post('/api/ai/message', {
-                content,
-                deviceId,
-                type
-            });
+        const response = await this.post(CONFIG.API.ENDPOINTS.AI_MESSAGE || '/api/ai/message', {
+            content, deviceId, type
+        });
 
-            if (response && response.success) {
-                return response.data;
-            } else {
-                throw new Error(response?.error || 'AI消息发送失败');
-            }
-        } catch (error) {
-            throw error;
+        if (response && response.success) {
+            return response.data;
         }
+        throw new Error(response?.error || 'AI消息发送失败');
     },
     
     // 上传文件
     async uploadFile(file, deviceId, onProgress = null) {
-        try {
-            // 验证文件大小
-            if (!Utils.validateFileSize(file.size)) {
-                throw new Error(CONFIG.ERRORS.FILE_TOO_LARGE);
-            }
-            
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('deviceId', deviceId);
-            
-            // 如果需要进度回调，可以使用XMLHttpRequest
-            if (onProgress) {
-                return this.uploadWithProgress(CONFIG.API.ENDPOINTS.FILES_UPLOAD, formData, onProgress);
-            }
-            
-            const response = await this.upload(CONFIG.API.ENDPOINTS.FILES_UPLOAD, formData);
-            
-            if (response.success) {
-                return response.data;
-            } else {
-                throw new Error(response.error || CONFIG.ERRORS.FILE_UPLOAD_FAILED);
-            }
-        } catch (error) {
-            console.error('文件上传失败:', error);
-            throw error;
+        if (!Utils.validateFileSize(file.size)) {
+            throw new Error(CONFIG.ERRORS.FILE_TOO_LARGE);
         }
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('deviceId', deviceId);
+
+        if (onProgress) {
+            return this.uploadWithProgress(CONFIG.API.ENDPOINTS.FILES_UPLOAD, formData, onProgress);
+        }
+
+        const response = await this.upload(CONFIG.API.ENDPOINTS.FILES_UPLOAD, formData);
+
+        if (response.success) {
+            return response.data;
+        }
+        throw new Error(response.error || CONFIG.ERRORS.FILE_UPLOAD_FAILED);
     },
     
     // 带进度的文件上传
@@ -189,18 +166,22 @@ const API = {
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
 
+            const timeoutId = setTimeout(() => {
+                xhr.abort();
+                reject(new Error('文件上传超时'));
+            }, 60000);
+
             xhr.upload.addEventListener('progress', (event) => {
                 if (event.lengthComputable) {
-                    const percentComplete = (event.loaded / event.total) * 100;
-                    onProgress(percentComplete);
+                    onProgress((event.loaded / event.total) * 100);
                 }
             });
 
             xhr.addEventListener('load', () => {
+                clearTimeout(timeoutId);
                 if (xhr.status >= 200 && xhr.status < 300) {
                     try {
-                        const response = JSON.parse(xhr.responseText);
-                        resolve(response);
+                        resolve(JSON.parse(xhr.responseText));
                     } catch (e) {
                         reject(new Error('响应解析失败'));
                     }
@@ -209,17 +190,13 @@ const API = {
                 }
             });
 
-            xhr.addEventListener('error', () => {
-                reject(new Error('网络错误'));
-            });
+            xhr.addEventListener('error', () => reject(new Error('网络错误')));
+            xhr.addEventListener('abort', () => reject(new Error('上传已取消')));
 
             xhr.open('POST', url);
-
-            // 添加认证头（必须在open之后设置）
             if (Auth && Auth.getToken()) {
                 xhr.setRequestHeader('Authorization', `Bearer ${Auth.getToken()}`);
             }
-
             xhr.send(formData);
         });
     },
@@ -229,184 +206,61 @@ const API = {
         try {
             const url = `${CONFIG.API.ENDPOINTS.FILES_DOWNLOAD}/${r2Key}`;
 
-            // 直接使用fetch，不通过request方法，避免response被消费
-            const defaultOptions = {
-                method: 'GET',
-                headers: {}
-            };
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000);
 
-            // 添加认证头
-            const authHeaders = Auth ? Auth.addAuthHeader(defaultOptions.headers) : defaultOptions.headers;
+            const headers = Auth ? Auth.addAuthHeader({}) : {};
+            const response = await fetch(url, { headers, signal: controller.signal });
 
-            const config = {
-                ...defaultOptions,
-                headers: {
-                    ...authHeaders
-                }
-            };
-
-            const response = await fetch(url, config);
+            clearTimeout(timeoutId);
 
             if (!response.ok) {
                 throw new Error(`下载失败: ${response.status} ${response.statusText}`);
             }
 
-            // 获取文件blob
             const blob = await response.blob();
-
-            // 创建下载链接
             const downloadUrl = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = downloadUrl;
             link.download = fileName;
             link.style.display = 'none';
-
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-
-            // 清理URL对象
             window.URL.revokeObjectURL(downloadUrl);
 
             return true;
         } catch (error) {
-            console.error('文件下载失败:', error);
-
-            // 下载失败通知已禁用，避免移动端弹窗遮挡输入框
-            if (error.message.includes('401')) {
-                console.error('下载失败：请重新登录');
-                // 可以选择自动跳转到登录页
+            console.error('[API] 文件下载失败:', error);
+            if (error.name === 'AbortError') {
+                console.error('下载超时');
+            } else if (error.message.includes('401')) {
                 if (typeof Auth !== 'undefined' && Auth.logout) {
-                    setTimeout(() => {
-                        Auth.logout();
-                        window.location.href = '/login.html';
-                    }, 2000);
+                    setTimeout(() => { Auth.logout(); window.location.href = '/login.html'; }, 2000);
                 }
-            } else {
-                console.error(`下载失败：${error.message}`);
             }
-
             return false;
         }
+    },
+
+    // 设备同步
+    async syncDevice(deviceId, deviceName) {
+        return this.post(CONFIG.API.ENDPOINTS.SYNC, { deviceId, deviceName });
+    },
+
+    // 清空所有数据
+    async clearAllData(confirmCode) {
+        return this.post(CONFIG.API.ENDPOINTS.CLEAR_ALL || '/api/clear-all', { confirmCode });
     },
 
     // 检查认证状态
     async checkAuthStatus() {
         try {
-            const response = await this.get('/auth/verify');
+            const response = await this.get(CONFIG.API.ENDPOINTS.AUTH_VERIFY);
             return response.valid === true;
         } catch (error) {
-            console.warn('认证状态检查失败:', error);
+            console.warn('[API] 认证状态检查失败:', error);
             return false;
-        }
-    },
-
-    // 图片blob URL缓存
-    imageBlobCache: new Map(),
-
-    // 获取图片blob URL（用于预览）
-    async getImageBlobUrl(r2Key) {
-        // 检查缓存
-        if (this.imageBlobCache.has(r2Key)) {
-            return this.imageBlobCache.get(r2Key);
-        }
-
-        try {
-            const url = `${CONFIG.API.ENDPOINTS.FILES_DOWNLOAD}/${r2Key}`;
-
-            // 直接使用fetch，不通过request方法，避免response被消费
-            const defaultOptions = {
-                method: 'GET',
-                headers: {}
-            };
-
-            // 添加认证头
-            const authHeaders = Auth ? Auth.addAuthHeader(defaultOptions.headers) : defaultOptions.headers;
-
-            const config = {
-                ...defaultOptions,
-                headers: {
-                    ...authHeaders
-                }
-            };
-
-            const response = await fetch(url, config);
-
-            if (!response.ok) {
-                throw new Error(`获取图片失败: ${response.status}`);
-            }
-
-            // 获取图片blob
-            const blob = await response.blob();
-
-            // 创建blob URL
-            const blobUrl = window.URL.createObjectURL(blob);
-
-            // 缓存blob URL
-            this.imageBlobCache.set(r2Key, blobUrl);
-
-            return blobUrl;
-        } catch (error) {
-            console.error('获取图片blob URL失败:', error);
-            throw error;
-        }
-    },
-
-    // 清理图片blob URL缓存
-    clearImageBlobCache() {
-        for (const [key, blobUrl] of this.imageBlobCache) {
-            window.URL.revokeObjectURL(blobUrl);
-        }
-        this.imageBlobCache.clear();
-    },
-
-    // 移除特定图片的blob URL
-    revokeImageBlobUrl(r2Key) {
-        if (this.imageBlobCache.has(r2Key)) {
-            const blobUrl = this.imageBlobCache.get(r2Key);
-            window.URL.revokeObjectURL(blobUrl);
-            this.imageBlobCache.delete(r2Key);
-        }
-    },
-    
-    // 设备同步
-    async syncDevice(deviceId, deviceName) {
-        try {
-            const response = await this.post(CONFIG.API.ENDPOINTS.SYNC, {
-                deviceId,
-                deviceName
-            });
-
-            if (response.success) {
-                return true;
-            } else {
-                throw new Error(response.error || CONFIG.ERRORS.DEVICE_SYNC_FAILED);
-            }
-        } catch (error) {
-            console.error('设备同步失败:', error);
-            // 设备同步失败不应该阻止应用运行
-            return false;
-        }
-    },
-
-    // 清空所有数据
-    async clearAllData(confirmCode) {
-        try {
-            const response = await this.post(CONFIG.API.ENDPOINTS.CLEAR_ALL, {
-                confirmCode
-            });
-
-            if (response.success) {
-                return response.data;
-            } else {
-                throw new Error(response.error || CONFIG.ERRORS.CLEAR_FAILED);
-            }
-        } catch (error) {
-            console.error('数据清理失败:', error);
-            throw new Error(error.message || CONFIG.ERRORS.CLEAR_FAILED);
         }
     }
 };
-
-// 冻结API对象
-Object.freeze(API);
