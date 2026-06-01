@@ -1,76 +1,68 @@
-/* ============================================
-   Input Area & Upload Components
-   WeChat-accurate input bar
+﻿/* ============================================
+   MD3 Input Area & Components
    ============================================ */
+.message-input { width: 100%; display: flex; align-items: flex-end; }
+.input-wrapper { display: flex; align-items: flex-end; gap: 8px; width: 100%; }
 
-/* ---- Message Form ---- */
-.message-input {
-  width: 100%;
-  display: flex;
-  align-items: flex-end;
-}
-
-.input-wrapper {
-  display: flex;
-  align-items: flex-end;
-  gap: 8px;
-  width: 100%;
-}
-
+/* ---- MD3 Outlined Text Field ---- */
 .input-field-container {
   flex: 1;
   display: flex;
   align-items: flex-end;
-  background: var(--color-white);
-  border-radius: 6px;
+  background: var(--md-sys-color-surface);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-outlined-text-field-container-shape);
   position: relative;
-  min-height: 36px;
+  min-height: var(--input-min-height);
+  transition: border var(--md-sys-duration-medium1) var(--md-sys-motion-easing-standard);
+}
+
+.input-field-container:focus-within {
+  border: 2px solid var(--md-sys-color-primary);
 }
 
 .input-field-container textarea {
   flex: 1;
   border: none;
-  padding: 8px 40px 8px 12px;
-  font-size: 16px;
+  padding: 10px 40px 10px 14px;
+  font-size: var(--md-sys-typescale-body-large-size);
+  line-height: var(--md-sys-typescale-body-large-line);
+  letter-spacing: var(--md-sys-typescale-body-large-tracking);
   resize: none;
   min-height: 20px;
   max-height: 100px;
   background: transparent;
   font-family: var(--font-family);
-  line-height: 1.4;
   outline: none;
   -webkit-user-select: text;
   user-select: text;
-  color: var(--color-gray-900);
+  color: var(--md-sys-color-on-surface);
 }
 
 .input-field-container textarea::placeholder {
-  color: var(--color-gray-400);
+  color: var(--md-outlined-text-field-input-text-placeholder-color);
 }
 
-/* ---- File Button (left side) ---- */
+/* ---- File Button ---- */
 .file-button {
-  background: none;
-  color: var(--color-gray-600);
-  font-size: 22px;
+  color: var(--md-sys-color-on-surface-variant);
   width: 36px;
   height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border-radius: 4px;
+  border-radius: var(--md-sys-shape-corner-full);
+  transition: background var(--md-sys-duration-short3) ease;
 }
+.file-button:hover { background: var(--md-sys-color-surface-variant); }
+.file-button:active { background: var(--md-sys-color-outline-variant); }
 
-.file-button:active {
-  background: var(--color-gray-200);
-}
-
-/* ---- Send Button (inside input, right) ---- */
+/* ---- Send Button (MD3 FAB mini) ---- */
 .send-button {
-  background: var(--color-primary);
-  color: var(--color-white);
-  border-radius: 6px;
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-radius: var(--md-filled-button-container-shape);
   width: 30px;
   height: 30px;
   display: flex;
@@ -78,41 +70,22 @@
   justify-content: center;
   flex-shrink: 0;
   position: absolute;
-  right: 3px;
-  bottom: 3px;
+  right: 4px;
+  bottom: 5px;
   transform: scale(0);
   opacity: 0;
-  transition: transform 200ms var(--ease-bounce), opacity 150ms ease;
+  transition: transform var(--md-sys-duration-medium2) var(--md-sys-motion-easing-emphasized-decelerate),
+              opacity var(--md-sys-duration-medium1) var(--md-sys-motion-easing-standard);
   will-change: transform, opacity;
 }
-
-.send-button.show {
-  transform: scale(1);
-  opacity: 1;
-}
-
+.send-button.show { transform: scale(1); opacity: 1; }
 .send-button:active:not(:disabled) {
   transform: scale(0.85);
-  transition-duration: 50ms;
+  transition-duration: var(--md-sys-duration-short2);
 }
-
 .send-button:disabled {
-  background: var(--color-gray-300);
+  background: var(--md-sys-color-outline-variant);
   cursor: not-allowed;
-}
-
-/* ---- AI 模式指示器 ---- */
-.ai-mode-indicator {
-  position: absolute;
-  top: -11px;
-  right: 12px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 1px 8px;
-  border-radius: 10px;
-  font-size: 10px;
-  animation: slideDown 250ms var(--ease-out);
-  box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
 }
 
 /* ---- Function Button ---- */
@@ -122,362 +95,94 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-gray-500);
+  color: var(--md-sys-color-on-surface-variant);
   flex-shrink: 0;
   position: absolute;
-  right: 3px;
-  bottom: 3px;
-  transform: scale(1);
-  opacity: 1;
-  transition: transform 200ms var(--ease-bounce), opacity 150ms ease;
+  right: 4px;
+  bottom: 5px;
+  transition: transform var(--md-sys-duration-medium2) var(--md-sys-motion-easing-emphasized-decelerate),
+              opacity var(--md-sys-duration-medium1) var(--md-sys-motion-easing-standard);
+}
+.function-button.show { transform: scale(1); opacity: 1; }
+.function-button:not(.show) { transform: scale(0); opacity: 0; pointer-events: none; }
+.function-button:active { color: var(--md-sys-color-primary); }
+
+/* ---- Send Icon ---- */
+.send-icon { width: 16px; height: 16px; }
+.send-button.loading .send-icon { animation: spin 1s linear infinite; }
+
+/* ---- AI Mode Indicator (MD3 Chip) ---- */
+.ai-mode-indicator {
+  position: absolute;
+  top: -12px;
+  right: 12px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 2px 10px;
+  border-radius: var(--md-sys-shape-corner-full);
+  font-size: var(--md-sys-typescale-label-small-size);
+  letter-spacing: var(--md-sys-typescale-label-small-tracking);
+  animation: slideDown var(--md-sys-duration-medium2) var(--md-sys-motion-easing-emphasized-decelerate);
+  box-shadow: var(--md-sys-elevation-level1);
 }
 
-.function-button.show {
-  transform: scale(1);
-  opacity: 1;
-}
-
-.function-button:not(.show) {
-  transform: scale(0);
-  opacity: 0;
-  pointer-events: none;
-}
-
-.function-button:active {
-  color: var(--color-primary);
-}
-
-.send-icon {
-  width: 16px;
-  height: 16px;
-}
-
-.send-button.loading .send-icon {
-  animation: spin 1s linear infinite;
-}
-
-/* ---- 拖拽上传覆盖层 ---- */
+/* ---- MD3 Drag & Drop Overlay ---- */
 .drag-overlay {
   position: fixed;
   inset: 0;
   z-index: var(--z-overlay);
-  background: rgba(7, 193, 96, 0.06);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
+  background: color-mix(in srgb, var(--md-sys-color-primary-container) 60%, transparent);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 200ms ease;
+  transition: opacity var(--md-sys-duration-medium2) var(--md-sys-motion-easing-standard);
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
-.drag-overlay.active {
-  opacity: 1;
-  pointer-events: auto;
-}
+.drag-overlay.active { opacity: 1; pointer-events: auto; }
 
 .drag-content {
   text-align: center;
-  color: var(--color-primary);
-  transform: scale(0.95);
-  transition: transform 200ms var(--ease-bounce);
+  color: var(--md-sys-color-primary);
+  transform: scale(0.92);
+  transition: transform var(--md-sys-duration-medium2) var(--md-sys-motion-easing-emphasized-decelerate);
 }
-
-.drag-overlay.active .drag-content {
-  transform: scale(1);
-}
-
-.drag-content .drag-icon {
-  font-size: 48px;
-  margin-bottom: 12px;
-}
-
+.drag-overlay.active .drag-content { transform: scale(1); }
+.drag-content .drag-icon { font-size: 56px; margin-bottom: 12px; }
 .drag-content .drag-text {
-  font-size: 16px;
-  font-weight: var(--font-medium);
+  font-size: var(--md-sys-typescale-title-medium-size);
+  font-weight: var(--md-sys-typescale-title-medium-weight);
 }
-
 .drag-content .drag-hint {
-  font-size: 12px;
-  color: var(--color-gray-500);
+  font-size: var(--md-sys-typescale-body-small-size);
+  color: var(--md-sys-color-on-surface-variant);
   margin-top: 4px;
 }
 
-/* ---- 键盘弹出适配 ---- */
-body.keyboard-open .input-container {
-  position: sticky;
-  bottom: 0;
-}
-
-body.keyboard-open .message-list {
-  padding-bottom: 8px;
-}
-
-/* ---- Upload Status ---- */
+/* ---- MD3 Upload Status ---- */
 .upload-status {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--color-gray-700);
-  font-size: 13px;
-  padding: 8px 12px;
-  background: var(--color-primary-50);
-  border-radius: 6px;
+  padding: 8px 16px;
+  background: var(--md-sys-color-surface-container-low);
+  border-radius: var(--md-sys-shape-corner-small);
   margin-bottom: 8px;
-  animation: uploadPulse 2s ease-in-out infinite;
+  font-size: var(--md-sys-typescale-body-small-size);
+  color: var(--md-sys-color-on-surface-variant);
 }
-
-.upload-spinner {
-  animation: spin 1s linear infinite;
-  font-size: 16px;
-  flex-shrink: 0;
-}
-
-.upload-progress {
-  flex: 1;
-  height: 3px;
-  background: var(--color-primary-100);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
+.upload-spinner { font-size: 18px; animation: spin 1s linear infinite; }
+.upload-progress { flex: 1; height: var(--md-linear-progress-track-height); background: var(--md-sys-color-surface-variant); border-radius: var(--md-sys-shape-corner-full); overflow: hidden; }
 .progress-bar {
   height: 100%;
-  background: var(--color-primary);
-  border-radius: 2px;
+  background: var(--md-linear-progress-active-indicator-color);
   width: 0%;
-  transition: width 250ms ease;
+  border-radius: var(--md-sys-shape-corner-full);
+  transition: width var(--md-sys-duration-medium2) var(--md-sys-motion-easing-standard);
 }
 
-@keyframes uploadPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
-}
-
-/* ---- Drag Overlay ---- */
-.drag-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(7, 193, 96, 0.06);
-  backdrop-filter: blur(3px);
-  z-index: var(--z-overlay);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 200ms ease;
-}
-
-.drag-overlay.active {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.drag-content {
-  background: var(--bg-glass-strong);
-  border: 2px dashed var(--color-primary);
-  border-radius: 16px;
-  padding: 40px;
-  text-align: center;
-  transform: scale(0.95);
-  transition: transform 200ms ease;
-}
-
-.drag-overlay.active .drag-content {
-  transform: scale(1);
-}
-
-.drag-icon {
-  font-size: 48px;
-  margin-bottom: 12px;
-  animation: bounce 1s infinite;
-  line-height: 1;
-}
-
-.drag-text {
-  font-size: 17px;
-  font-weight: 600;
-  color: var(--color-primary);
-  margin-bottom: 4px;
-}
-
-.drag-hint {
-  font-size: 14px;
-  color: var(--color-gray-500);
-}
-
-@keyframes bounce {
-  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-  40% { transform: translateY(-8px); }
-  60% { transform: translateY(-4px); }
-}
-
-body.dragging .message-list {
-  opacity: 0.6;
-}
-
-/* ---- AI Mode on Input Container ---- */
-.input-container.ai-mode {
-  border-top: 2px solid #7c5cbf;
-}
-
-/* ---- AI Mode Indicator ---- */
-.ai-mode-indicator {
-  position: absolute;
-  top: -11px;
-  right: 12px;
-  background: var(--bubble-ai);
-  color: var(--color-white);
-  padding: 1px 8px;
-  border-radius: 10px;
-  font-size: 10px;
-  font-weight: 500;
-  z-index: 10;
-  animation: aiModeSlideIn 250ms ease-out;
-}
-
-@keyframes aiModeSlideIn {
-  from { opacity: 0; transform: translateY(-6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ---- Upload Info (batch upload) ---- */
-.upload-info { flex: 1; }
-
-.upload-text {
-  font-weight: 500;
-  color: var(--color-gray-900);
-  font-size: 13px;
-}
-
-.upload-current {
-  font-size: 12px;
-  color: var(--color-gray-500);
-  margin-top: 2px;
-}
-
-/* ---- Keyboard Hint ---- */
-.keyboard-hint {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 13px;
-  opacity: 0;
-  transform: translateY(10px);
-  transition: all 200ms ease;
-  z-index: var(--z-toast);
-  max-width: 280px;
-  text-align: center;
-}
-
-.keyboard-hint.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* ---- Connection Status ---- */
-.connection-status {
-  position: fixed;
-  top: 8px;
-  right: 8px;
-  padding: 4px 10px;
-  border-radius: 10px;
-  font-size: 11px;
-  font-weight: 500;
-  z-index: var(--z-toast);
-  pointer-events: none;
-  opacity: 0;
-  transform: translateY(-10px);
-  transition: all 300ms ease;
-}
-
-.connection-status.online,
-.connection-status.offline,
-.connection-status.connecting,
-.connection-status.reconnecting {
-  opacity: 0.9;
-  transform: translateY(0);
-}
-
-.connection-status.online {
-  background: var(--color-success-bg);
-  color: var(--color-success);
-}
-
-.connection-status.offline {
-  background: var(--color-danger-bg);
-  color: var(--color-danger);
-}
-
-.connection-status.connecting,
-.connection-status.reconnecting {
-  background: var(--color-warning-bg);
-  color: #d48806;
-}
-
-/* ---- PWA Update Banner ---- */
-.pwa-update-banner {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  background: var(--color-primary);
-  color: white;
-  padding: 10px 16px;
-  z-index: var(--z-toast);
-  animation: slideDown 250ms ease;
-}
-
-.update-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  max-width: var(--app-max-width);
-  margin: 0 auto;
-  font-size: 14px;
-}
-
-.update-btn {
-  background: white;
-  color: var(--color-primary);
-  padding: 4px 14px;
-  border-radius: 14px;
-  font-size: 13px;
-  font-weight: 500;
-}
-
-/* ---- Toast Notification ---- */
-.toast-notification {
-  position: fixed;
-  top: 12px;
-  left: 50%;
-  transform: translateX(-50%) translateY(-120%);
-  padding: 8px 20px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 500;
-  color: white;
-  z-index: var(--z-max);
-  pointer-events: none;
-  opacity: 0;
-  transition: transform 300ms ease, opacity 200ms ease;
-  max-width: 85vw;
-  text-align: center;
-}
-
-.toast-notification.show {
-  transform: translateX(-50%) translateY(0);
-  opacity: 1;
-}
-
-.toast-notification.toast-success { background: var(--color-primary); }
-.toast-notification.toast-error { background: var(--color-danger); }
-.toast-notification.toast-warning { background: #e6a700; }
-.toast-notification.toast-info { background: rgba(0, 0, 0, 0.75); }
+/* ---- Keyboard Open ---- */
+body.keyboard-open .input-container { position: sticky; bottom: 0; }
+body.keyboard-open .message-list { padding-bottom: 8px; }

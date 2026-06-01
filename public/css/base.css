@@ -1,7 +1,6 @@
-/* ============================================
-   Base Reset & Foundation
+﻿/* ============================================
+   MD3 Base Reset & Foundation
    ============================================ */
-
 *,
 *::before,
 *::after {
@@ -25,14 +24,66 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  background: var(--bg-app);
-  color: var(--color-gray-900);
-  font-size: 16px;
-  line-height: 1.5;
+  background: var(--md-sys-color-background);
+  color: var(--md-sys-color-on-background);
+  font-size: var(--md-sys-typescale-body-medium-size);
+  line-height: var(--md-sys-typescale-body-medium-line);
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
   overscroll-behavior: none;
+}
+
+/* ---- MD3 Typography Utility Classes ---- */
+.md-display-large {
+  font-size: var(--md-sys-typescale-display-large-size);
+  line-height: var(--md-sys-typescale-display-large-line);
+  font-weight: var(--md-sys-typescale-display-large-weight);
+}
+.md-display-medium {
+  font-size: var(--md-sys-typescale-display-medium-size);
+  line-height: var(--md-sys-typescale-display-medium-line);
+  font-weight: var(--md-sys-typescale-display-medium-weight);
+}
+.md-headline-medium {
+  font-size: var(--md-sys-typescale-headline-medium-size);
+  line-height: var(--md-sys-typescale-headline-medium-line);
+  font-weight: var(--md-sys-typescale-headline-medium-weight);
+}
+.md-title-large {
+  font-size: var(--md-sys-typescale-title-large-size);
+  line-height: var(--md-sys-typescale-title-large-line);
+  font-weight: var(--md-sys-typescale-title-large-weight);
+}
+.md-title-medium {
+  font-size: var(--md-sys-typescale-title-medium-size);
+  line-height: var(--md-sys-typescale-title-medium-line);
+  font-weight: var(--md-sys-typescale-title-medium-weight);
+  letter-spacing: var(--md-sys-typescale-title-medium-tracking);
+}
+.md-body-large {
+  font-size: var(--md-sys-typescale-body-large-size);
+  line-height: var(--md-sys-typescale-body-large-line);
+  font-weight: var(--md-sys-typescale-body-large-weight);
+  letter-spacing: var(--md-sys-typescale-body-large-tracking);
+}
+.md-body-medium {
+  font-size: var(--md-sys-typescale-body-medium-size);
+  line-height: var(--md-sys-typescale-body-medium-line);
+  font-weight: var(--md-sys-typescale-body-medium-weight);
+  letter-spacing: var(--md-sys-typescale-body-medium-tracking);
+}
+.md-label-large {
+  font-size: var(--md-sys-typescale-label-large-size);
+  line-height: var(--md-sys-typescale-label-large-line);
+  font-weight: var(--md-sys-typescale-label-large-weight);
+  letter-spacing: var(--md-sys-typescale-label-large-tracking);
+}
+.md-label-small {
+  font-size: var(--md-sys-typescale-label-small-size);
+  line-height: var(--md-sys-typescale-label-small-line);
+  font-weight: var(--md-sys-typescale-label-small-weight);
+  letter-spacing: var(--md-sys-typescale-label-small-tracking);
 }
 
 /* ---- Interactive Elements ---- */
@@ -60,68 +111,38 @@ input, textarea, select {
   color: inherit;
 }
 
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
+a { text-decoration: none; color: inherit; }
 ul, ol { list-style: none; }
+img { max-width: 100%; height: auto; display: block; }
 
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-  -webkit-user-drag: none;
-}
-
-/* ---- Text Selection ---- */
 ::selection {
-  background: rgba(7, 193, 96, 0.2);
-  color: inherit;
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
 }
-
-/* ---- Focus ---- */
 :focus { outline: none; }
-
 :focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 1px;
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
 }
 
-/* ---- Scrollbar (thin, unobtrusive) ---- */
-::-webkit-scrollbar { width: 3px; }
+/* ---- MD3 Scrollbar ---- */
+::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.15);
-  border-radius: 4px;
+  background: var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--md-sys-color-outline);
 }
 
-@media (prefers-color-scheme: dark) {
-  ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.12);
-  }
-}
+/* ---- MD3 Elevation Surface Classes ---- */
+.surface-lowest { background: var(--md-sys-color-surface-container-lowest); }
+.surface-low { background: var(--md-sys-color-surface-container-low); }
+.surface { background: var(--md-sys-color-surface); }
+.surface-high { background: var(--md-sys-color-surface-container-high); }
+.surface-highest { background: var(--md-sys-color-surface-container-highest); }
 
-/* ---- Selectable Content ---- */
-.selectable,
-input, textarea,
-.text-message, .message-content,
-.file-name, .file-size, .file-details,
-.message-meta, .message-time {
-  -webkit-user-select: text;
-  -moz-user-select: text;
-  user-select: text;
-  -webkit-touch-callout: default;
-}
-
-/* ---- Utility ---- */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  border: 0;
-}
+.elevation-1 { box-shadow: var(--md-sys-elevation-level1); }
+.elevation-2 { box-shadow: var(--md-sys-elevation-level2); }
+.elevation-3 { box-shadow: var(--md-sys-elevation-level3); }

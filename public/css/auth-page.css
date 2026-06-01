@@ -1,268 +1,177 @@
-/* ============================================
-   Login / Auth Page Styles
+﻿/* ============================================
+   MD3 Auth Page - Login
    ============================================ */
-
 .auth-container {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #07c160 0%, #059748 50%, #047a3a 100%);
-  padding: var(--space-5);
-  font-family: var(--font-family);
+  background: var(--md-sys-color-surface-container);
+  padding: 24px;
   position: relative;
   overflow: hidden;
 }
 
-/* Decorative background circles */
-.auth-container::before,
-.auth-container::after {
-  content: '';
-  position: absolute;
-  border-radius: 50%;
-  opacity: 0.08;
-  background: white;
-}
-
-.auth-container::before {
-  width: 400px;
-  height: 400px;
-  top: -120px;
-  right: -80px;
-}
-
-.auth-container::after {
-  width: 300px;
-  height: 300px;
-  bottom: -100px;
-  left: -60px;
-}
-
-/* ---- Card ---- */
+/* ---- MD3 Card ---- */
 .auth-card {
-  background: var(--color-white);
-  border-radius: var(--radius-xl);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15),
-              0 8px 20px rgba(0, 0, 0, 0.1);
-  padding: var(--space-10);
+  background: var(--md-sys-color-surface-container-low);
+  border-radius: var(--md-sys-shape-corner-extra-large);
+  box-shadow: var(--md-sys-elevation-level3);
+  padding: 40px 32px 32px;
   width: 100%;
   max-width: 400px;
   text-align: center;
-  animation: authSlideUp 0.6s var(--ease-spring);
   position: relative;
   z-index: 1;
 }
 
-@keyframes authSlideUp {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ---- Icon ---- */
 .auth-icon {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto var(--space-6);
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 16px;
+  background: var(--md-sys-color-primary-container);
+  border-radius: var(--md-sys-shape-corner-large);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.5rem;
-  filter: drop-shadow(0 8px 24px rgba(7, 193, 96, 0.3));
 }
 
 .auth-icon-img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--md-sys-shape-corner-small);
 }
 
-/* ---- Title ---- */
 .auth-title {
-  font-size: var(--text-2xl);
-  font-weight: var(--font-semibold);
-  color: var(--color-gray-900);
-  margin-bottom: var(--space-2);
+  font-size: var(--md-sys-typescale-headline-small-size);
+  line-height: var(--md-sys-typescale-headline-small-line);
+  font-weight: var(--md-sys-typescale-headline-small-weight);
+  color: var(--md-sys-color-on-surface);
+  margin-bottom: 4px;
 }
 
 .auth-subtitle {
-  font-size: var(--text-sm);
-  color: var(--color-gray-500);
-  margin-bottom: var(--space-8);
-  line-height: var(--leading-normal);
+  font-size: var(--md-sys-typescale-body-medium-size);
+  line-height: var(--md-sys-typescale-body-medium-line);
+  color: var(--md-sys-color-on-surface-variant);
+  margin-bottom: 28px;
 }
 
-/* ---- Form ---- */
-.auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
-}
+/* ---- MD3 Outlined Text Field ---- */
+.auth-form { text-align: left; }
 
 .auth-input-group {
   position: relative;
+  margin-bottom: 20px;
 }
 
 .auth-input {
   width: 100%;
-  height: 50px;
-  border: 2px solid var(--color-gray-200);
-  border-radius: var(--radius-lg);
-  padding: 0 var(--space-4);
-  font-size: 16px;
-  background: var(--color-gray-50);
-  transition: all var(--duration-normal) var(--ease-default);
-}
-
-.auth-input:focus {
-  border-color: var(--color-primary);
-  background: var(--color-white);
-  box-shadow: 0 0 0 4px var(--color-primary-100);
+  padding: 16px 44px 16px 16px;
+  font-size: var(--md-sys-typescale-body-large-size);
+  line-height: var(--md-sys-typescale-body-large-line);
+  color: var(--md-sys-color-on-surface);
+  background: transparent;
+  border: var(--md-outlined-text-field-outline-width) solid var(--md-sys-color-outline);
+  border-radius: var(--md-outlined-text-field-container-shape);
+  transition: border var(--md-sys-duration-medium1) var(--md-sys-motion-easing-standard);
 }
 
 .auth-input::placeholder {
-  color: var(--color-gray-500);
+  color: var(--md-outlined-text-field-input-text-placeholder-color);
 }
 
-/* ---- Password Toggle ---- */
+.auth-input:focus {
+  border: var(--md-outlined-text-field-focus-outline-width) solid var(--md-sys-color-primary);
+  padding: 15px 43px 15px 15px;
+}
+
 .password-toggle {
   position: absolute;
-  right: var(--space-4);
+  right: 8px;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--color-gray-500);
-  font-size: var(--text-lg);
-  padding: var(--space-1);
-  transition: color var(--duration-fast) var(--ease-default);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--md-sys-shape-corner-full);
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 18px;
+  transition: background var(--md-sys-duration-short3) ease;
 }
 
-.password-toggle:hover {
-  color: var(--color-primary);
-}
+.password-toggle:hover { background: var(--md-sys-color-surface-variant); }
 
-/* ---- Button ---- */
+/* ---- MD3 Filled Button ---- */
 .auth-button {
-  height: 50px;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
-  color: white;
-  border-radius: var(--radius-lg);
-  font-size: 16px;
-  font-weight: var(--font-semibold);
+  width: 100%;
+  padding: 14px 24px;
+  font-size: var(--md-sys-typescale-label-large-size);
+  font-weight: var(--md-sys-typescale-label-large-weight);
+  line-height: var(--md-sys-typescale-label-large-line);
+  letter-spacing: var(--md-sys-typescale-label-large-tracking);
+  color: var(--md-sys-color-on-primary);
+  background: var(--md-sys-color-primary);
+  border-radius: var(--md-filled-button-container-shape);
+  transition: box-shadow var(--md-sys-duration-medium1) var(--md-sys-motion-easing-standard),
+              background var(--md-sys-duration-medium1) var(--md-sys-motion-easing-standard);
   position: relative;
   overflow: hidden;
-  transition: all var(--duration-normal) var(--ease-default);
 }
 
-.auth-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px var(--color-primary-300);
+.auth-button:hover {
+  background: color-mix(in srgb, var(--md-sys-color-primary) 90%, black);
+  box-shadow: var(--md-sys-elevation-level1);
 }
 
-.auth-button:active:not(:disabled) {
-  transform: translateY(0);
+.auth-button:active {
+  background: color-mix(in srgb, var(--md-sys-color-primary) 80%, black);
+  box-shadow: var(--md-filled-button-pressed-elevation);
 }
 
-.auth-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.auth-button.loading {
-  color: transparent;
-}
-
-.auth-button.loading::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 20px;
-  height: 20px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-/* ---- Messages ---- */
+/* ---- MD3 Error/Warning Text ---- */
 .auth-error {
-  background: var(--color-danger-bg);
-  border: 1px solid var(--color-danger-border);
-  color: var(--color-danger);
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-md);
-  font-size: var(--text-sm);
-  margin-top: var(--space-4);
-  animation: shake 0.5s var(--ease-default);
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  75% { transform: translateX(5px); }
+  font-size: var(--md-sys-typescale-body-small-size);
+  color: var(--md-sys-color-error);
+  padding: 8px 12px;
+  margin-top: 12px;
+  background: var(--md-sys-color-error-container);
+  border-radius: var(--md-sys-shape-corner-extra-small);
+  text-align: center;
 }
 
 .auth-warning {
-  background: var(--color-warning-bg);
-  border: 1px solid var(--color-warning-border);
-  color: #d48806;
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-md);
-  font-size: var(--text-sm);
-  margin-top: var(--space-4);
+  composes: auth-error;
+  color: var(--md-sys-color-on-surface-variant);
+  background: var(--md-sys-color-surface-variant);
 }
 
-/* ---- Help ---- */
+/* ---- Help & Security ---- */
 .auth-help {
-  margin-top: var(--space-6);
-  padding-top: var(--space-6);
-  border-top: 1px solid var(--color-gray-100);
-  font-size: var(--text-sm);
-  color: var(--color-gray-600);
-  line-height: var(--leading-normal);
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--md-sys-color-outline-variant);
 }
 
-/* ---- Security Tips ---- */
+.auth-help p {
+  font-size: var(--md-sys-typescale-body-small-size);
+  color: var(--md-sys-color-on-surface-variant);
+  margin-bottom: 4px;
+  line-height: var(--md-sys-typescale-body-small-line);
+}
+
 .security-tips {
-  margin-top: var(--space-5);
-  padding: var(--space-4);
-  background: var(--color-success-bg);
-  border: 1px solid #b7eb8f;
-  border-radius: var(--radius-md);
-  font-size: var(--text-xs);
-  color: var(--color-success);
+  margin-top: 16px;
   text-align: left;
+  padding: 12px 16px;
+  background: var(--md-sys-color-surface-variant);
+  border-radius: var(--md-sys-shape-corner-small);
+  font-size: var(--md-sys-typescale-body-small-size);
+  color: var(--md-sys-color-on-surface-variant);
 }
 
-.security-tips ul {
-  margin: var(--space-2) 0 0;
-  padding-left: var(--space-4);
-}
-
-.security-tips li {
-  margin-bottom: var(--space-1);
-  list-style: disc;
-}
-
-/* ---- Responsive ---- */
-@media (max-width: 480px) {
-  .auth-container { padding: var(--space-4); }
-  .auth-card { padding: var(--space-8) var(--space-6); }
-  .auth-icon { width: 64px; height: 64px; font-size: 2rem; }
-  .auth-title { font-size: var(--text-xl); }
-  .auth-input, .auth-button { height: 48px; }
-}
-
-/* ---- Dark Mode ---- */
-@media (prefers-color-scheme: dark) {
-  .auth-card { background: #1a1a1a; }
-  .auth-title { color: #f0f0f0; }
-  .auth-subtitle { color: #999; }
-  .auth-input {
-    background: #2a2a2a;
-    border-color: #404040;
-    color: white;
-  }
-  .auth-input:focus { background: #333; border-color: var(--color-primary); }
-  .auth-help { border-top-color: #333; color: #999; }
-}
+.security-tips strong { display: block; margin-bottom: 6px; }
+.security-tips li { margin-bottom: 3px; padding-left: 4px; }
+.security-tips li::before { content: "• "; color: var(--md-sys-color-primary); }

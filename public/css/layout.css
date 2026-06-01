@@ -1,7 +1,6 @@
-/* ============================================
-   Layout - App Shell & Structure
+﻿/* ============================================
+   MD3 App Shell & Layout
    ============================================ */
-
 .app {
   display: flex;
   flex-direction: column;
@@ -10,7 +9,7 @@
   min-height: -webkit-fill-available;
   max-width: var(--app-max-width);
   margin: 0 auto;
-  background: var(--bg-app);
+  background: var(--md-sys-color-surface);
   overflow: hidden;
   padding-top: var(--safe-top);
   padding-left: var(--safe-left);
@@ -34,7 +33,7 @@
   min-height: 0;
 }
 
-/* ---- Message List ---- */
+/* ---- Message List (MD3 Surface) ---- */
 .message-list {
   flex: 1;
   overflow-y: auto;
@@ -42,71 +41,50 @@
   padding: 12px 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  background: var(--bg-chat);
+  gap: 8px;
+  background: var(--md-sys-color-surface);
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 }
 
-/* 消息列表滚动条 - 细但可见 */
-.message-list::-webkit-scrollbar {
-  width: 4px;
-  background: transparent;
-}
-
-.message-list::-webkit-scrollbar-track {
-  background: transparent;
-  margin: 4px 0;
-}
-
+.message-list::-webkit-scrollbar { width: 4px; }
+.message-list::-webkit-scrollbar-track { background: transparent; margin: 4px 0; }
 .message-list::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.12);
-  border-radius: 4px;
+  background: var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-full);
   min-height: 30px;
 }
-
 .message-list::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--md-sys-color-outline);
 }
 
 @media (prefers-color-scheme: dark) {
   .message-list::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.12);
-  }
-  .message-list::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255,255,255,0.15);
   }
 }
 
-/* 大屏适配 */
-@media (min-width: 769px) {
-  .message-list {
-    max-height: calc(100vh - 160px);
-  }
-}
-
-/* ---- Input Area ---- */
+/* ---- Input Container (MD3 Surface Container) ---- */
 .input-container {
-  border-top: 1px solid var(--color-gray-200);
-  padding: 8px 10px;
-  background: var(--bg-input);
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+  padding: 8px 12px;
+  background: var(--md-sys-color-surface-container-low);
   position: sticky;
   bottom: 0;
   z-index: var(--z-sticky);
   display: flex;
   align-items: center;
   padding-bottom: calc(8px + var(--safe-bottom));
-  -webkit-transform: translateZ(0);
   transform: translateZ(0);
 }
 
 /* ---- Loading States ---- */
 .loading {
   text-align: center;
-  color: var(--color-gray-500);
+  color: var(--md-sys-color-on-surface-variant);
   padding: 48px 32px;
-  font-size: 15px;
+  font-size: var(--md-sys-typescale-body-medium-size);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -116,100 +94,93 @@
 .loading-spinner {
   font-size: 24px;
   animation: spin 1s linear infinite;
+  color: var(--md-sys-color-primary);
 }
 
 .empty-state {
   text-align: center;
-  color: var(--color-gray-500);
-  padding: 60px 32px;
+  color: var(--md-sys-color-on-surface-variant);
+  padding: 64px 32px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 16px;
-  animation: fadeIn 300ms ease-out;
+  animation: fadeIn 300ms var(--md-sys-motion-easing-emphasized-decelerate);
 }
 
 .empty-icon {
   font-size: 56px;
-  opacity: 0.5;
+  opacity: 0.6;
   margin-bottom: 4px;
 }
 
 .empty-state p {
-  font-size: 14px;
-  color: var(--color-gray-500);
+  font-size: var(--md-sys-typescale-body-medium-size);
+  color: var(--md-sys-color-on-surface-variant);
   margin: 0;
-  line-height: 1.6;
+  line-height: var(--md-sys-typescale-body-medium-line);
 }
 
 .empty-state .empty-hint {
-  font-size: 12px;
-  color: var(--color-gray-400);
+  font-size: var(--md-sys-typescale-body-small-size);
+  color: var(--md-sys-color-outline);
   margin-top: 4px;
 }
 
-/* ---- Connection Status ---- */
+/* ---- Connection Status (MD3 Badge) ---- */
 .connection-status {
   position: fixed;
   top: 8px;
   right: 8px;
   z-index: var(--z-toast);
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 11px;
-  font-weight: var(--font-medium);
+  padding: 4px 12px;
+  border-radius: var(--md-sys-shape-corner-full);
+  font-size: var(--md-sys-typescale-label-small-size);
+  font-weight: var(--md-sys-typescale-label-small-weight);
   opacity: 0;
   transform: translateY(-12px);
-  transition: opacity var(--duration-normal) var(--ease-out),
-              transform var(--duration-normal) var(--ease-out);
+  transition: opacity var(--md-sys-duration-medium2) var(--md-sys-motion-easing-emphasized-decelerate),
+              transform var(--md-sys-duration-medium2) var(--md-sys-motion-easing-emphasized-decelerate);
   pointer-events: none;
+  letter-spacing: var(--md-sys-typescale-label-small-tracking);
 }
 
-.connection-status.show {
-  opacity: 1;
-  transform: translateY(0);
-}
+.connection-status.show { opacity: 1; transform: translateY(0); }
 
 .connection-status.online {
-  background: var(--color-success-bg);
-  color: var(--color-success);
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
 }
-
 .connection-status.offline {
-  background: var(--color-danger-bg);
-  color: var(--color-danger);
-  animation: pulse 2s infinite;
+  background: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-on-error-container);
+  animation: pulse 2s var(--md-sys-motion-easing-standard) infinite;
 }
-
-.connection-status.connecting {
-  background: var(--color-warning-bg);
-  color: var(--color-warning);
-}
-
+.connection-status.connecting,
 .connection-status.reconnecting {
-  background: var(--color-warning-bg);
-  color: var(--color-warning);
-  animation: pulse 1.5s infinite;
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  animation: pulse 1.5s var(--md-sys-motion-easing-standard) infinite;
 }
 
-/* ---- Toast Notification ---- */
+/* ---- MD3 Snackbar (Toast) ---- */
 .toast-notification {
   position: fixed;
   top: 12px;
   left: 50%;
   transform: translateX(-50%) translateY(-120%);
   z-index: var(--z-toast);
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: var(--font-medium);
+  padding: 10px 20px;
+  border-radius: var(--md-snackbar-container-shape);
+  font-size: var(--md-sys-typescale-body-medium-size);
+  font-weight: var(--md-sys-typescale-label-large-weight);
   opacity: 0;
-  transition: transform 300ms var(--ease-bounce),
-              opacity 200ms ease;
+  transition: transform var(--md-sys-duration-medium3) var(--md-sys-motion-easing-emphasized-decelerate),
+              opacity var(--md-sys-duration-medium1) var(--md-sys-motion-easing-standard);
   pointer-events: none;
   max-width: calc(100% - 32px);
   text-align: center;
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--md-snackbar-container-elevation);
 }
 
 .toast-notification.show {
@@ -218,21 +189,16 @@
 }
 
 .toast-notification.toast-success {
-  background: var(--color-success-bg);
-  color: var(--color-success);
-  border: 1px solid rgba(16, 185, 129, 0.2);
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
 }
-
 .toast-notification.toast-error {
-  background: var(--color-danger-bg);
-  color: var(--color-danger);
-  border: 1px solid var(--color-danger-border);
+  background: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-on-error-container);
 }
-
 .toast-notification.toast-info {
-  background: var(--color-accent-100);
-  color: var(--color-accent-dark);
-  border: 1px solid var(--color-accent-200);
+  background: var(--md-sys-color-tertiary-container);
+  color: var(--md-sys-color-on-tertiary-container);
 }
 
 /* ---- Animations ---- */
@@ -240,79 +206,78 @@
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes messageSlideIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(8px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
-
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
-
 @keyframes shimmer {
   0% { background-position: -200px 0; }
   100% { background-position: calc(200px + 100%) 0; }
 }
-
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
 }
-
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(100%); }
   to { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes slideDown {
   from { opacity: 0; transform: translateY(-20px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .fade-in {
-  animation: fadeIn 200ms ease-out;
+  animation: fadeIn var(--md-sys-duration-medium2) var(--md-sys-motion-easing-emphasized-decelerate);
+}
+.message-fade-in {
+  animation: messageSlideIn var(--md-sys-duration-medium3) var(--md-sys-motion-easing-emphasized-decelerate);
 }
 
-.shimmer {
-  background: linear-gradient(90deg, var(--color-gray-100) 25%, var(--color-gray-200) 50%, var(--color-gray-100) 75%);
-  background-size: 200px 100%;
-  animation: shimmer 1.5s infinite;
-}
-
-/* ---- 顶部加载指示器 ---- */
+/* ---- Top Loading Indicator (MD3 Linear Progress) ---- */
 .top-loading-indicator {
   text-align: center;
   padding: 8px;
-  font-size: 12px;
-  color: var(--color-gray-400);
-  animation: fadeIn 200ms ease-out;
+  font-size: var(--md-sys-typescale-label-small-size);
+  color: var(--md-sys-color-outline);
+  animation: fadeIn var(--md-sys-duration-medium1) var(--md-sys-motion-easing-standard);
 }
 
-/* ---- 日期分隔线 ---- */
+/* ---- Date Separator ---- */
 .date-separator {
   text-align: center;
   padding: 12px 0 8px;
-  font-size: 12px;
-  color: var(--color-gray-400);
+  font-size: var(--md-sys-typescale-body-small-size);
+  color: var(--md-sys-color-outline);
   position: relative;
 }
 
 .date-separator::before,
 .date-separator::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
-  width: calc(50% - 60px);
+  width: calc(50% - 64px);
   height: 1px;
-  background: var(--color-gray-200);
+  background: var(--md-sys-color-outline-variant);
 }
-
 .date-separator::before { left: 0; }
 .date-separator::after { right: 0; }
 
 .date-separator span {
-  background: var(--bg-chat);
+  background: var(--md-sys-color-surface);
   padding: 0 12px;
+  font-weight: var(--font-weight-medium);
+}
+
+/* ---- MD3 Divider ---- */
+.md-divider {
+  height: var(--md-divider-thickness);
+  background: var(--md-divider-color);
+  border: none;
+  margin: 8px 0;
 }
