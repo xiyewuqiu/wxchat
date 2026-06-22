@@ -282,7 +282,7 @@ const SearchUI = {
         // 显示/隐藏清除按钮
         const clearBtn = document.getElementById('searchClearBtn');
         if (clearBtn) {
-            clearBtn.style.display = query.length > 0 ? 'block' : 'none';
+            clearBtn.style.display = query.length > 0 ? 'flex' : 'none';
         }
 
         // 防抖搜索

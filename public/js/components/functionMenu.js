@@ -69,8 +69,17 @@ const FunctionMenu = {
         }
     ],
 
+    emojiPickerItems: [
+        '😀', '😄', '😊', '😍', '🥰', '😘', '😎', '🤔',
+        '😂', '🤣', '😅', '😭', '😢', '😡', '😴', '🤯',
+        '👍', '👎', '👏', '🙏', '💪', '🤝', '👌', '✌️',
+        '❤️', '🧡', '💛', '💚', '💙', '💜', '🔥', '💯',
+        '🎉', '✨', '🌟', '🎁', '☕', '🍻', '🍚', '🍜'
+    ],
+
     // 组件状态
     isInitialized: false,
+    isEmojiPickerOpen: false,
 
     // 初始化菜单
     init() {
@@ -79,6 +88,7 @@ const FunctionMenu = {
         }
 
         this.createMenuElement();
+        this.createEmojiPickerElement();
         this.bindEvents();
         this.isInitialized = true;
     },
@@ -113,6 +123,35 @@ const FunctionMenu = {
         document.body.insertAdjacentHTML('beforeend', menuHTML);
     },
 
+    // 创建表情选择器DOM元素
+    createEmojiPickerElement() {
+        const existingPicker = document.getElementById('emojiPicker');
+        if (existingPicker) {
+            return;
+        }
+
+        const pickerHTML = `
+            <div class="emoji-picker" id="emojiPicker" role="dialog" aria-modal="true" aria-label="选择表情">
+                <div class="emoji-picker-overlay"></div>
+                <div class="emoji-picker-content">
+                    <div class="emoji-picker-header">
+                        <h3>选择表情</h3>
+                        <button class="emoji-picker-close" id="emojiPickerClose" aria-label="关闭表情选择">
+                            <svg viewBox="0 0 24 24" width="16" height="16">
+                                <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="emoji-picker-grid">
+                        ${this.generateEmojiItems()}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', pickerHTML);
+    },
+
     // 生成菜单项HTML - 微信风格
     generateMenuItems() {
         return this.menuItems.map(item => `
@@ -122,6 +161,15 @@ const FunctionMenu = {
                     <div class="function-menu-item-title">${item.title}</div>
                 </div>
             </div>
+        `).join('');
+    },
+
+    // 生成表情按钮HTML
+    generateEmojiItems() {
+        return this.emojiPickerItems.map(emoji => `
+            <button type="button" class="emoji-picker-item" data-emoji="${emoji}" aria-label="插入表情 ${emoji}">
+                ${emoji}
+            </button>
         `).join('');
     },
 
@@ -150,6 +198,32 @@ const FunctionMenu = {
                 this.hide();
             }
         });
+
+        // 表情选择
+        document.addEventListener('click', (e) => {
+            const emojiItem = e.target.closest('.emoji-picker-item');
+            if (emojiItem) {
+                const emoji = emojiItem.dataset.emoji;
+                if (emoji) {
+                    this.insertTextToInput(emoji);
+                }
+                this.hideEmojiPicker();
+            }
+        });
+
+        // 关闭表情选择器
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('#emojiPickerClose') || e.target.classList.contains('emoji-picker-overlay')) {
+                this.hideEmojiPicker();
+            }
+        });
+
+        // ESC键关闭表情选择器
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.isEmojiPickerOpen) {
+                this.hideEmojiPicker();
+            }
+        });
     },
 
     // 处理菜单项点击
@@ -165,6 +239,7 @@ const FunctionMenu = {
         
         // 关闭菜单
         this.hide();
+        this.syncFunctionButtonState(false);
     },
 
     // 执行功能动作 - 微信风格功能
@@ -270,9 +345,7 @@ const FunctionMenu = {
 
     // 表情功能
     handleEmoji() {
-        const emojis = ['😊', '👍', '❤️', '😂', '🎉', '👏', '🔥', '💯', '🥰', '😍', '🤔', '😅'];
-        const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
-        this.insertTextToInput(randomEmoji);
+        this.showEmojiPicker();
     },
 
     // 文件功能
@@ -474,6 +547,7 @@ const FunctionMenu = {
         const menu = document.getElementById('functionMenu');
         if (menu) {
             menu.classList.add('show');
+            this.syncFunctionButtonState(true);
         } else {
             console.error('FunctionMenu: 无法显示菜单，元素不存在');
         }
@@ -484,8 +558,41 @@ const FunctionMenu = {
         const menu = document.getElementById('functionMenu');
         if (menu) {
             menu.classList.remove('show');
+            this.syncFunctionButtonState(false);
         } else {
             console.error('FunctionMenu: 无法隐藏菜单，元素不存在');
+        }
+    },
+
+    // 显示表情选择器
+    showEmojiPicker() {
+        this.createEmojiPickerElement();
+
+        const picker = document.getElementById('emojiPicker');
+        if (!picker) return;
+
+        picker.classList.add('show');
+        this.isEmojiPickerOpen = true;
+
+        const firstEmoji = picker.querySelector('.emoji-picker-item');
+        if (firstEmoji) {
+            setTimeout(() => firstEmoji.focus(), 120);
+        }
+    },
+
+    // 隐藏表情选择器
+    hideEmojiPicker() {
+        const picker = document.getElementById('emojiPicker');
+        if (picker) {
+            picker.classList.remove('show');
+        }
+        this.isEmojiPickerOpen = false;
+    },
+
+    // 同步功能按钮内部状态，避免菜单关闭后下一次点击被误判为关闭
+    syncFunctionButtonState(isOpen) {
+        if (window.FunctionButton) {
+            window.FunctionButton.isMenuOpen = isOpen;
         }
     },
 
