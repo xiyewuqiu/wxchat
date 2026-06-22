@@ -1,5 +1,5 @@
-// SiliconFlow AI 图片生成 API 封装
-// 专门处理与SiliconFlow API的图片生成通信
+// AI 图片生成 API 封装
+// 前端只调用本服务，真实供应商地址和密钥保留在后端环境变量中。
 
 const ImageGenAPI = {
     // 当前请求的AbortController
@@ -35,12 +35,10 @@ const ImageGenAPI = {
                 requestBody.seed = options.seed;
             }
             
-            const response = await fetch('https://api.siliconflow.cn/v1/images/generations', {
+            const headers = typeof Auth !== 'undefined' ? Auth.addAuthHeader({ 'Content-Type': 'application/json' }) : { 'Content-Type': 'application/json' };
+            const response = await fetch(CONFIG.API.ENDPOINTS.AI_IMAGE, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${CONFIG.IMAGE_GEN.API_KEY}`
-                },
+                headers,
                 body: JSON.stringify(requestBody),
                 signal: this.currentController.signal
             });
@@ -51,13 +49,14 @@ const ImageGenAPI = {
             }
             
             const result = await response.json();
+            const data = result.data || result;
 
             return {
                 success: true,
                 data: {
-                    imageUrl: result.images[0].url,
-                    seed: result.seed,
-                    timings: result.timings,
+                    imageUrl: data.images?.[0]?.url,
+                    seed: data.seed,
+                    timings: data.timings,
                     prompt: prompt,
                     options: options
                 }
@@ -144,7 +143,7 @@ const ImageGenAPI = {
     getStatus() {
         return {
             hasActiveRequest: this.currentController !== null,
-            apiKey: CONFIG.IMAGE_GEN.API_KEY ? '已配置' : '未配置'
+            apiKey: '服务端配置'
         };
     }
 };

@@ -1,7 +1,7 @@
 {
   "name": "微信文件传输助手",
   "short_name": "wxchat",
-  "description": "基于Cloudflare Workers的微信文件传输助手Web应用",
+  "description": "自部署微信文件传输助手Web应用",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait-primary",

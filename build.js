@@ -3,8 +3,7 @@
 // 简单的构建脚本 - 用于Cloudflare部署
 // 由于我们使用的是静态文件，不需要复杂的构建过程
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'node:fs';
 
 console.log('🚀 开始构建微信文件传输助手...');
 

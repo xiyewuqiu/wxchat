@@ -1,5 +1,5 @@
-// SiliconFlow AI API 封装
-// 专门处理与SiliconFlow API的通信和DeepSeek-R1模型的流式响应
+// AI API 封装
+// 前端只调用本服务，真实供应商地址和密钥保留在后端环境变量中。
 
 const AIAPI = {
     // 当前请求的AbortController
@@ -17,13 +17,12 @@ const AIAPI = {
         try {
             console.log('AIAPI: 开始AI流式聊天请求', { message });
             
-            const response = await fetch(`${CONFIG.AI.API_BASE_URL}/chat/completions`, {
+            const headers = typeof Auth !== 'undefined' ? Auth.addAuthHeader({ 'Content-Type': 'application/json' }) : { 'Content-Type': 'application/json' };
+            const response = await fetch(CONFIG.API.ENDPOINTS.AI_CHAT, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${CONFIG.AI.API_KEY}`
-                },
+                headers,
                 body: JSON.stringify({
+                    message,
                     model: CONFIG.AI.MODEL,
                     messages: [{ role: 'user', content: message }],
                     stream: true,
@@ -159,15 +158,7 @@ const AIAPI = {
         if (!CONFIG.AI.ENABLED) {
             throw new Error('AI功能未启用');
         }
-        
-        if (!CONFIG.AI.API_KEY) {
-            throw new Error('AI API密钥未配置');
-        }
-        
-        if (!CONFIG.AI.API_BASE_URL) {
-            throw new Error('AI API地址未配置');
-        }
-        
+
         return true;
     },
     
@@ -176,20 +167,11 @@ const AIAPI = {
         try {
             this.validateConfig();
             
-            const response = await fetch(`${CONFIG.AI.API_BASE_URL}/models`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${CONFIG.AI.API_KEY}`
-                }
+            const response = await fetch(CONFIG.API.ENDPOINTS.CONFIG, {
+                headers: typeof Auth !== 'undefined' ? Auth.addAuthHeader({}) : {}
             });
-            
-            if (response.ok) {
-                console.log('AIAPI: API连接测试成功');
-                return true;
-            } else {
-                console.error('AIAPI: API连接测试失败', response.status);
-                return false;
-            }
+            const result = await response.json();
+            return response.ok && result.success && result.data?.ai?.enabled === true;
         } catch (error) {
             console.error('AIAPI: API连接测试异常', error);
             return false;
@@ -200,7 +182,7 @@ const AIAPI = {
     getStatus() {
         return {
             enabled: CONFIG.AI.ENABLED,
-            hasApiKey: !!CONFIG.AI.API_KEY,
+            hasApiKey: false,
             model: CONFIG.AI.MODEL,
             isRequesting: !!this.currentController
         };

@@ -1,0 +1,11 @@
+.git
+node_modules
+npm-debug.log
+.env
+data
+uploads
+backups
+*.db
+*.db-shm
+*.db-wal
+SELFHOST_SERVER4_PLAN.md

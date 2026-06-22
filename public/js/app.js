@@ -20,6 +20,10 @@ class WeChatApp {
                 return;
             }
 
+            if (window.loadRuntimeConfig) {
+                await window.loadRuntimeConfig();
+            }
+
             // iOS Safari 视口修复
             this.initIOSViewportFix();
 
@@ -146,7 +150,7 @@ class WeChatApp {
         };
 
         window.addEventListener('resize', Utils.debounce(handleViewportChange, 100));
-    },
+    }
 
     // 检查浏览器兼容性
     checkBrowserCompatibility() {

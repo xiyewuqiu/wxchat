@@ -11,6 +11,9 @@ const CONFIG = {
             SYNC: '/api/sync',
             CLEAR_ALL: '/api/sync/clear-all',
             AI_MESSAGE: '/api/ai/message',
+            CONFIG: '/api/config',
+            AI_CHAT: '/api/ai/chat',
+            AI_IMAGE: '/api/ai/image',
             // 鉴权相关接口
             AUTH_LOGIN: '/api/auth/login',
             AUTH_VERIFY: '/api/auth/verify',
@@ -57,10 +60,8 @@ const CONFIG = {
 
     // AI 配置
     AI: {
-        ENABLED: true,
-        API_BASE_URL: 'https://api.siliconflow.cn/v1',
-        API_KEY: 'sk-jcjftvgfaismslthkpdnsabzpkpidqatyajoesdowcutyoyh',
-        MODEL: 'deepseek-ai/DeepSeek-R1',
+        ENABLED: false,
+        MODEL: '',
         MAX_TOKENS: 4000,
         TEMPERATURE: 0.7,
         STREAM: true,
@@ -71,9 +72,8 @@ const CONFIG = {
 
     // AI图片生成配置
     IMAGE_GEN: {
-        ENABLED: true,
-        API_KEY: 'sk-cowojsuuakqrsaizlldlimbhewnokgjhvczjnwwydxnvrczv',
-        MODEL: 'Kwai-Kolors/Kolors',
+        ENABLED: false,
+        MODEL: '',
         DEFAULT_SIZE: '1024x1024',
         DEFAULT_STEPS: 20,
         DEFAULT_GUIDANCE: 7.5,
@@ -293,20 +293,42 @@ const CONFIG = {
     },
 };
 
+async function loadRuntimeConfig() {
+    try {
+        const response = await fetch(CONFIG.API.ENDPOINTS.CONFIG, {
+            headers: typeof Auth !== 'undefined' && Auth.getToken ? Auth.addAuthHeader({}) : {}
+        });
+        if (!response.ok) return;
+
+        const result = await response.json();
+        if (!result.success || !result.data) return;
+
+        const { ai, imageGen, file } = result.data;
+        if (ai) {
+            CONFIG.AI.ENABLED = !!ai.enabled;
+            CONFIG.AI.MODEL = ai.model || CONFIG.AI.MODEL;
+            CONFIG.AI.MAX_TOKENS = ai.maxTokens || CONFIG.AI.MAX_TOKENS;
+            CONFIG.AI.TEMPERATURE = ai.temperature ?? CONFIG.AI.TEMPERATURE;
+            CONFIG.AI.STREAM = ai.stream !== false;
+        }
+        if (imageGen) {
+            CONFIG.IMAGE_GEN.ENABLED = !!imageGen.enabled;
+            CONFIG.IMAGE_GEN.MODEL = imageGen.model || CONFIG.IMAGE_GEN.MODEL;
+            CONFIG.IMAGE_GEN.DEFAULT_SIZE = imageGen.defaultSize || CONFIG.IMAGE_GEN.DEFAULT_SIZE;
+            CONFIG.IMAGE_GEN.DEFAULT_STEPS = imageGen.defaultSteps || CONFIG.IMAGE_GEN.DEFAULT_STEPS;
+            CONFIG.IMAGE_GEN.DEFAULT_GUIDANCE = imageGen.defaultGuidance || CONFIG.IMAGE_GEN.DEFAULT_GUIDANCE;
+            CONFIG.IMAGE_GEN.MAX_PROMPT_LENGTH = imageGen.maxPromptLength || CONFIG.IMAGE_GEN.MAX_PROMPT_LENGTH;
+        }
+        if (file && file.maxSizeMb) {
+            CONFIG.FILE.MAX_SIZE = file.maxSizeMb * 1024 * 1024;
+            CONFIG.ERRORS.FILE_TOO_LARGE = `文件大小不能超过${file.maxSizeMb}MB`;
+        }
+    } catch (error) {
+        console.warn('[Config] 运行时配置加载失败，使用默认配置:', error.message);
+    }
+}
+
+window.loadRuntimeConfig = loadRuntimeConfig;
+
 // 冻结配置对象，防止意外修改
-Object.freeze(CONFIG);
-Object.freeze(CONFIG.API);
-Object.freeze(CONFIG.API.ENDPOINTS);
-Object.freeze(CONFIG.FILE);
-Object.freeze(CONFIG.UI);
-Object.freeze(CONFIG.DEVICE);
-Object.freeze(CONFIG.MESSAGE_TYPES);
-Object.freeze(CONFIG.AI);
-Object.freeze(CONFIG.IMAGE_GEN);
-Object.freeze(CONFIG.FILE_ICONS);
-Object.freeze(CONFIG.FILE_EXTENSION_ICONS);
-Object.freeze(CONFIG.CLEAR);
-Object.freeze(CONFIG.PWA);
-Object.freeze(CONFIG.ERRORS);
-Object.freeze(CONFIG.SUCCESS);
-Object.freeze(CONFIG.SEARCH);
+// 自部署版会在启动时从 /api/config 合并运行时配置，因此这里不冻结对象。

@@ -15,11 +15,20 @@ files.post('/upload', async (c) => {
 
     validateParams({ file: file ? 'present' : null, deviceId }, ['file', 'deviceId'])
 
+    const maxFileSizeMb = Number.parseInt(c.env.MAX_FILE_SIZE_MB || '100', 10)
+    const maxFileSize = maxFileSizeMb * 1024 * 1024
+    if (Number.isFinite(maxFileSize) && file.size > maxFileSize) {
+      return c.json({
+        success: false,
+        error: `文件大小不能超过 ${maxFileSizeMb}MB`
+      }, 413)
+    }
+
     // 生成唯一文件名
     const r2Key = FileService.generateR2Key(file.name)
 
     // 上传到R2
-    await FileService.uploadToR2(r2, r2Key, file.stream(), {
+    await FileService.uploadToR2(R2, r2Key, file.stream(), {
       contentType: file.type,
       fileName: file.name
     })
@@ -49,7 +58,7 @@ files.post('/upload', async (c) => {
     } catch (dbError) {
       console.error('[Files] 数据库操作失败:', dbError)
       // 回滚：删除已上传的R2文件
-      await FileService.deleteFromR2(r2, r2Key)
+      await FileService.deleteFromR2(R2, r2Key)
       return c.json({
         success: false,
         error: `数据库操作失败: ${dbError.message}`
@@ -78,7 +87,7 @@ files.get('/download/:r2Key', async (c) => {
     }
 
     // 从R2获取文件
-    const object = await FileService.getFromR2(r2, r2Key)
+    const object = await FileService.getFromR2(R2, r2Key)
     if (!object) {
       return c.json({ success: false, error: '文件不存在' }, 404)
     }

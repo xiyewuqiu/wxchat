@@ -269,25 +269,16 @@ const AIHandler = {
     // 处理AI错误
     async handleAIError(error) {
         console.error('[AIHandler] AI错误:', error);
+        if (this.currentThinkingMessageId && window.UI && typeof UI.removeMessage === 'function') {
+            UI.removeMessage(this.currentThinkingMessageId);
+        }
+
+        if (this.currentResponseMessageId && window.UI && typeof UI.removeMessage === 'function') {
+            UI.removeMessage(this.currentResponseMessageId);
+        }
+
         if (window.UI && typeof UI.showError === 'function') {
             UI.showError(error.message || 'AI处理失败，请稍后重试');
-        }
-    }
-};
-
-                // 触发消息刷新，显示完整的对话
-                if (window.MessageHandler && typeof MessageHandler.loadMessages === 'function') {
-                    await MessageHandler.loadMessages(true);
-                }
-            } else {
-                console.error('AIHandler: AI响应存储失败');
-                // 降级处理：直接在前端显示
-                this.completeAIResponseFallback(result);
-            }
-        } catch (error) {
-            console.error('AIHandler: AI响应API调用失败', error);
-            // 降级处理：直接在前端显示
-            this.completeAIResponseFallback(result);
         }
     },
 
@@ -303,41 +294,7 @@ const AIHandler = {
             isAIResponse: true
         });
     },
-    
-    // 处理AI错误
-    async handleAIError(error) {
-        console.error('AIHandler: 处理AI错误', error);
-        
-        // 移除思考和响应消息
-        if (this.currentThinkingMessageId && window.UI && typeof UI.removeMessage === 'function') {
-            UI.removeMessage(this.currentThinkingMessageId);
-        }
-        
-        if (this.currentResponseMessageId && window.UI && typeof UI.removeMessage === 'function') {
-            UI.removeMessage(this.currentResponseMessageId);
-        }
-        
-        // 显示错误消息
-        const errorMessage = error.message || CONFIG.ERRORS.AI_REQUEST_FAILED;
-        if (window.UI && typeof UI.showError === 'function') {
-            UI.showError(errorMessage);
-        }
-        
-        // 添加错误消息到聊天
-        const errorChatMessage = {
-            id: `error-${Date.now()}`,
-            type: CONFIG.MESSAGE_TYPES.AI_RESPONSE,
-            content: `❌ ${errorMessage}`,
-            device_id: 'ai-system',
-            timestamp: new Date().toISOString(),
-            isError: true
-        };
-        
-        if (window.UI && typeof UI.addAIMessage === 'function') {
-            UI.addAIMessage(errorChatMessage);
-        }
-    },
-    
+
     // 取消当前AI请求
     cancelCurrentRequest() {
         if (this.isProcessing) {

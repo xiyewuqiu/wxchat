@@ -7,14 +7,49 @@
 [![Hono](https://img.shields.io/badge/Hono-Framework-blue.svg)](https://hono.dev/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow.svg)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 
-**基于 Cloudflare Workers 的现代化微信文件传输助手**
-*采用模块化全栈架构，实现跨设备文件传输和实时消息同步*
+**支持 Docker 自部署的现代化微信文件传输助手**
+*当前 fork 支持 Node.js + SQLite + local uploads，也保留 Cloudflare Workers 原始部署路径*
 
-[🌟 在线体验](https://wxchat.your-domain.workers.dev) | [📖 使用指南](#-使用指南) | [🚀 快速部署](#-快速开始) | [🐛 问题反馈](https://github.com/xiyewuqiu/wxchat/issues)
+[🐳 自部署指南](./SELFHOST.md) | [📖 使用指南](#-使用指南) | [🚀 Cloudflare 部署](#-快速开始) | [🐛 问题反馈](https://github.com/xiyewuqiu/wxchat/issues)
 
 </div>
 
 ---
+
+## 🐳 自部署版
+
+这个 fork 的推荐部署形态是 Docker Compose 单容器：
+
+```text
+Browser / PWA
+  -> OpenResty / HTTPS
+  -> 127.0.0.1:18091
+  -> Node.js + Hono
+  -> SQLite + local uploads
+```
+
+快速启动：
+
+```bash
+npm install
+cp .env.example .env
+npm run selfhost:dev
+```
+
+Docker Compose：
+
+```bash
+cp .env.example .env
+docker compose up -d --build
+```
+
+Compose 默认只绑定本机端口：
+
+```text
+127.0.0.1:18091 -> container:3000
+```
+
+详细说明见 [SELFHOST.md](./SELFHOST.md)。
 
 ## ✨ 功能特性
 
