@@ -62,19 +62,20 @@ const MessageRenderer = {
         const fallbackLabel = isOwn ? '我的设备' : '其他设备';
         const info = this.parseDeviceInfo(message.device_info);
         const snapshotName = info?.name || [info?.os, info?.browser].filter(Boolean).join(' ');
-        const deviceName = snapshotName || message.device_name || '';
-        const label = deviceName ? `${fallbackLabel} · ${deviceName}` : fallbackLabel;
 
         return {
-            label,
-            title: this.createDeviceTitle(info, message.device_name, fallbackLabel)
+            label: snapshotName || fallbackLabel,
+            title: snapshotName ? this.createDeviceTitle(info) : ''
         };
     },
 
     // 渲染消息元信息
     renderMessageMeta(deviceMeta, time) {
         const title = deviceMeta.title ? ` title="${this.escapeAttribute(deviceMeta.title)}"` : '';
-        return `<div class="message-meta"><span class="message-device"${title}>${this.escapeHtml(deviceMeta.label)}</span> <span class="message-time">${time}</span></div>`;
+        const device = deviceMeta.label
+            ? `<span class="message-device"${title}>${this.escapeHtml(deviceMeta.label)}</span> `
+            : '';
+        return `<div class="message-meta">${device}<span class="message-time">${time}</span></div>`;
     },
 
     // 解析设备信息快照
@@ -90,9 +91,9 @@ const MessageRenderer = {
     },
 
     // 生成悬停展示的设备详情
-    createDeviceTitle(info, deviceName, fallbackLabel) {
+    createDeviceTitle(info) {
         const lines = [];
-        if (info?.name || deviceName) lines.push(`设备: ${info?.name || deviceName}`);
+        if (info?.name) lines.push(`设备: ${info.name}`);
         if (info?.type) lines.push(`类型: ${info.type}`);
         if (info?.os) lines.push(`系统: ${info.os}`);
         if (info?.browser) lines.push(`浏览器: ${info.browser}`);
@@ -102,7 +103,7 @@ const MessageRenderer = {
         }
         if (info?.timezone) lines.push(`时区: ${info.timezone}`);
         if (info?.capturedAt) lines.push(`记录时间: ${Utils.formatTime(info.capturedAt)}`);
-        return lines.length > 0 ? lines.join('\n') : fallbackLabel;
+        return lines.join('\n');
     },
 
     // 转义HTML
@@ -124,9 +125,9 @@ const MessageRenderer = {
 
     // 更新消息时间显示格式
     updateMessageTime(messageElement, timestamp) {
-        const timeElement = messageElement.querySelector('.message-meta span:last-child');
+        const timeElement = messageElement.querySelector('.message-time');
         if (timeElement) {
-            timeElement.innerHTML = `<span class="message-time">${Utils.formatTime(timestamp)}</span>`;
+            timeElement.textContent = Utils.formatTime(timestamp);
         }
     },
 
