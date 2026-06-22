@@ -4,11 +4,74 @@
 
 import { DBService } from './database.js'
 
+const MAX_DEVICE_INFO_FIELD_LENGTH = 160
+const MAX_DEVICE_INFO_USER_AGENT_LENGTH = 240
+const deviceInfoColumnReady = new WeakSet()
+
+function clip(value, maxLength = MAX_DEVICE_INFO_FIELD_LENGTH) {
+  if (typeof value !== 'string') return null
+  const trimmed = value.trim()
+  return trimmed ? trimmed.slice(0, maxLength) : null
+}
+
+function normalizeDeviceInfo(deviceInfo) {
+  if (!deviceInfo || typeof deviceInfo !== 'object' || Array.isArray(deviceInfo)) {
+    return null
+  }
+
+  const normalized = {}
+  for (const key of ['name', 'type', 'os', 'browser', 'platform', 'language', 'timezone', 'capturedAt']) {
+    const value = clip(deviceInfo[key])
+    if (value) normalized[key] = value
+  }
+
+  const userAgent = clip(deviceInfo.userAgent, MAX_DEVICE_INFO_USER_AGENT_LENGTH)
+  if (userAgent) normalized.userAgent = userAgent
+
+  if (deviceInfo.screen && typeof deviceInfo.screen === 'object') {
+    const screen = {}
+    for (const key of ['width', 'height', 'pixelRatio']) {
+      const value = Number(deviceInfo.screen[key])
+      if (Number.isFinite(value) && value > 0) screen[key] = value
+    }
+    if (Object.keys(screen).length > 0) normalized.screen = screen
+  }
+
+  return Object.keys(normalized).length > 0 ? JSON.stringify(normalized) : null
+}
+
+async function ensureDeviceInfoColumn(db) {
+  if (deviceInfoColumnReady.has(db)) return
+
+  const result = await DBService.queryAll(db, `PRAGMA table_info(messages)`)
+  const hasDeviceInfo = (result.results || []).some(column => column.name === 'device_info')
+  if (!hasDeviceInfo) {
+    try {
+      await DBService.execute(db, `ALTER TABLE messages ADD COLUMN device_info TEXT`)
+    } catch (error) {
+      if (!/duplicate column name/i.test(error.message || '')) {
+        throw error
+      }
+    }
+  }
+
+  deviceInfoColumnReady.add(db)
+}
+
 export const MessageService = {
+  /**
+   * 确保消息表结构为当前版本
+   */
+  async ensureSchema(db) {
+    await ensureDeviceInfoColumn(db)
+  },
+
   /**
    * 获取消息列表（支持分页）
    */
   async getMessages(db, { limit = 50, offset = 0 } = {}) {
+    await this.ensureSchema(db)
+
     const limitNum = Math.min(Math.max(1, parseInt(limit)), 200)
     const offsetNum = Math.max(0, parseInt(offset))
 
@@ -18,6 +81,8 @@ export const MessageService = {
         m.type,
         m.content,
         m.device_id,
+        m.device_info,
+        d.name AS device_name,
         m.status,
         m.timestamp,
         f.original_name,
@@ -26,6 +91,7 @@ export const MessageService = {
         f.r2_key
       FROM messages m
       LEFT JOIN files f ON m.file_id = f.id
+      LEFT JOIN devices d ON m.device_id = d.id
       ORDER BY m.timestamp ASC
       LIMIT ? OFFSET ?
     `
@@ -48,10 +114,12 @@ export const MessageService = {
   /**
    * 创建文本消息
    */
-  async createMessage(db, { type, content, deviceId }) {
+  async createMessage(db, { type, content, deviceId, deviceInfo = null }) {
+    await this.ensureSchema(db)
+
     const result = await DBService.execute(db,
-      `INSERT INTO messages (type, content, device_id) VALUES (?, ?, ?)`,
-      [type || 'text', content, deviceId]
+      `INSERT INTO messages (type, content, device_id, device_info) VALUES (?, ?, ?, ?)`,
+      [type || 'text', content, deviceId, normalizeDeviceInfo(deviceInfo)]
     )
     return { id: result.meta.last_row_id }
   },
@@ -59,10 +127,12 @@ export const MessageService = {
   /**
    * 创建文件消息
    */
-  async createFileMessage(db, fileId, deviceId) {
+  async createFileMessage(db, fileId, deviceId, deviceInfo = null) {
+    await this.ensureSchema(db)
+
     const result = await DBService.execute(db,
-      `INSERT INTO messages (type, file_id, device_id) VALUES (?, ?, ?)`,
-      ['file', fileId, deviceId]
+      `INSERT INTO messages (type, file_id, device_id, device_info) VALUES (?, ?, ?, ?)`,
+      ['file', fileId, deviceId, normalizeDeviceInfo(deviceInfo)]
     )
     return { id: result.meta.last_row_id }
   },
@@ -70,20 +140,23 @@ export const MessageService = {
   /**
    * 创建AI消息
    */
-  async createAIMessage(db, { content, deviceId, type = 'ai_response' }) {
+  async createAIMessage(db, { content, deviceId, type = 'ai_response', deviceInfo = null }) {
+    await this.ensureSchema(db)
+
     const prefix = type === 'ai_response' ? '[AI] ' :
                    type === 'ai_thinking' ? '[AI-THINKING] ' : ''
     const messageContent = prefix + content
 
     const result = await DBService.execute(db,
-      `INSERT INTO messages (type, content, device_id) VALUES (?, ?, ?)`,
-      ['text', messageContent, deviceId]
+      `INSERT INTO messages (type, content, device_id, device_info) VALUES (?, ?, ?, ?)`,
+      ['text', messageContent, deviceId, normalizeDeviceInfo(deviceInfo)]
     )
     return {
       id: result.meta.last_row_id,
       type: 'text',
       content: messageContent,
       device_id: deviceId,
+      device_info: normalizeDeviceInfo(deviceInfo),
       timestamp: new Date().toISOString(),
       originalType: type
     }

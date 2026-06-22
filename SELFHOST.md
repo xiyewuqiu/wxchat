@@ -60,6 +60,16 @@ Compose 默认只绑定 loopback：
 ./uploads/
 ```
 
+## 消息设备信息
+
+默认只区分“本机 / 其他设备”。如需记录每条新消息发送时的设备信息快照，可在 `.env` 中启用：
+
+```env
+MESSAGE_DEVICE_INFO_ENABLED=true
+```
+
+启用后，新发送的文本、文件消息会保存设备名称、类型、系统、浏览器、屏幕等轻量信息；历史消息不会自动补齐。
+
 ## Server 4 OpenResty
 
 建议反代目标：

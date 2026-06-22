@@ -24,6 +24,9 @@ config.get('/', (c) => {
       file: {
         maxSizeMb: Number.parseInt(c.env.MAX_FILE_SIZE_MB || '100', 10),
       },
+      message: {
+        deviceInfoEnabled: c.env.MESSAGE_DEVICE_INFO_ENABLED === true || c.env.MESSAGE_DEVICE_INFO_ENABLED === 'true',
+      },
     },
   })
 })

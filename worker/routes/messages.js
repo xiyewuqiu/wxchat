@@ -4,6 +4,10 @@ import { validateParams } from '../middleware/errorHandler.js'
 
 const messages = new Hono()
 
+function deviceInfoEnabled(env) {
+  return env.MESSAGE_DEVICE_INFO_ENABLED === true || env.MESSAGE_DEVICE_INFO_ENABLED === 'true'
+}
+
 // 获取消息列表（支持分页）
 messages.get('/', async (c) => {
   try {
@@ -33,11 +37,16 @@ messages.get('/', async (c) => {
 messages.post('/', async (c) => {
   try {
     const { DB } = c.env
-    const { content, deviceId, type = 'text' } = await c.req.json()
+    const { content, deviceId, type = 'text', deviceInfo } = await c.req.json()
 
     validateParams({ content, deviceId }, ['content', 'deviceId'])
 
-    const result = await MessageService.createMessage(DB, { type, content, deviceId })
+    const result = await MessageService.createMessage(DB, {
+      type,
+      content,
+      deviceId,
+      deviceInfo: deviceInfoEnabled(c.env) ? deviceInfo : null
+    })
 
     return c.json({
       success: true,

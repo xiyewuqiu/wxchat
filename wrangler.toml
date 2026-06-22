@@ -28,5 +28,6 @@ JWT_SECRET = "your-super-secret-jwt-key-change-this-in-production"
 SESSION_EXPIRE_HOURS = "24"
 # 最大登录尝试次数
 MAX_LOGIN_ATTEMPTS = "5"
-
+# 是否记录每条消息发送时的设备信息快照
+MESSAGE_DEVICE_INFO_ENABLED = "false"
 

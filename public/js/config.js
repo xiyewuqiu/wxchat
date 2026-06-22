@@ -49,6 +49,11 @@ const CONFIG = {
         NAME_DESKTOP: 'Web浏览器',
         STORAGE_KEY: 'deviceId'
     },
+
+    // 消息配置
+    MESSAGE: {
+        DEVICE_INFO_ENABLED: false
+    },
     
     // 消息类型
     MESSAGE_TYPES: {
@@ -303,7 +308,7 @@ async function loadRuntimeConfig() {
         const result = await response.json();
         if (!result.success || !result.data) return;
 
-        const { ai, imageGen, file } = result.data;
+        const { ai, imageGen, file, message } = result.data;
         if (ai) {
             CONFIG.AI.ENABLED = !!ai.enabled;
             CONFIG.AI.MODEL = ai.model || CONFIG.AI.MODEL;
@@ -322,6 +327,9 @@ async function loadRuntimeConfig() {
         if (file && file.maxSizeMb) {
             CONFIG.FILE.MAX_SIZE = file.maxSizeMb * 1024 * 1024;
             CONFIG.ERRORS.FILE_TOO_LARGE = `文件大小不能超过${file.maxSizeMb}MB`;
+        }
+        if (message) {
+            CONFIG.MESSAGE.DEVICE_INFO_ENABLED = !!message.deviceInfoEnabled;
         }
     } catch (error) {
         console.warn('[Config] 运行时配置加载失败，使用默认配置:', error.message);

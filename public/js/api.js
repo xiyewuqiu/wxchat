@@ -69,6 +69,14 @@ const API = {
             body: JSON.stringify(data),
         });
     },
+
+    // 按运行时开关附带消息设备信息
+    withDeviceInfo(payload, deviceInfo = Utils.getMessageDeviceInfo()) {
+        if (deviceInfo) {
+            return { ...payload, deviceInfo };
+        }
+        return payload;
+    },
     
     // 文件上传请求
     async upload(url, formData) {
@@ -118,8 +126,11 @@ const API = {
     },
     
     // 发送文本消息
-    async sendMessage(content, deviceId) {
-        const response = await this.post(CONFIG.API.ENDPOINTS.MESSAGES, { content, deviceId });
+    async sendMessage(content, deviceId, deviceInfo = Utils.getMessageDeviceInfo()) {
+        const response = await this.post(
+            CONFIG.API.ENDPOINTS.MESSAGES,
+            this.withDeviceInfo({ content, deviceId }, deviceInfo)
+        );
 
         if (response.success) {
             return response.data;
@@ -128,9 +139,12 @@ const API = {
     },
 
     // 发送AI消息
-    async sendAIMessage(content, deviceId = 'ai-system', type = 'ai_response') {
+    async sendAIMessage(content, deviceId = 'ai-system', type = 'ai_response', deviceInfo = null) {
         const response = await this.post(CONFIG.API.ENDPOINTS.AI_MESSAGE || '/api/ai/message', {
-            content, deviceId, type
+            content,
+            deviceId,
+            type,
+            ...(deviceInfo ? { deviceInfo } : {})
         });
 
         if (response && response.success) {
@@ -140,7 +154,7 @@ const API = {
     },
     
     // 上传文件
-    async uploadFile(file, deviceId, onProgress = null) {
+    async uploadFile(file, deviceId, onProgress = null, deviceInfo = Utils.getMessageDeviceInfo()) {
         if (!Utils.validateFileSize(file.size)) {
             throw new Error(CONFIG.ERRORS.FILE_TOO_LARGE);
         }
@@ -148,6 +162,9 @@ const API = {
         const formData = new FormData();
         formData.append('file', file);
         formData.append('deviceId', deviceId);
+        if (deviceInfo) {
+            formData.append('deviceInfo', JSON.stringify(deviceInfo));
+        }
 
         if (onProgress) {
             return this.uploadWithProgress(CONFIG.API.ENDPOINTS.FILES_UPLOAD, formData, onProgress);

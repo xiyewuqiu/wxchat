@@ -5,6 +5,19 @@ import { validateParams } from '../middleware/errorHandler.js'
 
 const files = new Hono()
 
+function deviceInfoEnabled(env) {
+  return env.MESSAGE_DEVICE_INFO_ENABLED === true || env.MESSAGE_DEVICE_INFO_ENABLED === 'true'
+}
+
+function parseDeviceInfo(value) {
+  if (!value || typeof value !== 'string') return null
+  try {
+    return JSON.parse(value)
+  } catch {
+    return null
+  }
+}
+
 // 文件上传
 files.post('/upload', async (c) => {
   try {
@@ -12,6 +25,7 @@ files.post('/upload', async (c) => {
     const formData = await c.req.formData()
     const file = formData.get('file')
     const deviceId = formData.get('deviceId')
+    const deviceInfo = deviceInfoEnabled(c.env) ? parseDeviceInfo(formData.get('deviceInfo')) : null
 
     validateParams({ file: file ? 'present' : null, deviceId }, ['file', 'deviceId'])
 
@@ -44,7 +58,7 @@ files.post('/upload', async (c) => {
       })
 
       // 创建文件消息
-      await MessageService.createFileMessage(DB, fileRecord.id, deviceId)
+      await MessageService.createFileMessage(DB, fileRecord.id, deviceId, deviceInfo)
 
       return c.json({
         success: true,

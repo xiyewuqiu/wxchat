@@ -6,15 +6,24 @@ import { validateParams } from '../middleware/errorHandler.js'
 
 const sync = new Hono()
 
+function deviceInfoEnabled(env) {
+  return env.MESSAGE_DEVICE_INFO_ENABLED === true || env.MESSAGE_DEVICE_INFO_ENABLED === 'true'
+}
+
 // AI消息处理接口
 sync.post('/ai/message', async (c) => {
   try {
     const { DB } = c.env
-    const { content, deviceId, type = 'ai_response' } = await c.req.json()
+    const { content, deviceId, type = 'ai_response', deviceInfo } = await c.req.json()
 
     validateParams({ content, deviceId }, ['content', 'deviceId'])
 
-    const result = await MessageService.createAIMessage(DB, { content, deviceId, type })
+    const result = await MessageService.createAIMessage(DB, {
+      content,
+      deviceId,
+      type,
+      deviceInfo: deviceInfoEnabled(c.env) ? deviceInfo : null
+    })
 
     return c.json({ success: true, data: result })
   } catch (error) {

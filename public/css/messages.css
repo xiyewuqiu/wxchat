@@ -162,13 +162,23 @@
   font-size: var(--md-sys-typescale-label-small-size);
   color: var(--md-sys-color-outline);
   letter-spacing: var(--md-sys-typescale-label-small-tracking);
+  max-width: 100%;
 }
 .message.own .message-meta { justify-content: flex-end; }
 .message.other .message-meta { justify-content: flex-start; }
 
+.message-meta .message-device {
+  min-width: 0;
+  max-width: min(52vw, 220px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .message-meta .message-time {
   color: var(--md-sys-color-outline);
   font-size: var(--md-sys-typescale-label-small-size);
+  flex-shrink: 0;
 }
 
 /* ---- Message Status ---- */

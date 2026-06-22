@@ -17,6 +17,14 @@ const Utils = {
         }
         return deviceId;
     },
+
+    // 获取用于设备同步和消息展示的短设备名称
+    getDeviceName() {
+        const os = this.getDeviceOS();
+        const browser = this.getBrowserName();
+        const nameParts = [os, browser].filter(Boolean);
+        return nameParts.length > 0 ? nameParts.join(' ') : this.getDeviceType();
+    },
     
     // 格式化文件大小
     formatFileSize(bytes) {
@@ -220,6 +228,59 @@ const Utils = {
             return CONFIG.DEVICE.NAME_MOBILE;
         }
         return CONFIG.DEVICE.NAME_DESKTOP;
+    },
+
+    // 检测操作系统
+    getDeviceOS() {
+        const userAgent = navigator.userAgent || '';
+        const platform = navigator.platform || '';
+
+        if (/HarmonyOS/i.test(userAgent)) return 'HarmonyOS';
+        if (/Android/i.test(userAgent)) return 'Android';
+        if (/iPhone|iPad|iPod/i.test(userAgent)) return 'iOS';
+        if (/Mac/i.test(platform)) return 'macOS';
+        if (/Win/i.test(platform)) return 'Windows';
+        if (/Linux/i.test(platform)) return 'Linux';
+        return '';
+    },
+
+    // 检测浏览器名称
+    getBrowserName() {
+        const userAgent = navigator.userAgent || '';
+
+        if (/MicroMessenger/i.test(userAgent)) return 'WeChat';
+        if (/Edg\//i.test(userAgent)) return 'Edge';
+        if (/OPR\//i.test(userAgent)) return 'Opera';
+        if (/Firefox|FxiOS/i.test(userAgent)) return 'Firefox';
+        if (/CriOS|Chrome/i.test(userAgent)) return 'Chrome';
+        if (/Safari/i.test(userAgent)) return 'Safari';
+        return '';
+    },
+
+    // 生成消息发送时的设备信息快照
+    getDeviceInfoSnapshot() {
+        return {
+            name: this.getDeviceName(),
+            type: this.getDeviceType(),
+            os: this.getDeviceOS(),
+            browser: this.getBrowserName(),
+            platform: navigator.platform || '',
+            language: navigator.language || '',
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || '',
+            userAgent: navigator.userAgent || '',
+            screen: {
+                width: window.screen?.width || 0,
+                height: window.screen?.height || 0,
+                pixelRatio: window.devicePixelRatio || 1
+            },
+            capturedAt: new Date().toISOString()
+        };
+    },
+
+    // 根据运行时开关决定是否为消息附带设备信息
+    getMessageDeviceInfo() {
+        if (!CONFIG.MESSAGE?.DEVICE_INFO_ENABLED) return null;
+        return this.getDeviceInfoSnapshot();
     },
 
     // 检测是否为iOS设备

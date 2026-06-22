@@ -34,6 +34,7 @@ export function loadEnv() {
     JWT_SECRET: process.env.JWT_SECRET || 'change-this-jwt-secret',
     SESSION_EXPIRE_HOURS: process.env.SESSION_EXPIRE_HOURS || '24',
     MAX_FILE_SIZE_MB: readInt('MAX_FILE_SIZE_MB', 100),
+    MESSAGE_DEVICE_INFO_ENABLED: readBool('MESSAGE_DEVICE_INFO_ENABLED', false),
     AI_ENABLED: readBool('AI_ENABLED', false),
     IMAGE_GEN_ENABLED: readBool('IMAGE_GEN_ENABLED', false),
     AI_CHAT_BASE_URL: process.env.AI_CHAT_BASE_URL || '',

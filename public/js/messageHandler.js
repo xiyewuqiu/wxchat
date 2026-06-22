@@ -286,6 +286,7 @@ const MessageHandler = {
         this.sendQueue.push({
             content,
             deviceId: Utils.getDeviceId(),
+            deviceInfo: Utils.getMessageDeviceInfo(),
             timestamp: Date.now()
         });
         // 持久化到 localStorage，页面刷新不丢失
@@ -309,7 +310,7 @@ const MessageHandler = {
         const remaining = [];
         for (const item of this.sendQueue) {
             try {
-                await API.sendMessage(item.content, item.deviceId);
+                await API.sendMessage(item.content, item.deviceId, item.deviceInfo || Utils.getMessageDeviceInfo());
             } catch (error) {
                 remaining.push(item);
             }

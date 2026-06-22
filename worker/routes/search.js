@@ -1,4 +1,5 @@
 ﻿import { Hono } from 'hono'
+import { MessageService } from '../services/messageService.js'
 
 const search = new Hono()
 
@@ -17,6 +18,8 @@ const FILE_TYPE_MAP = {
 search.get('/', async (c) => {
   try {
     const { DB } = c.env
+    await MessageService.ensureSchema(DB)
+
     const query = c.req.query('q')
     const type = c.req.query('type') || 'all'
     const timeRange = c.req.query('timeRange') || 'all'
@@ -31,7 +34,6 @@ search.get('/', async (c) => {
 
     const whereConditions = []
     const params = []
-    let needsFileJoin = false
 
     // 文本搜索
     if (type === 'all' || type === 'text') {
@@ -41,7 +43,6 @@ search.get('/', async (c) => {
 
     // 文件搜索
     if (type === 'all' || type === 'file') {
-      needsFileJoin = true
       whereConditions.push(`(f.original_name LIKE ? AND m.type = 'file')`)
       params.push(`%${query}%`)
     }
@@ -67,7 +68,6 @@ search.get('/', async (c) => {
 
     // 文件类型过滤
     if (fileType !== 'all' && (type === 'all' || type === 'file')) {
-      needsFileJoin = true
       const mimeTypes = FILE_TYPE_MAP[fileType] || []
       if (mimeTypes.length > 0) {
         const mimeConditions = mimeTypes.map(() => 'f.mime_type = ?').join(' OR ')
@@ -80,10 +80,13 @@ search.get('/', async (c) => {
       return c.json({ success: false, error: '无效的搜索条件' }, 400)
     }
 
-    const joinClause = needsFileJoin ? 'LEFT JOIN files f ON m.file_id = f.id' : ''
+    const joinClause = `
+      LEFT JOIN files f ON m.file_id = f.id
+      LEFT JOIN devices d ON m.device_id = d.id
+    `
     const whereClause = `WHERE ${whereConditions.join(' OR ')}`
     const selectFields = `
-      m.id, m.type, m.content, m.device_id, m.timestamp,
+      m.id, m.type, m.content, m.device_id, m.device_info, d.name AS device_name, m.timestamp,
       f.original_name, f.file_size, f.mime_type, f.r2_key
     `
     const countParams = [...params]
