@@ -2,6 +2,8 @@
 // 提供Web端适用的功能选项界面框架
 
 const FunctionMenu = {
+    STYLE_VERSION: '2.2.2',
+
     // 菜单配置 - 微信风格
     menuItems: [
         {
@@ -89,8 +91,26 @@ const FunctionMenu = {
 
         this.createMenuElement();
         this.createEmojiPickerElement();
+        this.ensureModalStyles();
         this.bindEvents();
         this.isInitialized = true;
+    },
+
+    // 确保新版弹层样式已加载，绕过旧 Service Worker 对裸 CSS 路径的缓存
+    ensureModalStyles() {
+        const versionedHref = `./css/modals.css?v=${this.STYLE_VERSION}`;
+        const hasVersionedStyles = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
+            .some(link => link.href.includes(`/css/modals.css?v=${this.STYLE_VERSION}`));
+
+        if (hasVersionedStyles) {
+            return;
+        }
+
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = versionedHref;
+        link.dataset.wxchatModalStyles = this.STYLE_VERSION;
+        document.head.appendChild(link);
     },
 
     // 创建菜单DOM元素

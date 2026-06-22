@@ -1,9 +1,9 @@
 // 微信文件传输助手 Service Worker
 // 提供离线缓存和后台同步功能
 
-const CACHE_NAME = 'wxchat-v2.2.1';
-const STATIC_CACHE_NAME = 'wxchat-static-v2.2.1';
-const DYNAMIC_CACHE_NAME = 'wxchat-dynamic-v2.2.1';
+const CACHE_NAME = 'wxchat-v2.2.2';
+const STATIC_CACHE_NAME = 'wxchat-static-v2.2.2';
+const DYNAMIC_CACHE_NAME = 'wxchat-dynamic-v2.2.2';
 
 // 需要缓存的静态资源
 const STATIC_ASSETS = [
@@ -40,13 +40,13 @@ const STATIC_ASSETS = [
 // 需要网络优先的资源（API请求等）
 const NETWORK_FIRST_PATTERNS = [
   /\/api\//,
-  /\/auth\//
+  /\/auth\//,
+  /\.(?:css|js)$/
 ];
 
 // 需要缓存优先的资源
 const CACHE_FIRST_PATTERNS = [
   /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/,
-  /\.(?:css|js)$/,
   /\/icons\//
 ];
 
@@ -131,14 +131,20 @@ async function handleFetch(request) {
       return await networkFirst(request);
     }
     
-    // 静态资源：缓存优先策略
-    if (CACHE_FIRST_PATTERNS.some(pattern => pattern.test(url.pathname))) {
-      return await cacheFirst(request);
-    }
-    
     // HTML 页面：网络优先，缓存备用
     if (request.destination === 'document') {
       return await networkFirst(request);
+    }
+
+    // CSS/JS：网络优先，避免部署后继续命中旧样式或旧逻辑
+    if (request.destination === 'style' || request.destination === 'script' ||
+        NETWORK_FIRST_PATTERNS.some(pattern => pattern.test(url.pathname))) {
+      return await networkFirst(request);
+    }
+
+    // 图片和图标：缓存优先策略
+    if (CACHE_FIRST_PATTERNS.some(pattern => pattern.test(url.pathname))) {
+      return await cacheFirst(request);
     }
     
     // 其他请求：缓存优先

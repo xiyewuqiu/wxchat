@@ -65,10 +65,14 @@ class PWAManager {
         
         try {
             this.swRegistration = await navigator.serviceWorker.register('/sw.js', {
-                scope: '/'
+                scope: '/',
+                updateViaCache: 'none'
             });
             
             console.log('✅ Service Worker注册成功:', this.swRegistration.scope);
+            this.swRegistration.update().catch(error => {
+                console.warn('⚠️ Service Worker更新检查失败:', error);
+            });
             
             // 监听Service Worker更新
             this.swRegistration.addEventListener('updatefound', () => {

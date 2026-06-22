@@ -6,6 +6,12 @@ const STATIC_HEADERS = {
   'Cache-Control': 'public, max-age=3600',
 }
 
+const NO_CACHE_HEADERS = {
+  'Cache-Control': 'no-cache, no-store, must-revalidate',
+  Pragma: 'no-cache',
+  Expires: '0',
+}
+
 function isSafePath(filePath, rootDir) {
   const relative = path.relative(rootDir, filePath)
   return relative && !relative.startsWith('..') && !path.isAbsolute(relative)
@@ -34,10 +40,17 @@ export function addStaticFiles(app, rootDir) {
     try {
       const body = await fs.readFile(filePath)
       const contentType = lookup(filePath) || 'application/octet-stream'
+      const basename = path.basename(filePath)
+      const extension = path.extname(filePath)
+      const cacheHeaders = extension === '.html' || basename === 'sw.js'
+        ? NO_CACHE_HEADERS
+        : STATIC_HEADERS
+
       return new Response(body, {
         headers: {
-          ...STATIC_HEADERS,
+          ...cacheHeaders,
           'Content-Type': contentType,
+          ...(basename === 'sw.js' ? { 'Service-Worker-Allowed': '/' } : {}),
         },
       })
     } catch {
