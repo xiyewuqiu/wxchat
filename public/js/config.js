@@ -61,8 +61,8 @@ const CONFIG = {
     TIMEZONE: {
         SERVER: 'UTC',
         DEFAULT: 'UTC',
-        ACTIVE: 'UTC',
-        MODE: 'server',
+        ACTIVE: '',
+        MODE: 'browser',
         CUSTOM: '',
         ALLOW_CLIENT_OVERRIDE: true,
         MODE_STORAGE_KEY: 'wxchat.timezone.mode',
@@ -358,6 +358,9 @@ async function loadRuntimeConfig() {
         }
     } catch (error) {
         console.warn('[Config] 运行时配置加载失败，使用默认配置:', error.message);
+        if (window.Utils && typeof Utils.applyTimeZonePreference === 'function') {
+            Utils.applyTimeZonePreference();
+        }
     }
 }
 

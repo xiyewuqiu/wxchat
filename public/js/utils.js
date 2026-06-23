@@ -52,7 +52,12 @@ const Utils = {
     },
 
     getBrowserTimeZone() {
-        return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+        try {
+            const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            return this.isValidTimeZone(timeZone) ? timeZone : 'UTC';
+        } catch {
+            return 'UTC';
+        }
     },
 
     isValidTimeZone(timeZone) {
@@ -67,20 +72,31 @@ const Utils = {
 
     applyTimeZonePreference() {
         const timezoneConfig = CONFIG.TIMEZONE || {};
-        const storedMode = localStorage.getItem(timezoneConfig.MODE_STORAGE_KEY) || timezoneConfig.MODE || 'server';
+        const storedMode = localStorage.getItem(timezoneConfig.MODE_STORAGE_KEY) || timezoneConfig.MODE || 'browser';
         const storedValue = localStorage.getItem(timezoneConfig.VALUE_STORAGE_KEY) || '';
         const canOverride = timezoneConfig.ALLOW_CLIENT_OVERRIDE !== false;
 
         let mode = canOverride ? storedMode : 'server';
-        let active = timezoneConfig.DEFAULT || timezoneConfig.SERVER || 'UTC';
+        let active = this.isValidTimeZone(timezoneConfig.DEFAULT)
+            ? timezoneConfig.DEFAULT
+            : (this.isValidTimeZone(timezoneConfig.SERVER) ? timezoneConfig.SERVER : 'UTC');
 
         if (mode === 'browser') {
             active = this.getBrowserTimeZone();
         } else if (mode === 'custom' && this.isValidTimeZone(storedValue)) {
             active = storedValue;
+        } else if (mode === 'server') {
+            active = this.isValidTimeZone(timezoneConfig.DEFAULT)
+                ? timezoneConfig.DEFAULT
+                : (this.isValidTimeZone(timezoneConfig.SERVER) ? timezoneConfig.SERVER : 'UTC');
+        } else if (canOverride) {
+            mode = 'browser';
+            active = this.getBrowserTimeZone();
         } else {
             mode = 'server';
-            active = timezoneConfig.DEFAULT || timezoneConfig.SERVER || 'UTC';
+            active = this.isValidTimeZone(timezoneConfig.DEFAULT)
+                ? timezoneConfig.DEFAULT
+                : (this.isValidTimeZone(timezoneConfig.SERVER) ? timezoneConfig.SERVER : 'UTC');
         }
 
         CONFIG.TIMEZONE.MODE = mode;
@@ -109,6 +125,12 @@ const Utils = {
     getActiveTimeZone() {
         if (!CONFIG.TIMEZONE.ACTIVE) {
             return this.applyTimeZonePreference();
+        }
+        if (CONFIG.TIMEZONE.MODE === 'browser') {
+            const browserTimeZone = this.getBrowserTimeZone();
+            if (CONFIG.TIMEZONE.ACTIVE !== browserTimeZone) {
+                CONFIG.TIMEZONE.ACTIVE = browserTimeZone;
+            }
         }
         return CONFIG.TIMEZONE.ACTIVE;
     },

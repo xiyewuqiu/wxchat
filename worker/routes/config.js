@@ -14,7 +14,7 @@ function readInt(value, fallback) {
 }
 
 function getRuntimeTimezone(env) {
-  const fallback = 'UTC'
+  const fallback = env.SERVER_TIMEZONE || 'UTC'
   const timezone = env.APP_TIMEZONE || env.SERVER_TIMEZONE || fallback
   try {
     Intl.DateTimeFormat('en-US', { timeZone: timezone }).format(new Date())
@@ -25,7 +25,7 @@ function getRuntimeTimezone(env) {
 }
 
 config.get('/', (c) => {
-  const serverTimezone = c.env.SERVER_TIMEZONE || getRuntimeTimezone(c.env)
+  const serverTimezone = c.env.SERVER_TIMEZONE || 'UTC'
   const defaultTimezone = getRuntimeTimezone(c.env)
 
   return c.json({

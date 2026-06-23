@@ -162,6 +162,15 @@ const UI = {
         }
     },
 
+    // 根据当前时区/设备展示配置刷新已缓存消息
+    refreshMessagePresentation(messages = window.MessageHandler?.lastMessages || []) {
+        if (!messages || messages.length === 0) return;
+        this.messageCache.clear();
+        const messageContainer = this.elements.messageList;
+        if (messageContainer) messageContainer.innerHTML = '';
+        this.renderMessages(messages, false);
+    },
+
     // 增量更新消息列表
     updateMessagesIncremental(messages) {
         const messageContainer = this.elements.messageList;

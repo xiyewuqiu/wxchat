@@ -2,7 +2,7 @@
 // 提供Web端适用的功能选项界面框架
 
 const FunctionMenu = {
-    STYLE_VERSION: '2.2.2',
+    STYLE_VERSION: '2.2.3',
 
     // 菜单配置 - 微信风格
     menuItems: [
@@ -526,9 +526,12 @@ const FunctionMenu = {
         const dialog = document.getElementById('timezoneDialog');
         if (!dialog) return;
 
-        const mode = CONFIG.TIMEZONE.MODE || 'server';
-        const customValue = CONFIG.TIMEZONE.CUSTOM || CONFIG.TIMEZONE.ACTIVE || CONFIG.TIMEZONE.DEFAULT || 'UTC';
+        Utils.applyTimeZonePreference();
+        const mode = CONFIG.TIMEZONE.MODE || 'browser';
         const activeTimeZone = Utils.getActiveTimeZone();
+        const customValue = CONFIG.TIMEZONE.CUSTOM || activeTimeZone || Utils.getBrowserTimeZone();
+        const serverTimeZone = CONFIG.TIMEZONE.DEFAULT || CONFIG.TIMEZONE.SERVER || 'UTC';
+        const browserTimeZone = Utils.getBrowserTimeZone();
 
         dialog.querySelectorAll('input[name="timezoneMode"]').forEach(input => {
             input.checked = input.value === mode;
@@ -540,9 +543,10 @@ const FunctionMenu = {
 
         const summary = dialog.querySelector('#timezoneSummary');
         if (summary) {
-            summary.textContent = `当前: ${activeTimeZone} · 服务端: ${CONFIG.TIMEZONE.DEFAULT || CONFIG.TIMEZONE.SERVER || 'UTC'}`;
+            summary.textContent = `当前: ${activeTimeZone} · 浏览器: ${browserTimeZone} · 服务端: ${serverTimeZone}`;
         }
 
+        this.updateTimezoneCustomInputState();
         dialog.classList.add('show');
     },
 
@@ -565,11 +569,11 @@ const FunctionMenu = {
                         <div class="timezone-summary" id="timezoneSummary"></div>
                         <label class="timezone-option">
                             <input type="radio" name="timezoneMode" value="server">
-                            <span>跟随服务端</span>
+                            <span>跟随服务端 <small id="timezoneServerLabel"></small></span>
                         </label>
                         <label class="timezone-option">
                             <input type="radio" name="timezoneMode" value="browser">
-                            <span>跟随当前浏览器</span>
+                            <span>跟随当前浏览器 <small id="timezoneBrowserLabel"></small></span>
                         </label>
                         <label class="timezone-option timezone-option-custom">
                             <input type="radio" name="timezoneMode" value="custom">
@@ -592,6 +596,33 @@ const FunctionMenu = {
         document.getElementById('timezoneCancelBtn')?.addEventListener('click', close);
         document.querySelector('#timezoneDialog .timezone-dialog-overlay')?.addEventListener('click', close);
         document.getElementById('timezoneSaveBtn')?.addEventListener('click', () => this.saveTimezonePreference());
+        document.querySelectorAll('#timezoneDialog input[name="timezoneMode"]').forEach(input => {
+            input.addEventListener('change', () => this.updateTimezoneCustomInputState());
+        });
+        document.getElementById('timezoneCustomValue')?.addEventListener('focus', () => {
+            const customRadio = document.querySelector('#timezoneDialog input[name="timezoneMode"][value="custom"]');
+            if (customRadio && !customRadio.disabled) {
+                customRadio.checked = true;
+                this.updateTimezoneCustomInputState();
+            }
+        });
+    },
+
+    updateTimezoneCustomInputState() {
+        const dialog = document.getElementById('timezoneDialog');
+        if (!dialog) return;
+
+        const customInput = dialog.querySelector('#timezoneCustomValue');
+        const checked = dialog.querySelector('input[name="timezoneMode"]:checked');
+        if (customInput) {
+            customInput.disabled = checked?.value !== 'custom';
+        }
+
+        const serverLabel = dialog.querySelector('#timezoneServerLabel');
+        if (serverLabel) serverLabel.textContent = CONFIG.TIMEZONE.DEFAULT || CONFIG.TIMEZONE.SERVER || 'UTC';
+
+        const browserLabel = dialog.querySelector('#timezoneBrowserLabel');
+        if (browserLabel) browserLabel.textContent = Utils.getBrowserTimeZone();
     },
 
     hideTimezoneDialog() {
@@ -607,8 +638,10 @@ const FunctionMenu = {
             const active = Utils.setTimeZonePreference(mode, customValue);
             this.hideTimezoneDialog();
             UI.showSuccess(`时区已切换为 ${active}`);
-            if (window.MessageHandler && typeof MessageHandler.loadMessages === 'function') {
-                MessageHandler.loadMessages(false);
+            if (window.UI && typeof UI.refreshMessagePresentation === 'function') {
+                UI.refreshMessagePresentation();
+            } else if (window.MessageHandler && typeof MessageHandler.loadMessages === 'function') {
+                MessageHandler.loadMessages(true);
             }
             if (window.SearchAPI && typeof SearchAPI.clearCache === 'function') {
                 SearchAPI.clearCache();

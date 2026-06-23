@@ -290,6 +290,20 @@
   font-size: var(--md-sys-typescale-body-medium-size);
 }
 
+.timezone-option span {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+}
+
+.timezone-option small {
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: var(--md-sys-typescale-body-small-size);
+  word-break: break-word;
+}
+
 .timezone-option input {
   width: 18px;
   height: 18px;

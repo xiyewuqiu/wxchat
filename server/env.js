@@ -1,5 +1,6 @@
 import path from 'node:path'
 import process from 'node:process'
+import fs from 'node:fs'
 import dotenv from 'dotenv'
 
 dotenv.config()
@@ -22,14 +23,60 @@ function resolvePath(value, fallback) {
 }
 
 function getMachineTimezone() {
+  const candidates = [
+    process.env.TZ,
+    readTimezoneFile('/etc/timezone'),
+    readLocaltimeTarget('/etc/localtime'),
+  ]
+
+  for (const timezone of candidates) {
+    if (isValidTimezone(timezone)) return timezone.trim()
+  }
+
   try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    return isValidTimezone(timezone) ? timezone : 'UTC'
   } catch {
     return 'UTC'
   }
 }
 
+function isValidTimezone(timezone) {
+  if (!timezone || typeof timezone !== 'string') return false
+  try {
+    Intl.DateTimeFormat('en-US', { timeZone: timezone.trim() }).format(new Date())
+    return true
+  } catch {
+    return false
+  }
+}
+
+function readTimezoneFile(filePath) {
+  try {
+    return fs.readFileSync(filePath, 'utf8').trim()
+  } catch {
+    return ''
+  }
+}
+
+function readLocaltimeTarget(filePath) {
+  try {
+    const target = fs.realpathSync(filePath)
+    const marker = '/zoneinfo/'
+    const markerIndex = target.indexOf(marker)
+    return markerIndex >= 0 ? target.slice(markerIndex + marker.length) : ''
+  } catch {
+    return ''
+  }
+}
+
+function getConfiguredTimezone() {
+  return isValidTimezone(process.env.APP_TIMEZONE) ? process.env.APP_TIMEZONE.trim() : ''
+}
+
 export function loadEnv() {
+  const machineTimezone = getMachineTimezone()
+  const appTimezone = getConfiguredTimezone()
   const env = {
     NODE_ENV: process.env.NODE_ENV || 'development',
     ENVIRONMENT: process.env.NODE_ENV === 'production' ? 'production' : 'development',
@@ -44,8 +91,8 @@ export function loadEnv() {
     MAX_FILE_SIZE_MB: readInt('MAX_FILE_SIZE_MB', 100),
     MESSAGE_DEVICE_INFO_ENABLED: readBool('MESSAGE_DEVICE_INFO_ENABLED', false),
     MESSAGE_GROUP_WINDOW_MINUTES: readInt('MESSAGE_GROUP_WINDOW_MINUTES', 15),
-    APP_TIMEZONE: process.env.APP_TIMEZONE || getMachineTimezone(),
-    SERVER_TIMEZONE: getMachineTimezone(),
+    APP_TIMEZONE: appTimezone,
+    SERVER_TIMEZONE: machineTimezone,
     ALLOW_CLIENT_TIMEZONE_OVERRIDE: readBool('ALLOW_CLIENT_TIMEZONE_OVERRIDE', true),
     AI_ENABLED: readBool('AI_ENABLED', false),
     IMAGE_GEN_ENABLED: readBool('IMAGE_GEN_ENABLED', false),

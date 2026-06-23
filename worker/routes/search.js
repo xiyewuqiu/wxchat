@@ -24,6 +24,18 @@ function getSearchTimezone(env) {
   }
 }
 
+function getRequestedTimezone(value, env) {
+  if (value) {
+    try {
+      Intl.DateTimeFormat('en-US', { timeZone: value }).format(new Date())
+      return value
+    } catch {
+      // Fall back to server runtime timezone.
+    }
+  }
+  return getSearchTimezone(env)
+}
+
 function getDatePartsInTimezone(date, timeZone) {
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone,
@@ -110,6 +122,7 @@ search.get('/', async (c) => {
     const query = c.req.query('q')
     const type = c.req.query('type') || 'all'
     const timeRange = c.req.query('timeRange') || 'all'
+    const timezone = c.req.query('timezone') || ''
     const deviceId = c.req.query('deviceId') || 'all'
     const fileType = c.req.query('fileType') || 'all'
     const limit = Math.min(parseInt(c.req.query('limit') || '100'), 200)
@@ -137,7 +150,7 @@ search.get('/', async (c) => {
 
     // 时间范围
     if (timeRange !== 'all') {
-      const bounds = getTimeRangeBounds(timeRange, getSearchTimezone(c.env))
+      const bounds = getTimeRangeBounds(timeRange, getRequestedTimezone(timezone, c.env))
       if (bounds?.start) {
         filterConditions.push('m.timestamp >= ?')
         params.push(formatSqlUtc(bounds.start))

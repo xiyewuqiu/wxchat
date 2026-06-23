@@ -78,14 +78,16 @@ MESSAGE_DEVICE_INFO_ENABLED=true
 MESSAGE_GROUP_WINDOW_MINUTES=15
 ```
 
-自部署版默认读取运行机器的时区。也可以显式指定实例默认显示时区：
+自部署版会读取运行机器的时区并通过配置接口返回给前端；前端默认跟随当前浏览器/客户端时区显示。也可以显式指定服务端默认时区：
 
 ```env
 APP_TIMEZONE=Asia/Shanghai
 ALLOW_CLIENT_TIMEZONE_OVERRIDE=true
 ```
 
-`APP_TIMEZONE` 留空时使用部署机器时区；`ALLOW_CLIENT_TIMEZONE_OVERRIDE=false` 时，前端不能切换到浏览器或自定义时区。
+`APP_TIMEZONE` 留空时使用部署机器时区；`ALLOW_CLIENT_TIMEZONE_OVERRIDE=false` 时，前端不能切换到浏览器或自定义时区，并会强制跟随服务端默认时区。
+
+在 Linux/Docker 中，推荐设置 `TZ=Asia/Shanghai` 或挂载正确的 `/etc/timezone`、`/etc/localtime`，这样 `/api/config` 中的 `timezone.serverTimezone` 可以反映部署机器时区。
 
 ## Server 4 OpenResty
 

@@ -33,6 +33,7 @@ const server = serve({
   console.log(`WXChat self-host server listening on http://${info.address}:${info.port}`)
   console.log(`Database: ${env.DATABASE_PATH}`)
   console.log(`Uploads: ${env.UPLOAD_DIR}`)
+  console.log(`Timezone: server=${env.SERVER_TIMEZONE}, default=${env.APP_TIMEZONE || env.SERVER_TIMEZONE}`)
 })
 
 function shutdown(signal) {

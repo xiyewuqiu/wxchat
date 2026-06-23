@@ -29,6 +29,9 @@ const SearchAPI = {
             
             if (filters.timeRange && filters.timeRange !== 'all') {
                 params.append('timeRange', filters.timeRange);
+                if (window.Utils && typeof Utils.getActiveTimeZone === 'function') {
+                    params.append('timezone', Utils.getActiveTimeZone());
+                }
             }
             
             if (filters.deviceId && filters.deviceId !== 'all') {
@@ -117,6 +120,9 @@ const SearchAPI = {
         
         if (filters.type) parts.push(`type:${filters.type}`);
         if (filters.timeRange) parts.push(`time:${filters.timeRange}`);
+        if (filters.timeRange && filters.timeRange !== 'all' && window.Utils && typeof Utils.getActiveTimeZone === 'function') {
+            parts.push(`timezone:${Utils.getActiveTimeZone()}`);
+        }
         if (filters.deviceId) parts.push(`device:${filters.deviceId}`);
         if (filters.fileType) parts.push(`file:${filters.fileType}`);
         if (filters.limit) parts.push(`limit:${filters.limit}`);
