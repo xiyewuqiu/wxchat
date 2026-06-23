@@ -64,6 +64,12 @@ const FunctionMenu = {
             action: 'pwaManage'
         },
         {
+            id: 'timezone',
+            icon: '🕘',
+            title: '时区',
+            action: 'timezone'
+        },
+        {
             id: 'logout',
             icon: '🚪',
             title: '登出',
@@ -295,6 +301,9 @@ const FunctionMenu = {
             case 'pwaManage':
                 this.handlePwaManage();
                 break;
+            case 'timezone':
+                this.handleTimezone();
+                break;
             case 'logout':
                 this.handleLogout();
                 break;
@@ -508,6 +517,104 @@ const FunctionMenu = {
                     }
                 }
             }, 100);
+        }
+    },
+
+    // 时区设置
+    handleTimezone() {
+        this.createTimezoneDialog();
+        const dialog = document.getElementById('timezoneDialog');
+        if (!dialog) return;
+
+        const mode = CONFIG.TIMEZONE.MODE || 'server';
+        const customValue = CONFIG.TIMEZONE.CUSTOM || CONFIG.TIMEZONE.ACTIVE || CONFIG.TIMEZONE.DEFAULT || 'UTC';
+        const activeTimeZone = Utils.getActiveTimeZone();
+
+        dialog.querySelectorAll('input[name="timezoneMode"]').forEach(input => {
+            input.checked = input.value === mode;
+            input.disabled = CONFIG.TIMEZONE.ALLOW_CLIENT_OVERRIDE === false && input.value !== 'server';
+        });
+
+        const customInput = dialog.querySelector('#timezoneCustomValue');
+        if (customInput) customInput.value = customValue;
+
+        const summary = dialog.querySelector('#timezoneSummary');
+        if (summary) {
+            summary.textContent = `当前: ${activeTimeZone} · 服务端: ${CONFIG.TIMEZONE.DEFAULT || CONFIG.TIMEZONE.SERVER || 'UTC'}`;
+        }
+
+        dialog.classList.add('show');
+    },
+
+    createTimezoneDialog() {
+        if (document.getElementById('timezoneDialog')) return;
+
+        const dialogHTML = `
+            <div class="timezone-dialog" id="timezoneDialog" role="dialog" aria-modal="true" aria-label="时区设置">
+                <div class="timezone-dialog-overlay"></div>
+                <div class="timezone-dialog-content">
+                    <div class="timezone-dialog-header">
+                        <h3>时区</h3>
+                        <button class="timezone-dialog-close" id="timezoneDialogClose" aria-label="关闭时区设置">
+                            <svg viewBox="0 0 24 24" width="16" height="16">
+                                <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="timezone-dialog-body">
+                        <div class="timezone-summary" id="timezoneSummary"></div>
+                        <label class="timezone-option">
+                            <input type="radio" name="timezoneMode" value="server">
+                            <span>跟随服务端</span>
+                        </label>
+                        <label class="timezone-option">
+                            <input type="radio" name="timezoneMode" value="browser">
+                            <span>跟随当前浏览器</span>
+                        </label>
+                        <label class="timezone-option timezone-option-custom">
+                            <input type="radio" name="timezoneMode" value="custom">
+                            <span>自定义</span>
+                        </label>
+                        <input class="timezone-custom-input" id="timezoneCustomValue" type="text" placeholder="Asia/Shanghai" autocomplete="off">
+                    </div>
+                    <div class="timezone-dialog-actions">
+                        <button class="timezone-text-button" id="timezoneCancelBtn" type="button">取消</button>
+                        <button class="timezone-tonal-button" id="timezoneSaveBtn" type="button">保存</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', dialogHTML);
+
+        const close = () => this.hideTimezoneDialog();
+        document.getElementById('timezoneDialogClose')?.addEventListener('click', close);
+        document.getElementById('timezoneCancelBtn')?.addEventListener('click', close);
+        document.querySelector('#timezoneDialog .timezone-dialog-overlay')?.addEventListener('click', close);
+        document.getElementById('timezoneSaveBtn')?.addEventListener('click', () => this.saveTimezonePreference());
+    },
+
+    hideTimezoneDialog() {
+        document.getElementById('timezoneDialog')?.classList.remove('show');
+    },
+
+    saveTimezonePreference() {
+        const checked = document.querySelector('#timezoneDialog input[name="timezoneMode"]:checked');
+        const mode = checked?.value || 'server';
+        const customValue = document.getElementById('timezoneCustomValue')?.value?.trim() || '';
+
+        try {
+            const active = Utils.setTimeZonePreference(mode, customValue);
+            this.hideTimezoneDialog();
+            UI.showSuccess(`时区已切换为 ${active}`);
+            if (window.MessageHandler && typeof MessageHandler.loadMessages === 'function') {
+                MessageHandler.loadMessages(false);
+            }
+            if (window.SearchAPI && typeof SearchAPI.clearCache === 'function') {
+                SearchAPI.clearCache();
+            }
+        } catch (error) {
+            UI.showError(error.message || '时区设置失败');
         }
     },
 

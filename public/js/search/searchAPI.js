@@ -153,8 +153,7 @@ const SearchAPI = {
 
         return results.data.map(item => {
             // 格式化时间戳
-            const timestamp = new Date(item.timestamp);
-            const formattedTime = this.formatTimestamp(timestamp);
+            const formattedTime = Utils.formatTime(item.timestamp);
 
             // 获取文件图标
             let icon = '💬';
@@ -202,6 +201,10 @@ const SearchAPI = {
 
     // 格式化时间戳
     formatTimestamp(timestamp) {
+        if (window.Utils && typeof Utils.formatTime === 'function') {
+            return Utils.formatTime(timestamp);
+        }
+
         const now = new Date();
         const date = new Date(timestamp);
         const diffMs = now.getTime() - date.getTime();
@@ -249,4 +252,4 @@ if (typeof window !== 'undefined') {
 // 模块导出
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = SearchAPI;
-} 
+}

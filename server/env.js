@@ -21,6 +21,14 @@ function resolvePath(value, fallback) {
   return path.resolve(process.cwd(), value || fallback)
 }
 
+function getMachineTimezone() {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
+  } catch {
+    return 'UTC'
+  }
+}
+
 export function loadEnv() {
   const env = {
     NODE_ENV: process.env.NODE_ENV || 'development',
@@ -35,6 +43,10 @@ export function loadEnv() {
     SESSION_EXPIRE_HOURS: process.env.SESSION_EXPIRE_HOURS || '24',
     MAX_FILE_SIZE_MB: readInt('MAX_FILE_SIZE_MB', 100),
     MESSAGE_DEVICE_INFO_ENABLED: readBool('MESSAGE_DEVICE_INFO_ENABLED', false),
+    MESSAGE_GROUP_WINDOW_MINUTES: readInt('MESSAGE_GROUP_WINDOW_MINUTES', 15),
+    APP_TIMEZONE: process.env.APP_TIMEZONE || getMachineTimezone(),
+    SERVER_TIMEZONE: getMachineTimezone(),
+    ALLOW_CLIENT_TIMEZONE_OVERRIDE: readBool('ALLOW_CLIENT_TIMEZONE_OVERRIDE', true),
     AI_ENABLED: readBool('AI_ENABLED', false),
     IMAGE_GEN_ENABLED: readBool('IMAGE_GEN_ENABLED', false),
     AI_CHAT_BASE_URL: process.env.AI_CHAT_BASE_URL || '',

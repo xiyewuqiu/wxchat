@@ -9,7 +9,6 @@ const MessageRenderer = {
         const deviceMeta = this.getDeviceMeta(message, isOwn);
 
         const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${isOwn ? 'own' : 'other'}`;
         messageDiv.dataset.messageId = message.id;
         messageDiv.dataset.timestamp = message.timestamp;
 
@@ -19,7 +18,31 @@ const MessageRenderer = {
             messageDiv.innerHTML = this.renderFileMessageContent(message, deviceMeta, time);
         }
 
+        this.applyMessagePresentation(messageDiv, message, currentDeviceId);
         return messageDiv;
+    },
+
+    // 应用随相邻消息变化的展示状态
+    applyMessagePresentation(messageElement, message, currentDeviceId) {
+        if (!messageElement || !message) return;
+
+        const isOwn = message.device_id === currentDeviceId;
+        const groupPosition = message._groupPosition || 'single';
+        const colorIndex = message._deviceColorIndex || Utils.getDeviceColorIndex(message.device_id);
+
+        messageElement.className = [
+            'message',
+            isOwn ? 'own' : 'other',
+            `group-${groupPosition}`,
+            `device-color-${colorIndex}`
+        ].join(' ');
+        messageElement.dataset.messageId = message.id;
+        messageElement.dataset.timestamp = message.timestamp || '';
+        messageElement.dataset.deviceId = message.device_id || '';
+        messageElement.dataset.groupPosition = groupPosition;
+        messageElement.dataset.deviceColor = String(colorIndex);
+
+        this.updateMessageTime(messageElement, message.timestamp);
     },
 
     // 渲染文本消息内容

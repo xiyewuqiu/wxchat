@@ -176,8 +176,11 @@ const UI = {
         // 确保顶部加载指示器存在
         this.ensureTopLoadingIndicator();
 
+        const currentDeviceId = Utils.getDeviceId();
+        const preparedMessages = this.prepareMessagesForDisplay(messages, currentDeviceId);
+
         // 创建新的消息ID集合
-        const newMessageIds = new Set(messages.map(msg => msg.id));
+        const newMessageIds = new Set(preparedMessages.map(msg => msg.id));
 
         // 移除不存在的消息
         this.messageCache.forEach((element, messageId) => {
@@ -190,14 +193,18 @@ const UI = {
         // 批量处理新消息
         const fragment = document.createDocumentFragment();
         const newElements = [];
-        const currentDeviceId = Utils.getDeviceId();
-
-        messages.forEach((message) => {
+        preparedMessages.forEach((message) => {
             if (!this.messageCache.has(message.id)) {
                 const messageElement = this.createMessageElement(message, currentDeviceId);
                 fragment.appendChild(messageElement);
                 this.messageCache.set(message.id, messageElement);
                 newElements.push(messageElement);
+            } else {
+                MessageRenderer.applyMessagePresentation(
+                    this.messageCache.get(message.id),
+                    message,
+                    currentDeviceId
+                );
             }
         });
 
@@ -207,7 +214,7 @@ const UI = {
 
         // 加载需要图片的消息
         requestAnimationFrame(() => {
-            messages.forEach(message => {
+            preparedMessages.forEach(message => {
                 if (message._needsImageLoad) {
                     const { r2Key, safeId } = message._needsImageLoad;
                     ImageLoader.load(r2Key, safeId);
@@ -222,6 +229,48 @@ const UI = {
             });
         }
     },
+
+    // 为消息计算连续分组和设备颜色
+    prepareMessagesForDisplay(messages, currentDeviceId) {
+        const groupWindowMs = Math.max(1, Number(CONFIG.MESSAGE?.GROUP_WINDOW_MINUTES) || 15) * 60 * 1000;
+
+        const canAttach = (previous, current) => {
+            if (!previous || !current) return false;
+            if (previous.device_id !== current.device_id) return false;
+
+            const previousDate = Utils.parseTimestamp(previous.timestamp);
+            const currentDate = Utils.parseTimestamp(current.timestamp);
+            if (Number.isNaN(previousDate.getTime()) || Number.isNaN(currentDate.getTime())) return false;
+
+            const gap = currentDate.getTime() - previousDate.getTime();
+            if (gap < 0 || gap > groupWindowMs) return false;
+
+            return Utils.getTimeZoneDateKey(previousDate) === Utils.getTimeZoneDateKey(currentDate);
+        };
+
+        return messages.map((message, index) => {
+            const previous = messages[index - 1];
+            const next = messages[index + 1];
+            const attachPrevious = canAttach(previous, message);
+            const attachNext = canAttach(message, next);
+
+            let groupPosition = 'single';
+            if (attachPrevious && attachNext) {
+                groupPosition = 'middle';
+            } else if (attachPrevious) {
+                groupPosition = 'end';
+            } else if (attachNext) {
+                groupPosition = 'start';
+            }
+
+            return {
+                ...message,
+                _groupPosition: groupPosition,
+                _deviceColorIndex: Utils.getDeviceColorIndex(message.device_id),
+                _isOwn: message.device_id === currentDeviceId
+            };
+        });
+    },
     
     // 创建消息DOM元素（委托给 MessageRenderer）
     createMessageElement(message, currentDeviceId) {
@@ -230,30 +279,8 @@ const UI = {
     
     // 添加新消息到列表（增量方式）
     addMessage(message) {
-        const wasAtBottom = this.isAtBottom();
-
-        if (this.elements.messageList.querySelector('.empty-state')) {
-            this.elements.messageList.innerHTML = '';
-            this.messageCache.clear();
-        }
-
-        if (this.messageCache.has(message.id)) return;
-
-        const currentDeviceId = Utils.getDeviceId();
-        const messageElement = this.createMessageElement(message, currentDeviceId);
-
-        this.elements.messageList.appendChild(messageElement);
-        this.messageCache.set(message.id, messageElement);
-
-        if (message._needsImageLoad) {
-            requestAnimationFrame(() => {
-                ImageLoader.load(message._needsImageLoad.r2Key, message._needsImageLoad.safeId);
-            });
-        }
-
-        requestAnimationFrame(() => messageElement.classList.add('fade-in'));
-
-        if (wasAtBottom) this.scrollToBottom();
+        const cachedMessages = window.MessageHandler?.lastMessages || [];
+        this.renderMessages([...cachedMessages, message], this.isAtBottom());
     },
 
     // 添加AI消息到列表

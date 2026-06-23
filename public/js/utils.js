@@ -34,38 +34,148 @@ const Utils = {
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     },
+
+    // 解析数据库/API时间。无时区的SQLite时间按UTC处理。
+    parseTimestamp(timestamp) {
+        if (timestamp instanceof Date) return timestamp;
+        if (typeof timestamp === 'number') return new Date(timestamp);
+        if (typeof timestamp !== 'string') return new Date(timestamp);
+
+        const trimmed = timestamp.trim();
+        if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/.test(trimmed)) {
+            return new Date(trimmed.replace(' ', 'T') + 'Z');
+        }
+        if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?$/.test(trimmed)) {
+            return new Date(trimmed + 'Z');
+        }
+        return new Date(trimmed);
+    },
+
+    getBrowserTimeZone() {
+        return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+    },
+
+    isValidTimeZone(timeZone) {
+        if (!timeZone || typeof timeZone !== 'string') return false;
+        try {
+            Intl.DateTimeFormat('en-US', { timeZone }).format(new Date());
+            return true;
+        } catch {
+            return false;
+        }
+    },
+
+    applyTimeZonePreference() {
+        const timezoneConfig = CONFIG.TIMEZONE || {};
+        const storedMode = localStorage.getItem(timezoneConfig.MODE_STORAGE_KEY) || timezoneConfig.MODE || 'server';
+        const storedValue = localStorage.getItem(timezoneConfig.VALUE_STORAGE_KEY) || '';
+        const canOverride = timezoneConfig.ALLOW_CLIENT_OVERRIDE !== false;
+
+        let mode = canOverride ? storedMode : 'server';
+        let active = timezoneConfig.DEFAULT || timezoneConfig.SERVER || 'UTC';
+
+        if (mode === 'browser') {
+            active = this.getBrowserTimeZone();
+        } else if (mode === 'custom' && this.isValidTimeZone(storedValue)) {
+            active = storedValue;
+        } else {
+            mode = 'server';
+            active = timezoneConfig.DEFAULT || timezoneConfig.SERVER || 'UTC';
+        }
+
+        CONFIG.TIMEZONE.MODE = mode;
+        CONFIG.TIMEZONE.CUSTOM = mode === 'custom' ? active : storedValue;
+        CONFIG.TIMEZONE.ACTIVE = this.isValidTimeZone(active) ? active : 'UTC';
+        return CONFIG.TIMEZONE.ACTIVE;
+    },
+
+    setTimeZonePreference(mode, value = '') {
+        if (!CONFIG.TIMEZONE.ALLOW_CLIENT_OVERRIDE && mode !== 'server') {
+            throw new Error('当前部署不允许覆盖时区');
+        }
+
+        if (mode === 'custom' && !this.isValidTimeZone(value)) {
+            throw new Error('无效的时区名称，请使用类似 Asia/Shanghai 的 IANA 时区');
+        }
+        if (!['server', 'browser', 'custom'].includes(mode)) {
+            throw new Error('无效的时区模式');
+        }
+
+        localStorage.setItem(CONFIG.TIMEZONE.MODE_STORAGE_KEY, mode);
+        localStorage.setItem(CONFIG.TIMEZONE.VALUE_STORAGE_KEY, mode === 'custom' ? value : '');
+        return this.applyTimeZonePreference();
+    },
+
+    getActiveTimeZone() {
+        if (!CONFIG.TIMEZONE.ACTIVE) {
+            return this.applyTimeZonePreference();
+        }
+        return CONFIG.TIMEZONE.ACTIVE;
+    },
+
+    getTimeZoneDateParts(date, timeZone = this.getActiveTimeZone()) {
+        const parts = new Intl.DateTimeFormat('en-CA', {
+            timeZone,
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        }).formatToParts(date);
+        const values = {};
+        parts.forEach(part => {
+            if (part.type !== 'literal') values[part.type] = part.value;
+        });
+        return values;
+    },
+
+    getTimeZoneDateKey(date, timeZone = this.getActiveTimeZone()) {
+        const parts = this.getTimeZoneDateParts(date, timeZone);
+        return `${parts.year}-${parts.month}-${parts.day}`;
+    },
     
     // 格式化时间
-    formatTime(timestamp) {
-        const date = new Date(timestamp);
+    formatTime(timestamp, options = {}) {
+        const date = this.parseTimestamp(timestamp);
+        if (Number.isNaN(date.getTime())) return '';
+
+        const timeZone = options.timeZone || this.getActiveTimeZone();
         const now = new Date();
-        const diff = now - date;
+        const todayKey = this.getTimeZoneDateKey(now, timeZone);
+        const dateKey = this.getTimeZoneDateKey(date, timeZone);
+        const yesterdayKey = this.getTimeZoneDateKey(new Date(now.getTime() - 24 * 60 * 60 * 1000), timeZone);
+        const timeFormat = {
+            timeZone,
+            hour: '2-digit',
+            minute: '2-digit'
+        };
         
         // 如果是今天
-        if (diff < 24 * 60 * 60 * 1000 && date.getDate() === now.getDate()) {
-            return date.toLocaleTimeString('zh-CN', {
-                hour: '2-digit',
-                minute: '2-digit'
-            });
+        if (dateKey === todayKey) {
+            return date.toLocaleTimeString('zh-CN', timeFormat);
         }
         
         // 如果是昨天
-        const yesterday = new Date(now);
-        yesterday.setDate(yesterday.getDate() - 1);
-        if (date.getDate() === yesterday.getDate()) {
-            return '昨天 ' + date.toLocaleTimeString('zh-CN', {
-                hour: '2-digit',
-                minute: '2-digit'
-            });
+        if (dateKey === yesterdayKey) {
+            return '昨天 ' + date.toLocaleTimeString('zh-CN', timeFormat);
         }
         
         // 其他日期
         return date.toLocaleString('zh-CN', {
+            timeZone,
             month: '2-digit',
             day: '2-digit',
             hour: '2-digit',
             minute: '2-digit'
         });
+    },
+
+    getDeviceColorIndex(deviceId) {
+        const value = String(deviceId || 'unknown-device');
+        let hash = 0;
+        for (let i = 0; i < value.length; i++) {
+            hash = ((hash << 5) - hash + value.charCodeAt(i)) | 0;
+        }
+        const colorCount = Math.max(1, Number(CONFIG.MESSAGE?.DEVICE_COLOR_COUNT) || 8);
+        return Math.abs(hash) % colorCount + 1;
     },
     
     // 获取文件图标 - 支持MIME类型和文件扩展名

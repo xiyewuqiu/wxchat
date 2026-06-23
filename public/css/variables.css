@@ -300,6 +300,31 @@
   --bubble-thinking-bg: var(--md-sys-color-surface-container-high);
   --bubble-thinking-text: var(--md-sys-color-on-surface-variant);
 
+  --device-color-1-bg: #eaf3ff;
+  --device-color-1-text: #12314f;
+  --device-color-1-accent: #2f80ed;
+  --device-color-2-bg: #fff0f4;
+  --device-color-2-text: #4f1427;
+  --device-color-2-accent: #d64b73;
+  --device-color-3-bg: #eef8ec;
+  --device-color-3-text: #183719;
+  --device-color-3-accent: #46a451;
+  --device-color-4-bg: #fff6df;
+  --device-color-4-text: #463108;
+  --device-color-4-accent: #c48916;
+  --device-color-5-bg: #f1efff;
+  --device-color-5-text: #2b2455;
+  --device-color-5-accent: #6f5bd8;
+  --device-color-6-bg: #e8f8f7;
+  --device-color-6-text: #103837;
+  --device-color-6-accent: #269c98;
+  --device-color-7-bg: #f5f1ea;
+  --device-color-7-text: #3c3020;
+  --device-color-7-accent: #9a7240;
+  --device-color-8-bg: #f0f2f5;
+  --device-color-8-text: #243140;
+  --device-color-8-accent: #65758b;
+
   --font-family: -apple-system, BlinkMacSystemFont, 'Google Sans', 'Segoe UI', 
     'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
   --font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
@@ -393,6 +418,31 @@
     --bubble-other-text: var(--md-sys-color-on-surface);
     --bubble-thinking-bg: var(--md-sys-color-surface-container-high);
     --bubble-thinking-text: var(--md-sys-color-on-surface-variant);
+
+    --device-color-1-bg: #18324f;
+    --device-color-1-text: #d7e8ff;
+    --device-color-1-accent: #83bfff;
+    --device-color-2-bg: #4a2432;
+    --device-color-2-text: #ffd8e3;
+    --device-color-2-accent: #ff9fbc;
+    --device-color-3-bg: #213b24;
+    --device-color-3-text: #d7f0d4;
+    --device-color-3-accent: #8bd98f;
+    --device-color-4-bg: #443515;
+    --device-color-4-text: #ffe7ad;
+    --device-color-4-accent: #f2c35d;
+    --device-color-5-bg: #312b59;
+    --device-color-5-text: #e5ddff;
+    --device-color-5-accent: #b8a9ff;
+    --device-color-6-bg: #163c3b;
+    --device-color-6-text: #c9efed;
+    --device-color-6-accent: #75d4d0;
+    --device-color-7-bg: #3c3124;
+    --device-color-7-text: #f1e2cc;
+    --device-color-7-accent: #d5b282;
+    --device-color-8-bg: #2e343d;
+    --device-color-8-text: #dbe3ed;
+    --device-color-8-accent: #a8b5c7;
 
     --color-gray-50: #1a1c19;
     --color-gray-100: #222421;
