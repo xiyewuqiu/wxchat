@@ -5,11 +5,14 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    environment:
+      TZ: ${TZ:-UTC}
     ports:
       - "127.0.0.1:18091:3000"
     volumes:
       - ./data:/app/data
       - ./uploads:/app/uploads
+      - /etc/localtime:/etc/localtime:ro
     healthcheck:
       test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:3000/login.html').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
       interval: 30s

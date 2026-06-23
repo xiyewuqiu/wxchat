@@ -245,11 +245,14 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    environment:
+      TZ: ${TZ:-UTC}
     ports:
       - "127.0.0.1:18091:3000"
     volumes:
       - ./data:/app/data
       - ./uploads:/app/uploads
+      - /etc/localtime:/etc/localtime:ro
 ```
 
 不要直接公开 `3000` 或 `18091`。
@@ -345,10 +348,12 @@ curl -i http://127.0.0.1:3000/login.html
 - 写 `.env.example`。
 - 初始化数据库。
 - 加健康检查。
+- 加宿主机时区同步：`TZ` 环境变量、`/etc/localtime` 只读挂载、`scripts/sync-host-timezone.sh`。
 
 验收：
 
 ```bash
+./scripts/sync-host-timezone.sh .env
 docker compose up -d --build
 curl -i http://127.0.0.1:3000/login.html
 docker compose logs --tail 100
@@ -362,6 +367,7 @@ docker compose logs --tail 100
 
 - 上传或 git clone 到 `/opt/wxchat/app`。
 - 写 `/opt/wxchat/.env`。
+- 运行 `./scripts/sync-host-timezone.sh .env`，让容器时区跟随 Server 4 宿主机。
 - 创建 `/opt/wxchat/data` 和 `/opt/wxchat/uploads`。
 - `docker compose up -d --build`。
 - 本机 curl 验证 `127.0.0.1:18091`。
@@ -432,4 +438,3 @@ curl -k -I https://110.42.235.46:18448/
 - 多房间 / 多账号
 - 大文件分片上传
 - 高级审计日志
-

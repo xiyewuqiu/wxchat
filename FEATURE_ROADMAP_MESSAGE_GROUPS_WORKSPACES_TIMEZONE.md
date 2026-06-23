@@ -116,6 +116,17 @@
 
 ## 阶段二：时区配置与显示修正
 
+状态：`已完成，持续补强部署兼容性`。
+
+已落地：
+
+- 自部署服务端读取 `APP_TIMEZONE`、`TZ`、`/etc/timezone`、`/etc/localtime`，并在启动日志输出当前服务端时区。
+- 前端默认跟随客户端/浏览器时区，支持服务端、浏览器、自定义 IANA 时区切换。
+- 自定义时区控件已改为可输入检索、可浏览选择的下拉框。
+- 搜索时间范围会携带当前显示时区，避免“今天/昨天”和消息展示不一致。
+- Docker Compose 已加入 `TZ` 环境变量和宿主机 `/etc/localtime` 只读挂载。
+- 新增 `scripts/sync-host-timezone.sh`，用于把宿主机时区同步到 `.env` 的 `TZ=`。
+
 ### 目标
 
 服务端默认读取部署机器的时区，前端可使用服务端时区显示消息，也可以允许用户切换显示时区。数据库时间存储保持统一，显示层负责转换。
@@ -132,6 +143,7 @@
 - `worker/routes/search.js`
 - `database/schema.sql`
 - 部署文档：`SELFHOST.md`
+- Docker 部署：`Dockerfile`、`docker-compose.yml`、`scripts/sync-host-timezone.sh`
 
 ### 设计原则
 
@@ -145,6 +157,7 @@
 
 新增环境变量：
 
+- `TZ`：Docker/Node 运行时使用的宿主机时区，推荐通过 `scripts/sync-host-timezone.sh` 写入 `.env`。
 - `APP_TIMEZONE`：实例默认显示时区，未设置时自部署读取机器时区。
 - `ALLOW_CLIENT_TIMEZONE_OVERRIDE`：是否允许前端覆盖显示时区，默认 `true`。
 
@@ -165,6 +178,7 @@
 5. `Utils.formatTime(timestamp, options)` 支持指定 `timeZone`。
 6. 修正 SQLite `CURRENT_TIMESTAMP` 返回格式的解析歧义，必要时在查询层转换为 ISO UTC。
 7. 搜索里的 `today/yesterday/week/month` 改成按配置时区计算边界，而不是直接用 SQLite `date('now')`。
+8. Docker Compose 挂载宿主机 `/etc/localtime` 并传入 `TZ`，部署前运行 `scripts/sync-host-timezone.sh .env` 同步宿主机时区。
 
 ### 验收标准
 
@@ -410,12 +424,15 @@ CREATE TABLE workspace_members (
 
 ### M2：时区可靠化
 
+状态：`已完成`。
+
 交付：
 
 - 服务端读取机器时区。
 - 环境变量覆盖。
 - 前端显示时区设置。
 - 搜索时间范围按目标时区计算。
+- Docker 容器时区默认跟随宿主机。
 
 预计时间：`1-2 天`。
 

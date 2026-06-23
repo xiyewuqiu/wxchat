@@ -41,6 +41,14 @@ JWT_SECRET=
 PUBLIC_BASE_URL=
 ```
 
+让 Docker 容器使用宿主机时区：
+
+```bash
+./scripts/sync-host-timezone.sh .env
+```
+
+脚本会读取宿主机 `timedatectl`、`/etc/timezone` 或 `/etc/localtime`，并把检测到的 IANA 时区写入 `.env` 的 `TZ=`。`docker-compose.yml` 会同时把 `TZ` 传给容器，并只读挂载宿主机 `/etc/localtime`。
+
 启动：
 
 ```bash
@@ -87,7 +95,7 @@ ALLOW_CLIENT_TIMEZONE_OVERRIDE=true
 
 `APP_TIMEZONE` 留空时使用部署机器时区；`ALLOW_CLIENT_TIMEZONE_OVERRIDE=false` 时，前端不能切换到浏览器或自定义时区，并会强制跟随服务端默认时区。
 
-在 Linux/Docker 中，推荐设置 `TZ=Asia/Shanghai` 或挂载正确的 `/etc/timezone`、`/etc/localtime`，这样 `/api/config` 中的 `timezone.serverTimezone` 可以反映部署机器时区。
+在 Linux/Docker 中，推荐运行 `./scripts/sync-host-timezone.sh .env`，或手动设置 `TZ=Asia/Shanghai`。Compose 会挂载宿主机 `/etc/localtime`，这样容器系统时区和 `/api/config` 中的 `timezone.serverTimezone` 可以跟宿主机保持一致。
 
 ## Server 4 OpenResty
 
