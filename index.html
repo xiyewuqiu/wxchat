@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+    <title>微信文件传输助手</title>
+
+    <!-- iOS Safari 专用优化 -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="微信文件传输助手" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#07c160" />
+    <meta name="background-color" content="#ffffff" />
+
+    <!-- Favicon / Apple Touch Icons -->
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💬</text></svg>"
+    />
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/ios/32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/ios/16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/ios/180.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/ios/152.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="/icons/ios/144.png" />
+    <link rel="apple-touch-icon" sizes="120x120" href="/icons/ios/120.png" />
+
+    <meta name="description" content="基于 Cloudflare Workers 的微信文件传输助手 Web 应用" />
+    <meta name="keywords" content="文件传输,微信,Cloudflare,Workers,PWA,React" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

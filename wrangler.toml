@@ -1,11 +1,13 @@
 name = "wxchat"
-main = "worker/index.js"
-compatibility_date = "2025-06-17"
+main = "worker/index.ts"
+compatibility_date = "2026-10-01"
 
-# 静态资源配置 - 使用正确的格式
+# 静态资源配置 - 托管 Vite 构建产物
+# SPA 路由回退到 index.html，由前端路由接管
 [assets]
-directory = "./public"
+directory = "./dist"
 binding = "ASSETS"
+not_found_handling = "single-page-application"
 
 # D1 数据库绑定
 [[d1_databases]]
@@ -28,5 +30,3 @@ JWT_SECRET = "your-super-secret-jwt-key-change-this-in-production"
 SESSION_EXPIRE_HOURS = "24"
 # 最大登录尝试次数
 MAX_LOGIN_ATTEMPTS = "5"
-
-

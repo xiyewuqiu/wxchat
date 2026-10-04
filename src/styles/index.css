@@ -1,0 +1,163 @@
+/* 全局样式入口 —— 设计系统按依赖顺序导入 */
+@import './variables.css';
+@import './base.css';
+@import './layout.css';
+@import './messages.css';
+@import './input.css';
+@import './ai-chat.css';
+@import './modals.css';
+@import './auth-page.css';
+@import './mobile.css';
+
+/* React 应用挂载根节点：撑满视口，避免首帧闪动 */
+#root {
+  min-height: 100vh;
+  min-height: calc(var(--vh, 1vh) * 100);
+}
+
+/* 加载占位（路由懒加载期间的兜底视图） */
+.app-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  color: var(--color-gray-500);
+  font-size: 14px;
+  gap: 10px;
+}
+
+/* 通用模态容器：与图片生成弹窗保持一致的外观 */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal);
+  padding: 20px;
+  animation: fadeIn 150ms ease-out;
+}
+
+.modal-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 420px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modalSlideIn 250ms ease;
+  padding: 20px;
+}
+
+.modal-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--color-gray-900);
+  margin-bottom: 12px;
+}
+
+.modal-message {
+  font-size: var(--text-base);
+  color: var(--color-gray-700);
+  line-height: var(--leading-relaxed);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.modal-input {
+  width: 100%;
+  margin-top: 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-md);
+  font-size: 16px;
+  background: var(--color-white);
+  color: var(--color-gray-900);
+}
+
+.modal-input:focus {
+  border-color: var(--color-primary);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.modal-actions button {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  transition: opacity var(--duration-fast) ease;
+}
+
+.modal-actions button:active {
+  opacity: 0.85;
+}
+
+.modal-btn-secondary {
+  background: var(--color-gray-100);
+  color: var(--color-gray-700);
+}
+
+.modal-btn-primary {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.modal-btn-primary:disabled {
+  background: var(--color-gray-300);
+  cursor: not-allowed;
+}
+
+/* Toast 容器：多个提示纵向堆叠，互不遮挡 */
+.toast-container {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: var(--z-max);
+  pointer-events: none;
+  width: max-content;
+  max-width: 90vw;
+}
+
+.toast-container .toast-notification {
+  position: static;
+  transform: translateY(-20px);
+  pointer-events: auto;
+}
+
+.toast-container .toast-notification.show {
+  transform: translateY(0);
+}
+
+@media (prefers-color-scheme: dark) {
+  .modal-card {
+    background: #1e1e1e;
+    color: var(--color-gray-900);
+  }
+  .modal-input {
+    background: #333;
+    border-color: #444;
+    color: #f0f0f0;
+  }
+  .modal-btn-secondary {
+    background: #333;
+    color: #ccc;
+  }
+}
+
+@media (min-width: 768px) {
+  .modal-overlay {
+    align-items: center;
+  }
+}
