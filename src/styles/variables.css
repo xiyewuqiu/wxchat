@@ -1,125 +1,96 @@
 /* ============================================
-   Design System - CSS Variables & Tokens
-   极致现代全栈设计系统 (Ultra-Modern Glass & WeChat Hybrid)
+   Design System - Balanced, Premium & Restrained
+   赏心悦目 · 克制现代 · 微信与 iOS 原生质感规范
    ============================================ */
 
 :root {
-  /* ---- Brand & Primary Colors ---- */
+  /* ---- 品牌主色 (温润翡翠绿，克制不刺眼) ---- */
   --color-primary: #07c160;
-  --color-primary-light: #26d476;
-  --color-primary-dark: #059b4c;
-  --color-primary-deep: #037a3a;
-  --color-primary-glow: rgba(7, 193, 96, 0.35);
-  --color-primary-50: rgba(7, 193, 96, 0.05);
-  --color-primary-100: rgba(7, 193, 96, 0.1);
-  --color-primary-200: rgba(7, 193, 96, 0.18);
-  --color-primary-300: rgba(7, 193, 96, 0.28);
+  --color-primary-hover: #06ad56;
+  --color-primary-active: #059b4c;
+  --color-primary-light: #25d366;
+  --color-primary-subtle: rgba(7, 193, 96, 0.08);
+  --color-primary-border: rgba(7, 193, 96, 0.25);
 
-  /* ---- Accent & AI Aurora Colors ---- */
-  --color-accent: #3b82f6;
-  --color-accent-light: #60a5fa;
-  --color-accent-dark: #2563eb;
-  --color-accent-glow: rgba(59, 130, 246, 0.35);
+  /* ---- 辅助与功能色 ---- */
+  --color-accent: #2b7fff;
+  --color-accent-subtle: rgba(43, 127, 255, 0.08);
 
-  --color-ai-purple: #8b5cf6;
-  --color-ai-indigo: #6366f1;
-  --color-ai-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
-  --color-ai-soft: rgba(139, 92, 246, 0.12);
-  --color-ai-border: rgba(139, 92, 246, 0.25);
+  --color-ai-purple: #7c3aed;
+  --color-ai-indigo: #4f46e5;
+  --color-ai-subtle: rgba(124, 58, 237, 0.08);
+  --color-ai-border: rgba(124, 58, 237, 0.2);
 
-  /* ---- Status Colors ---- */
-  --color-danger: #ef4444;
-  --color-danger-light: #f87171;
-  --color-danger-dark: #dc2626;
-  --color-danger-bg: rgba(239, 68, 68, 0.08);
-  --color-danger-border: rgba(239, 68, 68, 0.2);
+  --color-danger: #fa5151;
+  --color-danger-subtle: rgba(250, 81, 81, 0.08);
+  --color-warning: #fa9d3b;
+  --color-warning-subtle: rgba(250, 157, 59, 0.1);
+  --color-success: #07c160;
 
-  --color-warning: #f59e0b;
-  --color-warning-light: #fbbf24;
-  --color-warning-bg: rgba(245, 158, 11, 0.1);
-  --color-warning-border: rgba(245, 158, 11, 0.25);
-
-  --color-success: #10b981;
-  --color-success-bg: rgba(16, 185, 129, 0.1);
-  --color-success-border: rgba(16, 185, 129, 0.25);
-
-  /* ---- Neutral Slate Colors ---- */
+  /* ---- 中性灰度阶梯 (温和细腻，无泛蓝刺眼光) ---- */
   --color-white: #ffffff;
   --color-black: #000000;
-  --color-gray-50: #f8fafc;
-  --color-gray-100: #f1f5f9;
-  --color-gray-150: #e8eef5;
-  --color-gray-200: #e2e8f0;
-  --color-gray-300: #cbd5e1;
-  --color-gray-400: #94a3b8;
-  --color-gray-500: #64748b;
-  --color-gray-600: #475569;
-  --color-gray-700: #334155;
-  --color-gray-800: #1e293b;
-  --color-gray-900: #0f172a;
+  --color-gray-50: #fafafa;
+  --color-gray-100: #f2f2f2;
+  --color-gray-200: #e5e5e5;
+  --color-gray-300: #d9d9d9;
+  --color-gray-400: #b2b2b2;
+  --color-gray-500: #8c8c8c;
+  --color-gray-600: #666666;
+  --color-gray-700: #404040;
+  --color-gray-800: #262626;
+  --color-gray-900: #191919;
 
-  /* ---- Backgrounds & Glassmorphism ---- */
-  --bg-app: #f1f5f9;
-  --bg-chat: #f4f6f8;
-  --bg-input: rgba(255, 255, 255, 0.88);
+  /* ---- 背景层次 (微信原生护眼米灰底色) ---- */
+  --bg-app: #ededed;
+  --bg-chat: #ededed;
+  --bg-header: rgba(247, 247, 247, 0.94);
+  --bg-input: rgba(247, 247, 247, 0.96);
   --bg-card: #ffffff;
-  --bg-card-subtle: #f8fafc;
-  --bg-overlay: rgba(15, 23, 42, 0.45);
-  
-  --glass-bg: rgba(255, 255, 255, 0.78);
-  --glass-bg-subtle: rgba(255, 255, 255, 0.6);
-  --glass-bg-strong: rgba(255, 255, 255, 0.92);
-  --glass-border: rgba(255, 255, 255, 0.65);
-  --glass-border-subtle: rgba(0, 0, 0, 0.06);
-  --glass-blur: blur(16px);
-  --glass-blur-lg: blur(24px);
+  --bg-card-subtle: #f7f7f7;
+  --bg-overlay: rgba(0, 0, 0, 0.5);
 
-  /* ---- Message Bubbles ---- */
-  --bubble-own: linear-gradient(135deg, #07c160 0%, #05a850 100%);
-  --bubble-own-text: #ffffff;
-  --bubble-own-meta: rgba(255, 255, 255, 0.85);
-  --bubble-own-shadow: 0 3px 12px rgba(7, 193, 96, 0.22);
+  --glass-blur: blur(20px);
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --border-divider: rgba(0, 0, 0, 0.06);
+
+  /* ---- 微信经典消息气泡 (极度舒适护眼) ---- */
+  --bubble-own: #95ec69;
+  --bubble-own-text: #000000;
+  --bubble-own-time: rgba(0, 0, 0, 0.45);
 
   --bubble-other: #ffffff;
-  --bubble-other-text: #0f172a;
-  --bubble-other-border: rgba(226, 232, 240, 0.8);
-  --bubble-other-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+  --bubble-other-text: #191919;
+  --bubble-other-time: rgba(0, 0, 0, 0.45);
 
-  --bubble-ai: linear-gradient(135deg, #1e1b4b 0%, #2e1065 100%);
-  --bubble-ai-light: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
-  --bubble-ai-text: #ffffff;
-  --bubble-thinking-bg: rgba(241, 245, 249, 0.85);
-  --bubble-thinking-border: rgba(203, 213, 225, 0.6);
-  --bubble-thinking-text: #475569;
+  --bubble-ai: #ffffff;
+  --bubble-ai-text: #191919;
+  --bubble-thinking-bg: #f2f2f2;
+  --bubble-thinking-text: #666666;
 
-  /* ---- Typography ---- */
-  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'PingFang SC',
-    'Hiragino Sans GB', 'Microsoft YaHei', 'Segoe UI', Roboto, sans-serif;
-  --font-display: 'Outfit', var(--font-family);
+  /* ---- 字体与排印 ---- */
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Inter', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Consolas', monospace;
 
-  --text-2xs: 0.65rem;
+  --text-2xs: 0.6875rem;
   --text-xs: 0.75rem;
   --text-sm: 0.84rem;
   --text-base: 0.9375rem;
   --text-md: 1rem;
   --text-lg: 1.125rem;
   --text-xl: 1.25rem;
-  --text-2xl: 1.5rem;
-  --text-3xl: 1.875rem;
-  --text-4xl: 2.25rem;
+  --text-2xl: 1.45rem;
 
   --font-normal: 400;
   --font-medium: 500;
   --font-semibold: 600;
   --font-bold: 700;
 
-  --leading-tight: 1.2;
-  --leading-normal: 1.5;
-  --leading-relaxed: 1.65;
+  --leading-normal: 1.45;
+  --leading-relaxed: 1.6;
 
-  /* ---- Spacing ---- */
-  --space-0: 0;
+  /* ---- 间距与圆角 (圆润克制) ---- */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -127,116 +98,83 @@
   --space-5: 1.25rem;
   --space-6: 1.5rem;
   --space-8: 2rem;
-  --space-10: 2.5rem;
-  --space-12: 3rem;
 
-  /* ---- Border Radius (Squircle Continuous) ---- */
-  --radius-xs: 6px;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-  --radius-2xl: 24px;
-  --radius-3xl: 32px;
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-2xl: 22px;
   --radius-full: 9999px;
 
-  /* ---- High-End Shadows ---- */
-  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
-  --shadow-sm: 0 2px 4px rgba(15, 23, 42, 0.05), 0 1px 2px rgba(15, 23, 42, 0.03);
-  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.04);
-  --shadow-lg: 0 12px 28px rgba(15, 23, 42, 0.08), 0 4px 10px rgba(15, 23, 42, 0.04);
-  --shadow-xl: 0 20px 40px rgba(15, 23, 42, 0.12), 0 8px 16px rgba(15, 23, 42, 0.05);
-  --shadow-2xl: 0 28px 64px rgba(15, 23, 42, 0.16);
-  --shadow-glow: 0 0 24px var(--color-primary-glow);
-  --shadow-glow-ai: 0 0 24px rgba(139, 92, 246, 0.35);
+  /* ---- 自然微阴影 (绝不生硬) ---- */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 16px 36px rgba(0, 0, 0, 0.16);
 
-  /* ---- Transitions & Springs ---- */
-  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
-
-  --duration-fast: 150ms;
-  --duration-normal: 250ms;
-  --duration-slow: 400ms;
-
-  /* ---- Z-Index Scale ---- */
-  --z-base: 0;
-  --z-dropdown: 100;
-  --z-sticky: 200;
-  --z-overlay: 500;
-  --z-modal: 1000;
-  --z-popover: 1500;
-  --z-toast: 2000;
-  --z-max: 9999;
-
-  /* ---- Layout Dimensions ---- */
-  --app-max-width: 580px;
-  --header-height: 60px;
-  --input-min-height: 48px;
-
-  /* ---- Safe Areas ---- */
+  /* ---- 尺寸规范 ---- */
+  --app-max-width: 620px;
+  --header-height: 54px;
   --safe-top: env(safe-area-inset-top, 0px);
-  --safe-right: env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --safe-left: env(safe-area-inset-left, 0px);
-
   --vh: 1vh;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 240ms;
 }
 
 /* ============================================
-   Dark Mode System (Ultra Sleek OLED & Dark Slate)
+   Dark Mode (OLED 深邃纯黑与岩灰沉浸式)
    ============================================ */
 @media (prefers-color-scheme: dark) {
   :root {
     --color-primary: #07c160;
-    --color-primary-light: #2ed573;
-    --color-primary-dark: #059b4c;
-    --color-primary-glow: rgba(7, 193, 96, 0.45);
+    --color-primary-hover: #06ad56;
+    --color-primary-active: #059b4c;
+    --color-primary-subtle: rgba(7, 193, 96, 0.15);
 
-    --color-gray-50: #0b0f19;
-    --color-gray-100: #111827;
-    --color-gray-150: #162032;
-    --color-gray-200: #1f293d;
-    --color-gray-300: #334155;
-    --color-gray-400: #64748b;
-    --color-gray-500: #94a3b8;
-    --color-gray-600: #cbd5e1;
-    --color-gray-700: #e2e8f0;
-    --color-gray-800: #f1f5f9;
-    --color-gray-900: #f8fafc;
+    --color-gray-50: #141414;
+    --color-gray-100: #1f1f1f;
+    --color-gray-200: #2b2b2b;
+    --color-gray-300: #3b3b3b;
+    --color-gray-400: #666666;
+    --color-gray-500: #8c8c8c;
+    --color-gray-600: #b2b2b2;
+    --color-gray-700: #d9d9d9;
+    --color-gray-800: #f0f0f0;
+    --color-gray-900: #ffffff;
 
-    --bg-app: #080b11;
-    --bg-chat: #0b0f17;
-    --bg-input: rgba(17, 24, 39, 0.85);
-    --bg-card: #111827;
-    --bg-card-subtle: #162032;
-    --bg-overlay: rgba(0, 0, 0, 0.72);
+    --bg-app: #111111;
+    --bg-chat: #111111;
+    --bg-header: rgba(22, 22, 22, 0.94);
+    --bg-input: rgba(22, 22, 22, 0.96);
+    --bg-card: #1c1c1c;
+    --bg-card-subtle: #242424;
+    --bg-overlay: rgba(0, 0, 0, 0.65);
 
-    --glass-bg: rgba(17, 24, 39, 0.82);
-    --glass-bg-subtle: rgba(17, 24, 39, 0.65);
-    --glass-bg-strong: rgba(17, 24, 39, 0.95);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --glass-border-subtle: rgba(255, 255, 255, 0.05);
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-divider: rgba(255, 255, 255, 0.06);
 
-    --bubble-own: linear-gradient(135deg, #059b4c 0%, #037a3a 100%);
+    --bubble-own: #275e3a;
     --bubble-own-text: #ffffff;
-    --bubble-own-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    --bubble-own-time: rgba(255, 255, 255, 0.6);
 
-    --bubble-other: #182234;
-    --bubble-other-text: #f1f5f9;
-    --bubble-other-border: rgba(255, 255, 255, 0.06);
-    --bubble-other-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --bubble-other: #262626;
+    --bubble-other-text: #e6e6e6;
+    --bubble-other-time: rgba(255, 255, 255, 0.45);
 
-    --bubble-ai: linear-gradient(135deg, #1e1b4b 0%, #2e1065 100%);
-    --bubble-thinking-bg: #141c2c;
-    --bubble-thinking-border: rgba(255, 255, 255, 0.08);
-    --bubble-thinking-text: #94a3b8;
+    --bubble-ai: #232234;
+    --bubble-ai-text: #f0f0f0;
+    --bubble-thinking-bg: #1a1a1a;
+    --bubble-thinking-text: #999999;
 
     --shadow-xs: none;
-    --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.45);
-    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
-    --shadow-xl: 0 20px 48px rgba(0, 0, 0, 0.7);
-    --shadow-2xl: 0 28px 72px rgba(0, 0, 0, 0.85);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+    --shadow-xl: 0 16px 36px rgba(0, 0, 0, 0.6);
   }
 }

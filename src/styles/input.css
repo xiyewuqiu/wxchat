@@ -1,300 +1,201 @@
 /* ============================================
-   Floating Island Composer, Input Bar & Upload Progress
+   Input Area - WeChat Classic & Mobile Ergonomics
+   微信经典输入架构 · 移动端无缝沉浸 · 触控舒适
    ============================================ */
 
-/* 悬浮岛屿式输入栏底座 */
-.input-container-island {
-  padding: 10px 14px;
-  background: var(--glass-bg-strong);
+/* 底部输入栏容器 */
+.wechat-input-container {
+  background: var(--bg-input);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
-  border-top: 1px solid var(--color-gray-200);
+  border-top: 1px solid var(--border-divider);
+  padding: 8px 12px calc(8px + var(--safe-bottom));
   position: sticky;
   bottom: 0;
   z-index: var(--z-sticky);
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding-bottom: calc(10px + var(--safe-bottom));
-  transition: all var(--duration-normal);
+  gap: 6px;
+  user-select: none;
 }
 
-.input-container-island.is-ai-mode {
-  border-top: 2px solid var(--color-ai-purple);
-  box-shadow: 0 -4px 20px rgba(139, 92, 246, 0.15);
-}
-
-/* 顶部 AI 浮动小药丸 */
-.input-ai-floating-pill {
-  align-self: center;
-  display: flex;
+/* AI 伴随模式微弱提示标签 */
+.wechat-ai-bar {
+  display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: var(--color-ai-gradient);
-  color: #ffffff;
-  padding: 3px 12px;
-  border-radius: var(--radius-full);
-  font-size: var(--text-xs);
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-  animation: slideUpFade 0.25s var(--ease-spring);
-}
-
-.input-ai-floating-pill:hover {
-  transform: translateY(-1px);
-}
-
-.ai-pill-close {
-  margin-left: 4px;
-  font-size: 1rem;
-  opacity: 0.8;
-}
-
-/* 上传进度卡片 */
-.upload-progress-card {
-  background: var(--color-primary-50);
-  border: 1px solid var(--color-primary-200);
-  border-radius: var(--radius-lg);
-  padding: 10px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  animation: slideUpFade 0.25s var(--ease-spring);
-}
-
-.upload-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: var(--text-xs);
-  font-weight: 600;
-  color: var(--color-primary-dark);
-}
-
-.upload-card-title {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.upload-percentage {
-  font-family: var(--font-mono);
-}
-
-.upload-file-label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  align-self: flex-start;
+  padding: 2px 8px;
+  background: var(--color-ai-subtle);
+  border: 1px solid var(--color-ai-border);
+  border-radius: var(--radius-xs);
   font-size: var(--text-2xs);
-  color: var(--color-gray-600);
+  color: var(--color-ai-purple);
+  font-weight: 500;
+  cursor: pointer;
 }
 
-.upload-track {
-  width: 100%;
-  height: 4px;
-  background: var(--color-primary-100);
-  border-radius: 2px;
+.wechat-ai-bar .ai-close-btn {
+  font-size: 14px;
+  margin-left: 2px;
+  opacity: 0.6;
+}
+
+/* 上传流线进度条 */
+.wechat-upload-strip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: var(--color-primary-subtle);
+  border-radius: var(--radius-xs);
+  font-size: var(--text-2xs);
+  color: var(--color-primary-dark);
+  position: relative;
   overflow: hidden;
 }
 
-.upload-bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
-  border-radius: 2px;
+.strip-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.strip-pct {
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.strip-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: var(--color-primary);
   transition: width 0.2s ease;
 }
 
-/* 核心输入框表单包装 */
-.composer-form {
-  width: 100%;
-}
-
-.composer-wrapper {
+/* 核心输入行 */
+.wechat-input-row {
   display: flex;
   align-items: flex-end;
-  gap: 6px;
-  background: var(--bg-card);
-  border: 1px solid var(--color-gray-300);
-  border-radius: var(--radius-xl);
-  padding: 4px 6px;
-  box-shadow: var(--shadow-sm);
-  transition: all var(--duration-fast);
-}
-
-.composer-wrapper:focus-within {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-100);
-}
-
-.input-container-island.is-ai-mode .composer-wrapper:focus-within {
-  border-color: var(--color-ai-purple);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
-}
-
-/* 操作图标按键 */
-.composer-action-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-md);
-  color: var(--color-gray-500);
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--duration-fast);
-}
-
-.composer-action-btn:hover {
-  background: var(--color-gray-100);
-  color: var(--color-gray-800);
-}
-
-/* 自适应多行文本域 */
-.composer-textarea-box {
-  flex: 1;
-  min-height: 36px;
-  display: flex;
-  align-items: center;
-  padding: 4px 6px;
-}
-
-.composer-textarea-box textarea {
+  gap: 8px;
   width: 100%;
-  min-height: 24px;
-  max-height: 130px;
-  resize: none;
-  font-family: inherit;
-  font-size: var(--text-md);
-  line-height: 1.4;
-  color: var(--color-gray-900);
-  background: transparent;
 }
 
-.composer-textarea-box textarea::placeholder {
-  color: var(--color-gray-400);
-  font-size: var(--text-sm);
-}
-
-/* 右侧交互按键区 */
-.composer-right-actions {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-  margin-bottom: 2px;
-}
-
-.composer-plus-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-md);
-  color: var(--color-gray-500);
-  transition: all var(--duration-fast);
-}
-
-.composer-plus-btn:hover {
-  background: var(--color-gray-100);
-  color: var(--color-gray-900);
-}
-
-.composer-send-btn {
+/* 辅助图标按键 (触控舒适区) */
+.input-tool-btn {
   width: 38px;
   height: 38px;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-  color: #ffffff;
-  box-shadow: 0 4px 12px var(--color-primary-glow);
-  transition: all var(--duration-fast) var(--ease-spring);
-}
-
-.composer-send-btn:hover {
-  transform: scale(1.08);
-}
-
-.composer-send-btn.animate-pop {
-  animation: scaleUp 0.2s var(--ease-spring);
-}
-
-/* ---- 拖拽覆盖层 (DragOverlay) ---- */
-.drag-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  z-index: var(--z-max);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-6);
-  animation: fadeIn 0.2s ease-out;
-}
-
-.drag-content-card {
-  background: var(--bg-card);
-  border: 2px dashed var(--color-primary);
-  border-radius: var(--radius-3xl);
-  padding: var(--space-10) var(--space-8);
-  text-align: center;
-  max-width: 440px;
-  width: 100%;
-  box-shadow: var(--shadow-2xl);
-  animation: scaleUp 0.3s var(--ease-spring);
-}
-
-.drag-icon-glow {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto var(--space-4);
-  background: var(--color-primary-50);
-  color: var(--color-primary);
   border-radius: 50%;
+  color: var(--color-gray-600);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 24px var(--color-primary-glow);
-  animation: pulseGlow 2s infinite;
+  flex-shrink: 0;
+  transition: all var(--duration-fast);
 }
 
-.drag-main-title {
-  font-family: var(--font-display);
-  font-size: var(--text-xl);
-  font-weight: 700;
+.input-tool-btn:hover {
+  background: var(--color-gray-200);
   color: var(--color-gray-900);
-  margin-bottom: var(--space-2);
 }
 
-.drag-sub-hint {
-  font-size: var(--text-sm);
-  color: var(--color-gray-500);
+.input-tool-btn:active {
+  background: var(--color-gray-300);
+  transform: scale(0.94);
+}
+
+/* 输入框包装盒 (微信经典纯白微圆角) */
+.input-textarea-wrapper {
+  flex: 1;
+  min-height: 38px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  padding: 7px 10px;
+  transition: border-color var(--duration-fast);
+}
+
+.input-textarea-wrapper:focus-within {
+  border-color: var(--color-primary);
+}
+
+.input-textarea-wrapper textarea {
+  width: 100%;
+  min-height: 22px;
+  max-height: 120px;
+  resize: none;
+  font-family: inherit;
+  font-size: 16px; /* 16px 完美防止移动端 iOS 聚焦时页面放大 */
+  line-height: 1.4;
+  color: var(--color-gray-900);
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.input-textarea-wrapper textarea::placeholder {
+  color: var(--color-gray-400);
+  font-size: 15px;
+}
+
+/* 微信经典发送按钮 (温润绿色) */
+.input-send-btn {
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 4px;
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all var(--duration-fast);
+  white-space: nowrap;
+}
+
+.input-send-btn:hover {
+  background: var(--color-primary-hover);
+}
+
+.input-send-btn:active {
+  background: var(--color-primary-active);
+  transform: scale(0.97);
 }
 
 /* 深色模式下的输入栏 */
 @media (prefers-color-scheme: dark) {
-  .input-container-island {
-    background: rgba(17, 24, 39, 0.9);
+  .wechat-input-container {
+    background: #191919;
     border-top-color: rgba(255, 255, 255, 0.08);
   }
 
-  .composer-wrapper {
-    background: #162032;
-    border-color: rgba(255, 255, 255, 0.1);
+  .input-textarea-wrapper {
+    background: #262626;
+    border-color: rgba(255, 255, 255, 0.08);
   }
 
-  .composer-textarea-box textarea {
-    color: #f8fafc;
+  .input-textarea-wrapper textarea {
+    color: #f0f0f0;
   }
 
-  .composer-textarea-box textarea::placeholder {
-    color: rgba(255, 255, 255, 0.35);
+  .input-textarea-wrapper textarea::placeholder {
+    color: #666666;
   }
 
-  .drag-content-card {
-    background: #111827;
-    border-color: var(--color-primary);
+  .input-tool-btn {
+    color: #a6a6a6;
   }
 
-  .drag-main-title {
+  .input-tool-btn:hover {
+    background: #2b2b2b;
     color: #ffffff;
   }
 }

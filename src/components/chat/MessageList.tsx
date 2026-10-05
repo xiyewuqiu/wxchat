@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { Fragment, useCallback, useEffect, useRef } from 'react'
 import { UI_CONFIG } from '@/config'
 import { useChatStore } from '@/store/chatStore'
 import { useUiStore } from '@/store/uiStore'
+import { formatTime, shouldShowTimeDivider } from '@/lib/utils'
 import { MessageItem } from './MessageItem'
 import { StreamingBubble } from './StreamingBubble'
 import { IconSparkles, IconPalette, IconSearch } from '@/components/icons'
@@ -169,9 +170,20 @@ export function MessageList({
       )}
 
       {/* 消息流 */}
-      {messages.map((message) => (
-        <MessageItem key={message.id} message={message} currentDeviceId={currentDeviceId} />
-      ))}
+      {messages.map((message, index) => {
+        const prevMessage = index > 0 ? messages[index - 1] : null
+        const showDivider = shouldShowTimeDivider(message.timestamp, prevMessage?.timestamp)
+        return (
+          <Fragment key={message.id}>
+            {showDivider && (
+              <div className="message-time-divider">
+                <span className="time-divider-pill">{formatTime(message.timestamp)}</span>
+              </div>
+            )}
+            <MessageItem message={message} currentDeviceId={currentDeviceId} />
+          </Fragment>
+        )
+      })}
 
       {streaming && <StreamingBubble content={streaming.content} thinking={streaming.thinking} />}
     </div>

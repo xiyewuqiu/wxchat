@@ -1,14 +1,21 @@
 import { memo } from 'react'
 import { useUiStore } from '@/store/uiStore'
-import { useAuthStore } from '@/store/authStore'
 import { useChatStore } from '@/store/chatStore'
+import { useAuthStore } from '@/store/authStore'
 import { useNavigate } from 'react-router-dom'
-import { IconSparkles } from '@/components/icons'
+import {
+  IconSearch,
+  IconSparkles,
+  IconMoreHorizontal,
+  IconLogOut,
+  IconPalette,
+} from '@/components/icons'
 
 interface ChatHeaderProps {
   currentDeviceId: string
 }
 
+/** 顶栏导航：微信经典精致克制排版、移动端全视口融合与触控优化 */
 export const ChatHeader = memo(function ChatHeader({ currentDeviceId }: ChatHeaderProps) {
   const navigate = useNavigate()
   const status = useUiStore((state) => state.connectionStatus)
@@ -26,7 +33,7 @@ export const ChatHeader = memo(function ChatHeader({ currentDeviceId }: ChatHead
   const handleLogout = async () => {
     const confirmed = await askConfirm({
       title: '确认退出登录',
-      message: '退出后需要重新输入访问密码才能查看与传输文件。确定要退出吗？',
+      message: '退出后需要重新输入密码才能查看与传输记录。确定退出吗？',
       confirmText: '退出登录',
     })
     if (confirmed !== null) {
@@ -40,26 +47,27 @@ export const ChatHeader = memo(function ChatHeader({ currentDeviceId }: ChatHead
   return (
     <header className="chat-header">
       <div className="header-left">
-        <div className="header-avatar-wrap">
-          <img src="/icons/icon.svg" alt="微信文件传输助手" className="header-avatar" />
+        <div className="header-avatar-box">
+          <img src="/icons/icon.svg" alt="文件传输助手" className="header-avatar-img" />
           <span
-            className={`header-status-dot ${isConnected ? 'online' : 'offline'}`}
-            title={isConnected ? '实时在线' : '离线/重连中'}
+            className={`header-status-indicator ${isConnected ? 'online' : 'offline'}`}
+            title={isConnected ? '已连接' : '连接中断'}
           />
         </div>
-        <div className="header-info">
-          <div className="header-title-row">
-            <h1 className="header-title">文件传输助手</h1>
-            {aiMode && <span className="header-ai-badge">AI 伴随</span>}
+
+        <div className="header-title-meta">
+          <div className="header-name-row">
+            <h1 className="header-title-text">文件传输助手</h1>
+            {aiMode && <span className="ai-active-pill">AI 模式</span>}
           </div>
-          <div className="header-subtitle">
-            <span className="device-tag">本机: #{shortDeviceId}</span>
-            <span className="dot-divider">•</span>
-            <span className="status-text">{isConnected ? '实时同步中' : '连接维护中'}</span>
+          <div className="header-sub-text">
+            <span>#{shortDeviceId}</span>
+            <span className="sub-dot">·</span>
+            <span>{isConnected ? '在线' : '离线'}</span>
             {totalLoaded > 0 && (
               <>
-                <span className="dot-divider">•</span>
-                <span className="msg-count-tag">{totalLoaded} 条记录</span>
+                <span className="sub-dot">·</span>
+                <span>{totalLoaded}条</span>
               </>
             )}
           </div>
@@ -69,63 +77,48 @@ export const ChatHeader = memo(function ChatHeader({ currentDeviceId }: ChatHead
       <div className="header-actions">
         <button
           type="button"
-          className="header-icon-btn"
-          title="全文搜索 (Ctrl+F)"
+          className="header-action-btn"
+          title="搜索消息和文件"
           onClick={() => setSearchOpen(true)}
         >
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
+          <IconSearch size={18} />
         </button>
 
         <button
           type="button"
-          className={`header-icon-btn ai-toggle-btn ${aiMode ? 'active' : ''}`}
-          title={aiMode ? '关闭 AI 助手模式' : '开启 AI 助手模式'}
+          className={`header-action-btn ai-mode-btn${aiMode ? ' is-active' : ''}`}
+          title={aiMode ? '关闭 AI 伴随' : '开启 AI 伴随'}
           onClick={() => toggleAiMode()}
         >
-          <IconSparkles size={14} className="ai-icon-sparkle" />
-          <span className="ai-btn-text">AI</span>
+          <IconSparkles size={16} />
+          <span className="btn-label">AI</span>
         </button>
 
         <button
           type="button"
-          className="header-icon-btn"
+          className="header-action-btn desktop-only"
           title="AI 绘图工坊"
           onClick={() => setImageGenOpen(true)}
         >
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
-            <rect x="3" y="3" width="18" height="18" rx="4" />
-            <circle cx="8.5" cy="8.5" r="1.5" />
-            <polyline points="21 15 16 10 5 21" />
-          </svg>
+          <IconPalette size={18} />
         </button>
 
         <button
           type="button"
-          className="header-icon-btn"
-          title="更多功能面板"
+          className="header-action-btn"
+          title="更多功能"
           onClick={() => setFunctionMenuOpen(true)}
         >
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="12" cy="12" r="1.5" />
-            <circle cx="19" cy="12" r="1.5" />
-            <circle cx="5" cy="12" r="1.5" />
-          </svg>
+          <IconMoreHorizontal size={19} />
         </button>
 
         <button
           type="button"
-          className="header-icon-btn danger-hover"
-          title="安全退出"
+          className="header-action-btn logout-btn desktop-only"
+          title="退出登录"
           onClick={handleLogout}
         >
-          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-            <polyline points="16 17 21 12 16 7" />
-            <line x1="21" y1="12" x2="9" y2="12" />
-          </svg>
+          <IconLogOut size={17} />
         </button>
       </div>
     </header>

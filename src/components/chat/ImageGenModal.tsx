@@ -55,8 +55,12 @@ export function ImageGenModal() {
   return (
     <div className="image-gen-modal-overlay" role="dialog" aria-modal="true" onClick={() => setOpen(false)}>
       <div className="image-gen-studio-card" onClick={(event) => event.stopPropagation()}>
+        {/* 移动端拖拽把手指示条 */}
+        <div className="studio-drag-pill" />
+
         {/* 标题栏 */}
         <div className="studio-header">
+
           <div className="studio-title-group">
             <span className="studio-badge-icon">
               <IconPalette size={20} />

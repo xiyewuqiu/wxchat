@@ -78,6 +78,19 @@ export function formatTime(timestamp: string | number | Date): string {
   return date.toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
 }
 
+/** 是否需要在两条相邻消息间插入微信居中时间小标签 (相隔超过 5 分钟) */
+export function shouldShowTimeDivider(
+  currentTimestamp: string | number | Date,
+  prevTimestamp?: string | number | Date | null,
+): boolean {
+  if (!prevTimestamp) return true
+  const curr = parseTimestamp(currentTimestamp).getTime()
+  const prev = parseTimestamp(prevTimestamp).getTime()
+  if (Number.isNaN(curr) || Number.isNaN(prev)) return false
+  return curr - prev > 5 * 60 * 1000
+}
+
+
 export function getFileExtension(fileName: string | null | undefined): string | null {
   if (!fileName || typeof fileName !== 'string') return null
   const lastDot = fileName.lastIndexOf('.')

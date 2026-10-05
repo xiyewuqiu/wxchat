@@ -13,8 +13,10 @@ import {
   IconBot,
   IconClock,
   IconAlertCircle,
+  IconChevronLeft,
   IconX,
 } from '@/components/icons'
+
 import type { SearchFilters, SearchResultItem } from '@/types'
 
 interface SearchModalProps {
@@ -222,6 +224,10 @@ export function SearchModal({ onLocate }: SearchModalProps) {
       <div className="search-spotlight-card">
         {/* 顶部搜索框 */}
         <div className="spotlight-header">
+          <button type="button" className="spotlight-back-btn" onClick={close} title="返回">
+            <IconChevronLeft size={22} />
+          </button>
+
           <div className="spotlight-input-box">
             <span className="spotlight-search-icon">
               <IconSearch size={18} />
@@ -247,9 +253,10 @@ export function SearchModal({ onLocate }: SearchModalProps) {
           </div>
 
           <button type="button" className="spotlight-esc-pill" onClick={close} title="关闭搜索">
-            Esc
+            取消
           </button>
         </div>
+
 
         {/* 快捷过滤药丸组 */}
         <div className="spotlight-filter-bar">

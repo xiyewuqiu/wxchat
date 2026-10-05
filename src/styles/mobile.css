@@ -1,133 +1,251 @@
 /* ============================================
-   Mobile & Responsive Viewport Optimizations
+   Mobile & Responsive Ergonomics (最高标准移动端排版优化)
+   无缝视口 · 微信原生原生感 · 触控舒适区 · 零过度美化
    ============================================ */
 
-/* ---- 平板及中屏优化 (<= 768px) ---- */
+/* ---- 平板与中屏自适应 (<= 768px) ---- */
 @media (max-width: 768px) {
   .chat-viewport-wrapper {
     padding: 0;
+    background: var(--bg-chat);
   }
 
   .app {
     max-width: 100%;
     height: 100vh;
+    height: 100dvh;
     height: calc(var(--vh, 1vh) * 100);
     border-radius: 0;
     box-shadow: none;
     border: none;
   }
 
+  /* 移动端气泡列宽度控制：保留呼吸感与阅读节奏 */
+  .message-col {
+    max-width: 82% !important;
+  }
+
+  /* AI 绘画工坊转为原生 Bottom Sheet 底部抽屉架构 */
+  .image-gen-modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .image-gen-studio-card {
+    max-width: 100%;
+    width: 100%;
+    max-height: 86vh;
+    max-height: 86dvh;
+    border-radius: 18px 18px 0 0;
+    border-bottom: none;
+    border-left: none;
+    border-right: none;
+    box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.2);
+    animation: slideUpSheet 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* 全文搜索移动端全屏滑入 */
   .search-modal {
     padding: 0;
+    align-items: stretch;
   }
 
   .search-spotlight-card {
     max-width: 100%;
     max-height: 100vh;
+    max-height: 100dvh;
     height: 100%;
     border-radius: 0;
-  }
-
-  .message-bubble-col {
-    max-width: 84%;
+    border: none;
+    box-shadow: none;
   }
 }
 
-/* ---- 手机端深度适配 (<= 480px) ---- */
+/* ---- 手机端工学深度适配 (<= 480px) ---- */
 @media (max-width: 480px) {
+  /* 顶部导航紧凑精致 */
   .chat-header {
-    padding: 0 12px;
+    height: 48px;
+    padding: 0 10px;
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  .header-left {
+    gap: 8px;
+  }
+
+  .header-avatar-box {
+    width: 30px;
+    height: 30px;
+  }
+
+  .header-title-text {
+    font-size: 15px;
+  }
+
+  .header-sub-text {
+    font-size: 10px;
   }
 
   .header-actions {
     gap: 2px;
   }
 
-  .header-icon-btn {
+  .header-action-btn {
     width: 32px;
     height: 32px;
   }
 
-  .ai-btn-text {
-    display: none;
+  .ai-mode-btn {
+    padding: 0 6px;
+    height: 28px;
+    font-size: 11px;
   }
 
-  .message-avatar {
+  /* 消息列表与气泡触控优化 */
+  .message-list {
+    padding: 8px 10px;
+    gap: 10px;
+  }
+
+  .message-row {
+    gap: 8px;
+  }
+
+  .message-avatar-box {
     width: 32px;
     height: 32px;
-    font-size: 1rem;
+    border-radius: 4px;
   }
 
-  .message-bubble-col {
-    max-width: 88%;
+  .message-avatar-box svg {
+    width: 14px;
+    height: 14px;
   }
 
-  .message-content {
-    font-size: var(--text-sm);
-    padding: 8px 12px;
+  .message-bubble {
+    padding: 8px 11px;
+    font-size: 15px;
+    line-height: 1.45;
   }
 
+  /* 文件消息微缩卡片 */
   .file-message-content {
-    min-width: 220px;
-    max-width: 270px;
+    min-width: 200px;
+    max-width: 260px;
+    padding: 8px 10px;
+    gap: 8px;
   }
 
-  .file-badge-icon {
+  .file-type-vector-box {
+    width: 38px;
+    height: 38px;
+  }
+
+  .file-type-vector-box svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* 底部输入栏移动端贴合 */
+  .wechat-input-container {
+    padding: 6px 10px calc(6px + env(safe-area-inset-bottom, 0px));
+    gap: 5px;
+  }
+
+  .wechat-input-row {
+    gap: 6px;
+  }
+
+  .input-tool-btn {
     width: 36px;
     height: 36px;
   }
 
-  .file-emoji-icon {
-    font-size: 1rem;
+  .input-textarea-wrapper {
+    min-height: 36px;
+    padding: 6px 9px;
   }
 
-  .input-container-island {
-    padding: 8px 10px;
-    padding-bottom: calc(8px + var(--safe-bottom));
+  .input-textarea-wrapper textarea {
+    font-size: 16px; /* 严格保持 16px 阻止 iOS 自动缩放 */
   }
 
-  .composer-wrapper {
-    padding: 2px 4px;
-    border-radius: var(--radius-lg);
+  .input-send-btn {
+    height: 36px;
+    padding: 0 14px;
+    font-size: 14px;
   }
 
-  .composer-action-btn,
-  .composer-plus-btn {
-    width: 32px;
-    height: 32px;
+  /* 多功能抽屉在小屏手机下 4 列排布 */
+  .wechat-function-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px 4px;
   }
 
-  .composer-send-btn {
-    width: 34px;
-    height: 34px;
+  .grid-btn-squircle {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
   }
 
-  .composer-textarea-box textarea {
-    font-size: 15px;
+  .grid-btn-squircle svg {
+    width: 20px;
+    height: 20px;
   }
 
-  .menu-group-grid {
-    grid-template-columns: 1fr;
-    gap: 6px;
+  .grid-btn-label {
+    font-size: 11px;
   }
 
+  /* AI 绘图工作室移动端表单 */
   .studio-grid-fields {
     grid-template-columns: 1fr;
+    gap: 8px;
   }
 
-  .image-gen-studio-card {
-    max-height: 94vh;
+  .studio-header {
+    padding: 12px 14px;
+  }
+
+  .studio-body {
+    padding: 12px 14px;
+    gap: 10px;
+  }
+
+  .studio-footer {
+    padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* 确认对话框 */
+  .confirm-dialog-card {
+    max-width: 300px;
+    padding: 18px 16px;
+  }
+
+  .confirm-actions-row button {
+    height: 40px;
   }
 }
 
-/* ---- iOS Safari 软键盘弹出视口补偿 ---- */
+/* ---- 动画效果 (克制、平滑、原生) ---- */
+@keyframes slideUpSheet {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* ---- iOS Safari 软键盘弹出与安全区视口补偿 ---- */
 @supports (-webkit-touch-callout: none) {
   .app {
     height: -webkit-fill-available;
     min-height: -webkit-fill-available;
   }
 
-  .input-container-island {
+  .wechat-input-container {
     position: -webkit-sticky;
     position: sticky;
     bottom: 0;
@@ -139,5 +257,5 @@ body.keyboard-open .app {
 }
 
 body.keyboard-open .message-list {
-  padding-bottom: 20px;
+  padding-bottom: 12px;
 }
