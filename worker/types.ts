@@ -8,7 +8,11 @@ export interface Env {
   JWT_SECRET: string
   SESSION_EXPIRE_HOURS?: string
   MAX_LOGIN_ATTEMPTS?: string
+  /** SiliconFlow / AI 密钥 (在 Cloudflare 控制台作为 Secret 变量配置) */
+  AI_API_KEY?: string
+  SILICONFLOW_API_KEY?: string
 }
+
 
 export interface JwtPayload {
   iat: number

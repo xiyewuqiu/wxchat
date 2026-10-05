@@ -7,6 +7,7 @@ import filesRoutes from './routes/files.js'
 import searchRoutes from './routes/search.js'
 import syncRoutes from './routes/sync.js'
 import realtimeRoutes from './routes/realtime.js'
+import aiRoutes from './routes/ai.js'
 
 type AppEnv = { Bindings: Env; Variables: { user: JwtPayload } }
 
@@ -41,8 +42,10 @@ app.use('/api/*', authMiddleware)
 app.route('/api/messages', messagesRoutes)
 app.route('/api/files', filesRoutes)
 app.route('/api/search', searchRoutes)
+app.route('/api/ai', aiRoutes)
 app.route('/api', syncRoutes)
 app.route('/api', realtimeRoutes)
+
 
 // 静态资源与 SPA 回退。
 // 命中真实资源时按原样返回；未命中（如前端路由 /login）回退到 index.html，

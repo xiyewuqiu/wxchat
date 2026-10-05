@@ -52,8 +52,8 @@ export const AUTH_CONFIG = {
 
 export const AI_CONFIG = {
   ENABLED: true,
-  API_BASE_URL: 'https://api.siliconflow.cn/v1',
-  API_KEY: (env.VITE_AI_API_KEY as string | undefined) || 'sk-jcjftvgfaismslthkpdnsabzpkpidqatyajoesdowcutyoyh',
+  API_BASE_URL: '/api/ai',
+  API_KEY: (env.VITE_AI_API_KEY as string | undefined) || '',
   MODEL: 'deepseek-ai/DeepSeek-R1',
   MAX_TOKENS: 4000,
   TEMPERATURE: 0.7,
@@ -61,14 +61,16 @@ export const AI_CONFIG = {
 
 export const IMAGE_GEN_CONFIG = {
   ENABLED: true,
-  API_BASE_URL: 'https://api.siliconflow.cn/v1/images/generations',
-  API_KEY: (env.VITE_IMAGE_GEN_API_KEY as string | undefined) || 'sk-cowojsuuakqrsaizlldlimbhewnokgjhvczjnwwydxnvrczv',
+  API_BASE_URL: '/api/ai/image',
+  API_KEY: (env.VITE_IMAGE_GEN_API_KEY as string | undefined) || '',
   MODEL: 'Kwai-Kolors/Kolors',
   DEFAULT_SIZE: '1024x1024',
   DEFAULT_STEPS: 20,
   DEFAULT_GUIDANCE: 7.5,
   MAX_PROMPT_LENGTH: 1000,
 } as const
+
+
 
 export const MESSAGE_TYPES = {
   TEXT: 'text',
