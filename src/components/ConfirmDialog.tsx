@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Modal } from './Modal'
 import { useUiStore } from '@/store/uiStore'
+import { IconAlertTriangle, IconMessageSquare } from '@/components/icons'
 
 /**
- * 全局确认对话框：极致现代毛玻璃排版、图标提示与微交互。
+ * 全局确认对话框：极致现代毛玻璃排版、纯矢量图标与微交互 (零 Emoji)。
  */
 export function ConfirmDialog() {
   const confirm = useUiStore((state) => state.confirm)
@@ -21,13 +22,16 @@ export function ConfirmDialog() {
     resolveConfirm(value.trim())
   }
 
-  const isDanger = confirm.confirmText?.includes('退出') || confirm.confirmText?.includes('清空') || confirm.confirmText?.includes('删除')
+  const isDanger =
+    confirm.confirmText?.includes('退出') ||
+    confirm.confirmText?.includes('清空') ||
+    confirm.confirmText?.includes('删除')
 
   return (
     <Modal open onClose={() => resolveConfirm(null)} cardClassName="confirm-dialog-card">
       <div className="confirm-icon-wrapper">
         <span className={`confirm-bubble-icon ${isDanger ? 'is-danger' : 'is-info'}`}>
-          {isDanger ? '⚠️' : '💬'}
+          {isDanger ? <IconAlertTriangle size={24} /> : <IconMessageSquare size={24} />}
         </span>
       </div>
 

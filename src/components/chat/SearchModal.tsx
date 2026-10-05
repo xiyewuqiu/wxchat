@@ -1,9 +1,20 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { getSuggestions, search } from '@/api/search'
 import { SEARCH_CONFIG } from '@/config'
 import { parseAiContent } from '@/lib/aiContent'
-import { escapeHtml, formatFileSize, formatTime, getFileIcon } from '@/lib/utils'
+import { escapeHtml, formatFileSize, formatTime, isImageFile } from '@/lib/utils'
 import { useUiStore } from '@/store/uiStore'
+import {
+  IconSearch,
+  IconMessageSquare,
+  IconFile,
+  IconFileImage,
+  IconFileText,
+  IconBot,
+  IconClock,
+  IconAlertCircle,
+  IconX,
+} from '@/components/icons'
 import type { SearchFilters, SearchResultItem } from '@/types'
 
 interface SearchModalProps {
@@ -14,7 +25,7 @@ interface DisplayResult {
   id: number
   type: 'text' | 'file' | 'ai'
   aiKind?: 'response' | 'thinking'
-  icon: string
+  icon: ReactNode
   text: string
   fileName: string
   fileSize: string | null
@@ -40,6 +51,22 @@ function highlight(text: string, query: string): string {
   }
 }
 
+function renderSearchResultIcon(item: SearchResultItem): ReactNode {
+  const ai = parseAiContent(item.content)
+  if (ai) {
+    return <IconBot size={18} className="search-res-icon ai" />
+  }
+
+  if (item.type === 'file') {
+    if (isImageFile(item.mime_type)) {
+      return <IconFileImage size={18} className="search-res-icon img" />
+    }
+    return <IconFileText size={18} className="search-res-icon doc" />
+  }
+
+  return <IconMessageSquare size={18} className="search-res-icon text" />
+}
+
 function toDisplayResult(item: SearchResultItem): DisplayResult {
   const ai = parseAiContent(item.content)
 
@@ -48,7 +75,7 @@ function toDisplayResult(item: SearchResultItem): DisplayResult {
       id: item.id,
       type: 'ai',
       aiKind: ai.kind,
-      icon: '🤖',
+      icon: renderSearchResultIcon(item),
       text: ai.text,
       fileName: '',
       fileSize: null,
@@ -60,7 +87,7 @@ function toDisplayResult(item: SearchResultItem): DisplayResult {
     return {
       id: item.id,
       type: 'file',
-      icon: getFileIcon(item.mime_type, item.original_name),
+      icon: renderSearchResultIcon(item),
       text: item.original_name ?? '未知文件',
       fileName: item.original_name ?? '',
       fileSize: item.file_size ? formatFileSize(item.file_size) : null,
@@ -71,7 +98,7 @@ function toDisplayResult(item: SearchResultItem): DisplayResult {
   return {
     id: item.id,
     type: 'text',
-    icon: '💬',
+    icon: renderSearchResultIcon(item),
     text: item.content ?? '',
     fileName: '',
     fileSize: null,
@@ -90,7 +117,7 @@ function loadHistory(): string[] {
   }
 }
 
-/** 全文检索中枢：Spotlight 级体验、分类筛选胶囊、历史记录云与精准定位 */
+/** 全文检索中枢：Spotlight 级体验、分类筛选胶囊、纯矢量标签与精准定位 (零 Emoji) */
 export function SearchModal({ onLocate }: SearchModalProps) {
   const open = useUiStore((state) => state.searchOpen)
   const setOpen = useUiStore((state) => state.setSearchOpen)
@@ -150,7 +177,6 @@ export function SearchModal({ onLocate }: SearchModalProps) {
     [addHistory],
   )
 
-  // 输入防抖触发
   useEffect(() => {
     if (!open || query.trim().length < SEARCH_CONFIG.MIN_QUERY_LENGTH) {
       return
@@ -159,7 +185,6 @@ export function SearchModal({ onLocate }: SearchModalProps) {
     return () => clearTimeout(timer)
   }, [query, filters, open, runSearch])
 
-  // 预取搜索建议
   useEffect(() => {
     if (!open || query.trim().length < 2) return
     let active = true
@@ -199,10 +224,7 @@ export function SearchModal({ onLocate }: SearchModalProps) {
         <div className="spotlight-header">
           <div className="spotlight-input-box">
             <span className="spotlight-search-icon">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2">
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
+              <IconSearch size={18} />
             </span>
 
             <input
@@ -219,7 +241,7 @@ export function SearchModal({ onLocate }: SearchModalProps) {
 
             {query && (
               <button type="button" className="spotlight-clear-btn" onClick={() => setQuery('')}>
-                ×
+                <IconX size={15} />
               </button>
             )}
           </div>
@@ -241,7 +263,7 @@ export function SearchModal({ onLocate }: SearchModalProps) {
                 if (hasQuery) void runSearch(query, next)
               }}
             >
-              全部类型
+              全部
             </button>
             <button
               type="button"
@@ -252,7 +274,8 @@ export function SearchModal({ onLocate }: SearchModalProps) {
                 if (hasQuery) void runSearch(query, next)
               }}
             >
-              💬 文本
+              <IconMessageSquare size={13} className="pill-prefix-icon" />
+              <span>文本</span>
             </button>
             <button
               type="button"
@@ -263,7 +286,8 @@ export function SearchModal({ onLocate }: SearchModalProps) {
                 if (hasQuery) void runSearch(query, next)
               }}
             >
-              📁 文件
+              <IconFile size={13} className="pill-prefix-icon" />
+              <span>文件</span>
             </button>
           </div>
 
@@ -313,7 +337,7 @@ export function SearchModal({ onLocate }: SearchModalProps) {
                     void runSearch(item, filters)
                   }}
                 >
-                  <span className="tag-icon">🕒</span>
+                  <IconClock size={12} className="tag-clock-icon" />
                   <span>{item}</span>
                 </button>
               ))}
@@ -325,7 +349,9 @@ export function SearchModal({ onLocate }: SearchModalProps) {
         <div className="spotlight-results-area">
           {showWelcome && (
             <div className="spotlight-welcome-state">
-              <div className="welcome-spotlight-icon">🔍</div>
+              <div className="welcome-spotlight-icon">
+                <IconSearch size={36} />
+              </div>
               <h4 className="welcome-spotlight-title">即时搜索消息与文件</h4>
               <p className="welcome-spotlight-hint">键入关键词即可秒级模糊匹配上下文，支持高亮与一键滚动定位</p>
             </div>
@@ -340,7 +366,8 @@ export function SearchModal({ onLocate }: SearchModalProps) {
 
           {!loading && error && (
             <div className="spotlight-error-state">
-              <span>⚠️ {error}</span>
+              <IconAlertCircle size={16} />
+              <span>{error}</span>
               <button type="button" className="spotlight-retry-btn" onClick={() => void runSearch(query, filters)}>
                 重试
               </button>
@@ -356,7 +383,7 @@ export function SearchModal({ onLocate }: SearchModalProps) {
 
               {results.length === 0 && (
                 <div className="spotlight-empty-state">
-                  <span className="empty-state-icon">🍃</span>
+                  <IconFile size={32} className="empty-state-svg" />
                   <span>未找到与 "{query}" 相关的记录</span>
                 </div>
               )}

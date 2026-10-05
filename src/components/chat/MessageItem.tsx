@@ -4,6 +4,14 @@ import { formatTime } from '@/lib/utils'
 import { MarkdownContent } from './MarkdownContent'
 import { FileMessage } from './FileMessage'
 import { ThinkingMessage } from './ThinkingMessage'
+import {
+  IconBrain,
+  IconBot,
+  IconMonitor,
+  IconSmartphone,
+  IconSparkles,
+  IconCheck,
+} from '@/components/icons'
 import type { ChatMessage } from '@/types'
 
 interface MessageItemProps {
@@ -11,7 +19,7 @@ interface MessageItemProps {
   currentDeviceId: string
 }
 
-/** 单条消息：按 AI 思考 / AI 回答 / 文件 / 文本 分派渲染，配备精细头像与连续圆角排版 */
+/** 单条消息：按 AI 思考 / AI 回答 / 文件 / 文本 分派渲染，配备纯矢量图标与精细圆角排版 */
 export const MessageItem = memo(function MessageItem({ message, currentDeviceId }: MessageItemProps) {
   const ai = parseAiContent(message.content)
   const time = formatTime(message.timestamp)
@@ -19,11 +27,11 @@ export const MessageItem = memo(function MessageItem({ message, currentDeviceId 
   if (ai?.kind === 'thinking') {
     return (
       <div className="message-row ai-row" data-message-id={message.id}>
-        <div className="message-avatar ai-avatar" title="AI 思考进程">
-          <span>🧠</span>
+        <div className="message-avatar ai-avatar" title="AI 深度推理">
+          <IconBrain size={18} />
         </div>
         <div className="message-bubble-col">
-          <div className="message-sender-name">AI 思考模型</div>
+          <div className="message-sender-name">AI 深度推理模型</div>
           <div className="message ai">
             <ThinkingMessage content={ai.text} />
             <div className="message-meta">
@@ -39,7 +47,7 @@ export const MessageItem = memo(function MessageItem({ message, currentDeviceId 
     return (
       <div className="message-row ai-row" data-message-id={message.id}>
         <div className="message-avatar ai-avatar" title="AI 助手">
-          <span>🤖</span>
+          <IconBot size={18} />
         </div>
         <div className="message-bubble-col">
           <div className="message-sender-name">
@@ -52,7 +60,9 @@ export const MessageItem = memo(function MessageItem({ message, currentDeviceId 
             </div>
             <div className="message-meta">
               <span className="message-time">{time}</span>
-              <span className="ai-verified-badge" title="AI 生成">✨</span>
+              <span className="ai-verified-badge" title="AI 生成">
+                <IconSparkles size={11} />
+              </span>
             </div>
           </div>
         </div>
@@ -68,7 +78,7 @@ export const MessageItem = memo(function MessageItem({ message, currentDeviceId 
     <div className={`message-row ${isOwn ? 'own-row' : 'other-row'}`} data-message-id={message.id}>
       {!isOwn && (
         <div className="message-avatar other-avatar" title={senderLabel}>
-          <span>💻</span>
+          <IconMonitor size={18} />
         </div>
       )}
 
@@ -87,9 +97,7 @@ export const MessageItem = memo(function MessageItem({ message, currentDeviceId 
             <span className="message-time">{time}</span>
             {isOwn && (
               <span className="message-status-icon" title="已同步至云端">
-                <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor">
-                  <path d="M12.354 4.354a.5.5 0 0 0-.708-.708L5 10.293 1.854 7.146a.5.5 0 1 0-.708.708l3.5 3.5a.5.5 0 0 0 .708 0l7-7z" />
-                </svg>
+                <IconCheck size={12} />
               </span>
             )}
           </div>
@@ -98,7 +106,7 @@ export const MessageItem = memo(function MessageItem({ message, currentDeviceId 
 
       {isOwn && (
         <div className="message-avatar own-avatar" title="本机设备">
-          <span>📱</span>
+          <IconSmartphone size={18} />
         </div>
       )}
     </div>

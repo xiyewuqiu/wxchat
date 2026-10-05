@@ -1,16 +1,17 @@
 import { ThinkingMessage } from './ThinkingMessage'
+import { IconZap } from '@/components/icons'
 
 interface StreamingBubbleProps {
   content: string
   thinking: string
 }
 
-/** AI 流式实时回复气泡：支持思考过程渐进渲染与灵动打字光标 */
+/** AI 流式实时回复气泡：纯矢量闪电指示、思考过程渐进渲染与灵动打字光标 */
 export function StreamingBubble({ content, thinking }: StreamingBubbleProps) {
   return (
     <div className="message-row ai-row streaming-row">
       <div className="message-avatar ai-avatar is-streaming" title="AI 生成中...">
-        <span className="streaming-avatar-icon">⚡</span>
+        <IconZap size={18} className="streaming-avatar-icon" />
       </div>
 
       <div className="message-bubble-col">

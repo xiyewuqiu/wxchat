@@ -390,8 +390,29 @@
   box-shadow: var(--shadow-sm);
 }
 
-.pill-icon {
-  font-size: 1.35rem;
+.pill-vector-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pill-vector-icon.ai {
+  background: rgba(139, 92, 246, 0.12);
+  color: var(--color-ai-purple);
+}
+
+.pill-vector-icon.draw {
+  background: rgba(236, 72, 153, 0.12);
+  color: #ec4899;
+}
+
+.pill-vector-icon.search {
+  background: rgba(14, 165, 233, 0.12);
+  color: #0284c7;
 }
 
 .pill-content {

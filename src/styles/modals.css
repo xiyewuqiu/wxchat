@@ -500,6 +500,26 @@
   word-break: break-all;
 }
 
+.pill-prefix-icon {
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.tag-clock-icon {
+  color: var(--color-gray-400);
+}
+
+.search-res-icon.ai { color: var(--color-ai-purple); }
+.search-res-icon.img { color: #0891b2; }
+.search-res-icon.doc { color: #2563eb; }
+.search-res-icon.text { color: #10b981; }
+
+.empty-state-svg {
+  color: var(--color-gray-400);
+  opacity: 0.6;
+  margin-bottom: 6px;
+}
+
 .search-highlight {
   background: rgba(245, 158, 11, 0.25);
   color: #b45309;

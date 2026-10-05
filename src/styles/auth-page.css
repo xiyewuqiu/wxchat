@@ -338,9 +338,12 @@
   transform: translateY(-2px);
 }
 
-.feature-icon {
-  font-size: 1.35rem;
+.feature-icon-svg {
+  color: var(--color-primary-light);
   margin-bottom: var(--space-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .feature-title {
@@ -365,6 +368,17 @@
   font-size: var(--text-xs);
   color: rgba(255, 255, 255, 0.45);
   line-height: var(--leading-relaxed);
+}
+
+.footer-note-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.note-bulb-icon {
+  color: #fbbf24;
+  flex-shrink: 0;
 }
 
 @media (max-width: 480px) {

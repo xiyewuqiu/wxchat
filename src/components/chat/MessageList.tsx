@@ -4,6 +4,7 @@ import { useChatStore } from '@/store/chatStore'
 import { useUiStore } from '@/store/uiStore'
 import { MessageItem } from './MessageItem'
 import { StreamingBubble } from './StreamingBubble'
+import { IconSparkles, IconPalette, IconSearch } from '@/components/icons'
 
 interface MessageListProps {
   currentDeviceId: string
@@ -12,7 +13,7 @@ interface MessageListProps {
   onQuickPrompt?: (text: string) => void
 }
 
-/** 消息列表：智能平滑自适应滚动、弹性上滑加载、空状态探索引导与精准锚定 */
+/** 消息列表：智能平滑自适应滚动、弹性上滑加载、纯矢量空状态引导与精准锚定 */
 export function MessageList({
   currentDeviceId,
   highlightMessageId,
@@ -35,7 +36,6 @@ export function MessageList({
   const pendingRestoreRef = useRef<{ prevHeight: number; prevTotal: number } | null>(null)
   const scrollDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // 需要滚动到底部时统一由 scrollSignal 驱动（首屏、发送消息、实时新消息）
   useEffect(() => {
     const element = listRef.current
     if (!element) return
@@ -45,7 +45,6 @@ export function MessageList({
     })
   }, [scrollSignal])
 
-  // 向上加载历史后，按高度差恢复视觉位置，避免内容跳动
   useEffect(() => {
     const pending = pendingRestoreRef.current
     const element = listRef.current
@@ -81,7 +80,6 @@ export function MessageList({
     [],
   )
 
-  // 搜索结果定位：平滑滚动并短暂呼吸高亮
   useEffect(() => {
     if (highlightMessageId == null) return
     const element = listRef.current?.querySelector(`[data-message-id="${highlightMessageId}"]`)
@@ -108,7 +106,7 @@ export function MessageList({
         </div>
       )}
 
-      {/* 初始空状态欢迎探索卡片 */}
+      {/* 初始空状态欢迎探索卡片 (前沿纯矢量图标) */}
       {loaded && messages.length === 0 && !streaming && (
         <div className="welcome-empty-container">
           <div className="welcome-hero-card">
@@ -129,7 +127,9 @@ export function MessageList({
                   onQuickPrompt?.('帮我写一段精简的周工作汇报总结')
                 }}
               >
-                <span className="pill-icon">✨</span>
+                <div className="pill-vector-icon ai">
+                  <IconSparkles size={18} />
+                </div>
                 <div className="pill-content">
                   <span className="pill-title">AI 智能辅助</span>
                   <span className="pill-hint">写总结、改代码、提炼要点</span>
@@ -141,7 +141,9 @@ export function MessageList({
                 className="quick-pill-card"
                 onClick={() => setImageGenOpen(true)}
               >
-                <span className="pill-icon">🎨</span>
+                <div className="pill-vector-icon draw">
+                  <IconPalette size={18} />
+                </div>
                 <div className="pill-content">
                   <span className="pill-title">AI 绘图工坊</span>
                   <span className="pill-hint">一键绘制高品质插画与灵感</span>
@@ -153,7 +155,9 @@ export function MessageList({
                 className="quick-pill-card"
                 onClick={() => setSearchOpen(true)}
               >
-                <span className="pill-icon">🔍</span>
+                <div className="pill-vector-icon search">
+                  <IconSearch size={18} />
+                </div>
                 <div className="pill-content">
                   <span className="pill-title">全域文件检索</span>
                   <span className="pill-hint">按类型和时间秒级定位历史</span>

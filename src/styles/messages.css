@@ -320,15 +320,21 @@
   overflow: hidden;
 }
 
-.file-emoji-icon {
-  font-size: 1.15rem;
+.file-vector-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   line-height: 1;
 }
+
+.file-type-svg.img { color: #0891b2; }
+.file-type-svg.doc { color: #2563eb; }
+.file-type-svg.default { color: #059669; }
 
 .file-ext-tag {
   font-size: 0.55rem;
   font-weight: 700;
-  color: var(--color-primary-dark);
+  color: var(--color-gray-600);
   text-transform: uppercase;
   margin-top: 1px;
 }

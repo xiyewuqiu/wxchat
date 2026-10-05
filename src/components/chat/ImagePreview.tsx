@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
 import { getImageBlobUrl } from '@/api/files'
 import { revokeImageUrl } from '@/lib/utils'
+import { IconImage, IconAlertCircle, IconDownload, IconX } from '@/components/icons'
 
 interface ImagePreviewProps {
   r2Key: string
   fileName: string
 }
 
-/** 图片消息预览：支持骨架渐变加载、缩略图抗锯齿裁剪、全屏高清 Lightbox 浮层查看 */
+/** 图片消息预览：支持骨架渐变加载、缩略图抗锯齿裁剪、全屏高清 Lightbox 浮层查看 (纯矢量) */
 export function ImagePreview({ r2Key, fileName }: ImagePreviewProps) {
   const [blobUrl, setBlobUrl] = useState<string | null>(null)
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
@@ -43,14 +44,14 @@ export function ImagePreview({ r2Key, fileName }: ImagePreviewProps) {
       <div className="image-preview-wrapper">
         {status === 'loading' && (
           <div className="image-skeleton-shimmer">
-            <div className="skeleton-icon">🖼️</div>
-            <span className="skeleton-text">正在渲染高清图像...</span>
+            <IconImage size={28} className="skeleton-icon-svg" />
+            <span className="skeleton-text">正在渲染图像...</span>
           </div>
         )}
 
         {status === 'error' && (
           <div className="image-error-state">
-            <span className="image-error-icon">⚠️</span>
+            <IconAlertCircle size={16} className="image-error-icon" />
             <span className="image-error-text">图片预览加载失败</span>
             <button type="button" className="image-retry-action" onClick={handleRetry}>
               重试
@@ -89,11 +90,7 @@ export function ImagePreview({ r2Key, fileName }: ImagePreviewProps) {
                 title="保存原图"
                 onClick={(e) => e.stopPropagation()}
               >
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="7 10 12 15 17 10" />
-                  <line x1="12" y1="15" x2="12" y2="3" />
-                </svg>
+                <IconDownload size={18} />
               </a>
               <button
                 type="button"
@@ -101,10 +98,7 @@ export function ImagePreview({ r2Key, fileName }: ImagePreviewProps) {
                 title="关闭 (Esc)"
                 onClick={() => setFullscreenOpen(false)}
               >
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
+                <IconX size={18} />
               </button>
             </div>
           </div>

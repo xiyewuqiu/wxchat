@@ -18,7 +18,7 @@ export async function runImageGeneration(options: ImageGenOptions): Promise<void
     return
   }
 
-  ui.toast('🎨 AI正在生成图片...', 'info')
+  ui.toast('AI 正在生成图片，请稍候...', 'info')
 
   try {
     const imageUrl = await generateImage(options.prompt, {

@@ -1,8 +1,9 @@
 import { memo } from 'react'
 import { useUiStore } from '@/store/uiStore'
-import { useChatStore } from '@/store/chatStore'
 import { useAuthStore } from '@/store/authStore'
+import { useChatStore } from '@/store/chatStore'
 import { useNavigate } from 'react-router-dom'
+import { IconSparkles } from '@/components/icons'
 
 interface ChatHeaderProps {
   currentDeviceId: string
@@ -84,7 +85,7 @@ export const ChatHeader = memo(function ChatHeader({ currentDeviceId }: ChatHead
           title={aiMode ? '关闭 AI 助手模式' : '开启 AI 助手模式'}
           onClick={() => toggleAiMode()}
         >
-          <span className="ai-icon-sparkle">✨</span>
+          <IconSparkles size={14} className="ai-icon-sparkle" />
           <span className="ai-btn-text">AI</span>
         </button>
 

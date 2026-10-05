@@ -1,8 +1,18 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
+import {
+  IconLock,
+  IconEye,
+  IconEyeOff,
+  IconShield,
+  IconZap,
+  IconBot,
+  IconLightbulb,
+  IconAlertTriangle,
+} from '@/components/icons'
 
-/** 登录页：极致现代毛玻璃流光设计、立体光感卡片与多维安全防护 */
+/** 登录页：极简纯净暗调排版、克制无光输入框与纯矢量精细图标 */
 export function LoginPage() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
   const isInitializing = useAuthStore((state) => state.isInitializing)
@@ -14,7 +24,6 @@ export function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
-  // 已登录（含从本地恢复的会话）直接进入应用
   useEffect(() => {
     if (!isInitializing && isAuthenticated) {
       navigate('/', { replace: true })
@@ -43,7 +52,6 @@ export function LoginPage() {
 
   return (
     <div className="auth-container">
-      {/* 极光流光动态光斑 */}
       <div className="aurora-blob blob-1" />
       <div className="aurora-blob blob-2" />
       <div className="aurora-blob blob-3" />
@@ -64,10 +72,7 @@ export function LoginPage() {
           <div className="auth-field">
             <div className="auth-input-wrapper">
               <span className="auth-field-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                </svg>
+                <IconLock size={16} />
               </span>
 
               <input
@@ -90,24 +95,16 @@ export function LoginPage() {
                 title={showPassword ? '隐藏密码' : '显示密码'}
                 onClick={() => setShowPassword((value) => !value)}
               >
-                {showPassword ? (
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-                    <line x1="1" y1="1" x2="23" y2="23" />
-                  </svg>
-                ) : (
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
-                )}
+                {showPassword ? <IconEyeOff size={16} /> : <IconEye size={16} />}
               </button>
             </div>
           </div>
 
           {error && (
             <div className="auth-error-banner" role="alert">
-              <span className="auth-error-icon">⚠️</span>
+              <span className="auth-error-icon">
+                <IconAlertTriangle size={16} />
+              </span>
               <span className="auth-error-text">{error}</span>
             </div>
           )}
@@ -118,7 +115,7 @@ export function LoginPage() {
             ) : (
               <>
                 <span>立即进入</span>
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2">
                   <line x1="5" y1="12" x2="19" y2="12" />
                   <polyline points="12 5 19 12 12 19" />
                 </svg>
@@ -127,10 +124,12 @@ export function LoginPage() {
           </button>
         </form>
 
-        {/* 底部安全与特性徽章 */}
+        {/* 底部安全与特性徽章 (纯矢量图标) */}
         <div className="auth-features-grid">
           <div className="auth-feature-item">
-            <span className="feature-icon">🔒</span>
+            <span className="feature-icon-svg">
+              <IconShield size={18} />
+            </span>
             <div className="feature-desc">
               <span className="feature-title">端到端私有</span>
               <span className="feature-sub">数据隔离加密存储</span>
@@ -138,15 +137,19 @@ export function LoginPage() {
           </div>
 
           <div className="auth-feature-item">
-            <span className="feature-icon">⚡</span>
+            <span className="feature-icon-svg">
+              <IconZap size={18} />
+            </span>
             <div className="feature-desc">
               <span className="feature-title">边缘加速</span>
-              <span className="feature-sub">秒级毫秒同步响应</span>
+              <span className="feature-sub">毫秒同步极速响应</span>
             </div>
           </div>
 
           <div className="auth-feature-item">
-            <span className="feature-icon">🤖</span>
+            <span className="feature-icon-svg">
+              <IconBot size={18} />
+            </span>
             <div className="feature-desc">
               <span className="feature-title">AI 全能助手</span>
               <span className="feature-sub">内嵌智能思考绘画</span>
@@ -155,7 +158,10 @@ export function LoginPage() {
         </div>
 
         <div className="auth-footer-note">
-          <span>💡 忘记密码？可在 Cloudflare 环境变量中随时更新重置。</span>
+          <span className="footer-note-content">
+            <IconLightbulb size={13} className="note-bulb-icon" />
+            <span>忘记密码？可在 Cloudflare 环境变量中随时更新重置。</span>
+          </span>
         </div>
       </div>
     </div>

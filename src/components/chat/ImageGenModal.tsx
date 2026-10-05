@@ -3,6 +3,7 @@ import { IMAGE_STEP_OPTIONS, SUPPORTED_IMAGE_SIZES } from '@/api/ai'
 import { IMAGE_GEN_CONFIG } from '@/config'
 import { runImageGeneration } from '@/lib/imageGeneration'
 import { useUiStore } from '@/store/uiStore'
+import { IconPalette, IconLightbulb, IconSparkles, IconX } from '@/components/icons'
 
 const QUICK_INSPIRATIONS = [
   '赛博朋克夜色霓虹城市，雨后倒影，超精细8K',
@@ -11,7 +12,7 @@ const QUICK_INSPIRATIONS = [
   '高级极简玻璃拟物3D立体图标设计，柔和柔光',
 ]
 
-/** AI 绘画创作工坊：专业创作界面、尺寸比例微缩卡片、灵感胶囊与参数控制 */
+/** AI 绘画创作工坊：专业创作界面、尺寸比例微缩卡片、灵感胶囊与纯矢量图标 (零 Emoji) */
 export function ImageGenModal() {
   const open = useUiStore((state) => state.imageGenOpen)
   const setOpen = useUiStore((state) => state.setImageGenOpen)
@@ -57,14 +58,16 @@ export function ImageGenModal() {
         {/* 标题栏 */}
         <div className="studio-header">
           <div className="studio-title-group">
-            <span className="studio-badge-icon">🎨</span>
+            <span className="studio-badge-icon">
+              <IconPalette size={20} />
+            </span>
             <div>
               <h3 className="studio-title">AI 绘图创意工坊</h3>
               <p className="studio-sub">基于 Cloudflare 边缘生图大模型，秒级光影呈现</p>
             </div>
           </div>
           <button type="button" className="studio-close-btn" onClick={() => setOpen(false)}>
-            ×
+            <IconX size={18} />
           </button>
         </div>
 
@@ -93,7 +96,10 @@ export function ImageGenModal() {
 
             {/* 灵感快捷预设标签 */}
             <div className="inspiration-pills">
-              <span className="inspiration-label">💡 快速灵感:</span>
+              <span className="inspiration-label">
+                <IconLightbulb size={12} className="inspiration-bulb-icon" />
+                <span>快速灵感:</span>
+              </span>
               <div className="pills-scroll">
                 {QUICK_INSPIRATIONS.map((text) => (
                   <button
@@ -199,7 +205,8 @@ export function ImageGenModal() {
               </>
             ) : (
               <>
-                <span>✨ 立即开始生成</span>
+                <IconSparkles size={16} />
+                <span>立即开始生成</span>
                 <span className="studio-shortcut-hint">Ctrl + Enter</span>
               </>
             )}
