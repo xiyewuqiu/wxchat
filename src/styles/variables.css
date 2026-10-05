@@ -1,10 +1,10 @@
 /* ============================================
    Design System - Balanced, Premium & Restrained
-   赏心悦目 · 克制现代 · 微信与 iOS 原生质感规范
+   赏心悦目 · 克制现代 · 微信与 iOS / Telegram 原生质感规范
    ============================================ */
 
 :root {
-  /* ---- 品牌主色 (温润翡翠绿，克制不刺眼) ---- */
+  /* ---- 品牌主色 (微信温润玉绿，克制不刺眼) ---- */
   --color-primary: #07c160;
   --color-primary-hover: #06ad56;
   --color-primary-active: #059b4c;
@@ -41,26 +41,26 @@
   --color-gray-800: #262626;
   --color-gray-900: #191919;
 
-  /* ---- 背景层次 (微信原生护眼米灰底色) ---- */
+  /* ---- 背景层次 (浅色模式：微信经典温和微冷灰) ---- */
   --bg-app: #ededed;
   --bg-chat: #ededed;
   --bg-header: rgba(247, 247, 247, 0.94);
   --bg-input: rgba(247, 247, 247, 0.96);
   --bg-card: #ffffff;
   --bg-card-subtle: #f7f7f7;
-  --bg-overlay: rgba(0, 0, 0, 0.5);
+  --bg-overlay: rgba(0, 0, 0, 0.45);
 
   --glass-blur: blur(20px);
   --border-subtle: rgba(0, 0, 0, 0.08);
   --border-divider: rgba(0, 0, 0, 0.06);
 
-  /* ---- 微信经典消息气泡 (极度舒适护眼) ---- */
+  /* ---- 消息气泡 (浅色模式：微信护眼玉绿与纯白) ---- */
   --bubble-own: #95ec69;
-  --bubble-own-text: #000000;
+  --bubble-own-text: #111111;
   --bubble-own-time: rgba(0, 0, 0, 0.45);
 
   --bubble-other: #ffffff;
-  --bubble-other-text: #191919;
+  --bubble-other-text: #111111;
   --bubble-other-time: rgba(0, 0, 0, 0.45);
 
   --bubble-ai: #ffffff;
@@ -116,7 +116,7 @@
 
   /* ---- 尺寸规范 ---- */
   --app-max-width: 620px;
-  --header-height: 54px;
+  --header-height: 52px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --vh: 1vh;
@@ -127,54 +127,59 @@
 }
 
 /* ============================================
-   Dark Mode (OLED 深邃纯黑与岩灰沉浸式)
+   Dark Mode - Telegram & WhatsApp 级高定深色系统
+   告别发霉死墨绿 · 层次分明 · 护眼通透
    ============================================ */
 @media (prefers-color-scheme: dark) {
   :root {
     --color-primary: #07c160;
-    --color-primary-hover: #06ad56;
-    --color-primary-active: #059b4c;
+    --color-primary-hover: #10d66e;
+    --color-primary-active: #05a04e;
     --color-primary-subtle: rgba(7, 193, 96, 0.15);
 
-    --color-gray-50: #141414;
-    --color-gray-100: #1f1f1f;
-    --color-gray-200: #2b2b2b;
-    --color-gray-300: #3b3b3b;
-    --color-gray-400: #666666;
-    --color-gray-500: #8c8c8c;
-    --color-gray-600: #b2b2b2;
-    --color-gray-700: #d9d9d9;
-    --color-gray-800: #f0f0f0;
+    --color-gray-50: #16181d;
+    --color-gray-100: #1e2229;
+    --color-gray-200: #262b34;
+    --color-gray-300: #333a46;
+    --color-gray-400: #64748b;
+    --color-gray-500: #94a3b8;
+    --color-gray-600: #cbd5e1;
+    --color-gray-700: #e2e8f0;
+    --color-gray-800: #f1f5f9;
     --color-gray-900: #ffffff;
 
-    --bg-app: #111111;
-    --bg-chat: #111111;
-    --bg-header: rgba(22, 22, 22, 0.94);
-    --bg-input: rgba(22, 22, 22, 0.96);
-    --bg-card: #1c1c1c;
-    --bg-card-subtle: #242424;
-    --bg-overlay: rgba(0, 0, 0, 0.65);
+    /* 质感深灰底色，告别生硬死纯黑 */
+    --bg-app: #111418;
+    --bg-chat: #111418;
+    --bg-header: rgba(22, 25, 30, 0.94);
+    --bg-input: rgba(22, 25, 30, 0.96);
+    --bg-card: #1c2027;
+    --bg-card-subtle: #242932;
+    --bg-overlay: rgba(0, 0, 0, 0.7);
 
     --border-subtle: rgba(255, 255, 255, 0.08);
     --border-divider: rgba(255, 255, 255, 0.06);
 
-    --bubble-own: #275e3a;
+    /* 己方气泡：明朗、纯净的深色高定翠绿，配纯白文字，绝不发黑发脏 */
+    --bubble-own: #07c160;
     --bubble-own-text: #ffffff;
-    --bubble-own-time: rgba(255, 255, 255, 0.6);
+    --bubble-own-time: rgba(255, 255, 255, 0.7);
 
-    --bubble-other: #262626;
-    --bubble-other-text: #e6e6e6;
+    /* 他方气泡：温润深岩灰，带有微细质感边框 */
+    --bubble-other: #22272e;
+    --bubble-other-text: #f0f3f6;
     --bubble-other-time: rgba(255, 255, 255, 0.45);
 
-    --bubble-ai: #232234;
-    --bubble-ai-text: #f0f0f0;
-    --bubble-thinking-bg: #1a1a1a;
-    --bubble-thinking-text: #999999;
+    /* AI 助手气泡：深邃紫黑暗调 */
+    --bubble-ai: #1e1d2c;
+    --bubble-ai-text: #f3f0ff;
+    --bubble-thinking-bg: #1a1924;
+    --bubble-thinking-text: #a78bfa;
 
     --shadow-xs: none;
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
-    --shadow-xl: 0 16px 36px rgba(0, 0, 0, 0.6);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.45);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.55);
+    --shadow-xl: 0 16px 36px rgba(0, 0, 0, 0.65);
   }
 }

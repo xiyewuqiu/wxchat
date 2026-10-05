@@ -1,13 +1,13 @@
 /* ============================================
-   Message Stream & WeChat Classic Bubbles
-   极致赏心悦目 · 微信经典原生排版 · 高可读性
+   Message Stream & Modern Premium Chat Bubbles
+   彻底告别发暗发脏 · 纯净媒体直铺 · 丝滑平顺圆角 · 微信与 Telegram 原生质感
    ============================================ */
 
 /* 消息行容器 */
 .message-row {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
 }
 
@@ -20,16 +20,17 @@
   justify-content: flex-start;
 }
 
-/* 微信经典头像 (36px × 36px 微圆角) */
+/* 头像：精致 34px 微圆角 */
 .message-avatar-box {
-  width: 36px;
-  height: 36px;
-  border-radius: 4px;
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   user-select: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .message-avatar-box.own {
@@ -38,7 +39,7 @@
 }
 
 .message-avatar-box.other {
-  background: #4a7bf7;
+  background: #3b82f6;
   color: #ffffff;
 }
 
@@ -51,7 +52,7 @@
 .message-col {
   display: flex;
   flex-direction: column;
-  max-width: calc(100% - 90px);
+  max-width: calc(100% - 84px);
 }
 
 .message-row.own-row .message-col {
@@ -63,90 +64,22 @@
   align-items: flex-start;
 }
 
-/* 微信经典气泡主体 */
-.message-bubble {
-  position: relative;
-  padding: 9px 12px;
-  border-radius: 4px;
-  font-size: var(--text-base);
-  line-height: var(--leading-normal);
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  word-break: break-word;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-}
-
-/* 己方气泡：微信经典护眼玉绿 + 原生尖角 */
-.own-bubble {
-  background: var(--bubble-own);
-  color: var(--bubble-own-text);
-}
-
-.own-bubble::after {
-  content: '';
-  position: absolute;
-  top: 12px;
-  right: -5px;
-  width: 0;
-  height: 0;
-  border-top: 5px solid transparent;
-  border-bottom: 5px solid transparent;
-  border-left: 6px solid var(--bubble-own);
-}
-
-/* 他方气泡：纯白微框 + 原生尖角 */
-.other-bubble {
-  background: var(--bubble-other);
-  color: var(--bubble-other-text);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.other-bubble::after {
-  content: '';
-  position: absolute;
-  top: 12px;
-  left: -5px;
-  width: 0;
-  height: 0;
-  border-top: 5px solid transparent;
-  border-bottom: 5px solid transparent;
-  border-right: 6px solid var(--bubble-other);
-}
-
-/* AI 助手气泡：纯净微紫边 + 原生尖角 */
-.ai-bubble {
-  background: var(--bubble-ai);
-  color: var(--bubble-ai-text);
-  border: 1px solid rgba(124, 58, 237, 0.15);
-}
-
-.ai-bubble::after {
-  content: '';
-  position: absolute;
-  top: 12px;
-  left: -5px;
-  width: 0;
-  height: 0;
-  border-top: 5px solid transparent;
-  border-bottom: 5px solid transparent;
-  border-right: 6px solid var(--bubble-ai);
-}
-
-/* 微信居中时间小标签 */
+/* 微信经典居中时间药丸微标签 */
 .message-time-divider {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 12px 0 8px;
+  margin: 16px 0 8px;
   user-select: none;
 }
 
 .time-divider-pill {
   font-size: 11px;
+  font-weight: 400;
   color: var(--color-gray-500);
   background: rgba(0, 0, 0, 0.05);
-  padding: 2px 8px;
-  border-radius: 4px;
+  padding: 2px 10px;
+  border-radius: 12px;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.2px;
 }
@@ -154,303 +87,170 @@
 @media (prefers-color-scheme: dark) {
   .time-divider-pill {
     background: rgba(255, 255, 255, 0.08);
-    color: rgba(255, 255, 255, 0.45);
+    color: rgba(255, 255, 255, 0.5);
   }
 }
 
-/* 气泡悬浮/长按快速操作按钮 */
-.bubble-action-trigger {
-  opacity: 0;
-  color: var(--color-gray-400);
-  padding: 1px 3px;
-  border-radius: 3px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: 4px;
-  transition: opacity var(--duration-fast);
-  cursor: pointer;
+/* ---- 核心气泡规范 (丝滑 Squircle 微圆角，坚决去除粗暴突兀三角肉刺) ---- */
+.message-bubble {
+  position: relative;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: transform 0.12s ease;
 }
 
-.message-bubble:hover .bubble-action-trigger,
-.bubble-action-trigger:focus,
-.bubble-action-trigger:active {
-  opacity: 0.85;
+/* 己方气泡：明朗温润翠绿，右下微收角 */
+.own-bubble {
+  background: var(--bubble-own);
+  color: var(--bubble-own-text);
+  border-bottom-right-radius: 4px;
 }
 
-@media (max-width: 768px) {
-  .bubble-action-trigger {
-    opacity: 0.4;
-  }
+/* 他方气泡：温润深岩灰/纯白，左下微收角 */
+.other-bubble {
+  background: var(--bubble-other);
+  color: var(--bubble-other-text);
+  border: 1px solid var(--border-subtle);
+  border-bottom-left-radius: 4px;
 }
 
-/* 微信经典黑色胶囊悬浮操作菜单 */
-.wechat-popover-menu {
-  position: absolute;
-  top: -38px;
-  background: #2b2b2b;
-  border-radius: 6px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
-  padding: 3px 6px;
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  z-index: 50;
-  white-space: nowrap;
-  animation: popoverFadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.wechat-popover-menu.right {
-  right: 0;
-}
-
-.wechat-popover-menu.left {
-  left: 0;
-}
-
-.wechat-popover-menu::after {
-  content: '';
-  position: absolute;
-  bottom: -5px;
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-top: 5px solid #2b2b2b;
-}
-
-.wechat-popover-menu.right::after {
-  right: 14px;
-}
-
-.wechat-popover-menu.left::after {
-  left: 14px;
-}
-
-.popover-menu-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 8px;
-  border-radius: 4px;
-  color: #ffffff;
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.12s ease;
-}
-
-.popover-menu-item:hover,
-.popover-menu-item:active {
-  background: rgba(255, 255, 255, 0.18);
-}
-
-@keyframes popoverFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* AI 助手气泡：深邃紫黑暗调 */
+.ai-bubble {
+  background: var(--bubble-ai);
+  color: var(--bubble-ai-text);
+  border: 1px solid rgba(124, 58, 237, 0.22);
+  border-bottom-left-radius: 4px;
 }
 
 .ai-bubble-tag {
   font-size: var(--text-2xs);
   font-weight: 600;
   color: var(--color-ai-purple);
-  margin-bottom: 3px;
-}
-
-
-/* 气泡内文字与 Markdown */
-.bubble-content-text {
-  font-size: var(--text-base);
-}
-
-.bubble-content-text .text-message.markdown-rendered {
-  white-space: normal;
-}
-
-.bubble-content-text .text-message.markdown-rendered p {
-  margin: 0.25em 0;
-}
-
-.bubble-content-text .text-message.markdown-rendered h1,
-.bubble-content-text .text-message.markdown-rendered h2,
-.bubble-content-text .text-message.markdown-rendered h3 {
-  margin: 0.35em 0 0.2em;
-  font-size: 1.05em;
-  font-weight: 600;
-}
-
-.bubble-content-text .text-message.markdown-rendered code {
-  background: rgba(0, 0, 0, 0.06);
-  padding: 0.1em 0.35em;
-  border-radius: 3px;
-  font-family: var(--font-mono);
-  font-size: 0.88em;
-}
-
-.own-bubble .bubble-content-text .text-message.markdown-rendered code {
-  background: rgba(0, 0, 0, 0.1);
-}
-
-.bubble-content-text .text-message.markdown-rendered pre {
-  background: #1f1f1f;
-  color: #f0f0f0;
-  padding: 8px 12px;
-  border-radius: 4px;
-  overflow-x: auto;
-  margin: 0.4em 0;
-  font-size: 0.85em;
-}
-
-.bubble-content-text .text-message.markdown-rendered a {
-  color: #1a6dff;
-  text-decoration: underline;
-}
-
-.own-bubble .bubble-content-text .text-message.markdown-rendered a {
-  color: #044b1c;
-}
-
-/* 气泡元数据 (时间戳与状态对勾) */
-.bubble-meta {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.65rem;
-  margin-top: 3px;
-  line-height: 1;
-}
-
-.own-bubble .bubble-meta {
-  justify-content: flex-end;
-  color: var(--bubble-own-time);
-}
-
-.other-bubble .bubble-meta,
-.ai-bubble .bubble-meta {
-  justify-content: flex-start;
-  color: var(--bubble-other-time);
-}
-
-.bubble-check-icon {
-  display: flex;
-  align-items: center;
-  opacity: 0.7;
+  margin-bottom: 2px;
 }
 
 /* ============================================
-   微信原生经典文件卡片 (FileMessage)
+   纯净独立图片媒体展示 (Bubbleless Media)
+   彻底告别套在外层卡片里的丑陋排版！
    ============================================ */
-.wechat-file-bubble {
-  padding: 0;
-  display: flex;
-  flex-direction: column;
+.media-bubble {
+  background: transparent !important;
+  padding: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 12px !important;
+  overflow: visible !important;
 }
 
-.wechat-file-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 12px;
-  min-width: 230px;
-  max-width: 280px;
+.pure-image-message-wrapper {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: inline-block;
+  vertical-align: middle;
+}
+
+@media (prefers-color-scheme: light) {
+  .pure-image-message-wrapper {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+  }
+}
+
+.image-thumb-container {
   cursor: pointer;
-  user-select: none;
-  border-radius: 4px;
-  transition: opacity var(--duration-fast);
-}
-
-.wechat-file-card:hover {
-  opacity: 0.92;
-}
-
-.wechat-file-card:active {
-  opacity: 0.8;
-}
-
-.file-info-main {
-  flex: 1;
-  min-width: 0;
-}
-
-.file-title-text {
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.35;
-  color: inherit;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  max-width: 260px;
+  max-height: 320px;
   overflow: hidden;
-  word-break: break-all;
-}
-
-.file-size-meta {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 11px;
-  opacity: 0.65;
-  margin-top: 4px;
-}
-
-.meta-sep {
-  opacity: 0.5;
-}
-
-.file-ext-label {
-  font-weight: 600;
-}
-
-/* 右侧文件图标块 */
-.file-icon-box {
-  width: 44px;
-  height: 44px;
-  border-radius: 4px;
-  background: rgba(0, 0, 0, 0.04);
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  position: relative;
+  background: rgba(0, 0, 0, 0.2);
 }
 
-.own-bubble .file-icon-box {
-  background: rgba(0, 0, 0, 0.08);
+@media (max-width: 480px) {
+  .image-thumb-container {
+    max-width: min(72vw, 240px);
+    max-height: 280px;
+  }
 }
 
-.wechat-file-svg.img { color: #0891b2; }
-.wechat-file-svg.doc { color: #2563eb; }
-.wechat-file-svg.file { color: #059669; }
-
-/* 旋转微动效 */
-.spin-fast {
-  animation: spin 0.8s linear infinite;
-  color: var(--color-primary);
+.image-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.2s ease;
 }
 
-/* ============================================
-   微信经典图片预览 (ImagePreview)
-   ============================================ */
-.image-preview-wrapper {
-  margin-top: 6px;
-  border-radius: 4px;
-  overflow: hidden;
-  background: rgba(0, 0, 0, 0.03);
+.image-thumb-container:hover .image-thumb-img {
+  transform: scale(1.02);
 }
 
-.image-skeleton-shimmer {
+.image-hover-glass-mask {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 24px;
-  gap: 6px;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  color: #ffffff;
+}
+
+.image-thumb-container:hover .image-hover-glass-mask {
+  opacity: 1;
+}
+
+.zoom-hint-text {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+
+/* 媒体消息的半透明时间微标 */
+.media-bubble .bubble-meta {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  padding: 1px 6px;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 10px;
+  margin: 0;
+}
+
+.media-bubble .bubble-check-icon {
+  color: #ffffff;
+}
+
+/* 骨架屏与失败状态 */
+.image-skeleton-shimmer {
+  width: 220px;
+  height: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
   color: var(--color-gray-400);
   font-size: var(--text-2xs);
 }
@@ -459,40 +259,208 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 10px;
-  font-size: var(--text-2xs);
+  padding: 12px;
+  background: rgba(239, 68, 68, 0.1);
   color: var(--color-danger);
+  font-size: var(--text-2xs);
+  border-radius: 8px;
 }
 
 .image-retry-action {
   margin-left: auto;
   background: var(--color-danger);
   color: #ffffff;
-  padding: 2px 6px;
-  border-radius: 2px;
-  font-size: 0.65rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
 }
 
-.image-thumb-container {
+/* ============================================
+   微信经典非图片文档卡片 (WeChat Document Card)
+   ============================================ */
+.wechat-file-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 230px;
+  padding: 10px 12px;
+  background: var(--bg-card);
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
   cursor: pointer;
-  max-width: 220px;
-  max-height: 240px;
+  transition: all 0.15s ease;
+  position: relative;
+  user-select: none;
+}
+
+.own-bubble .wechat-file-card {
+  background: rgba(255, 255, 255, 0.95);
+  color: #111111;
+  border: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .own-bubble .wechat-file-card {
+    background: #1b2027;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+.wechat-file-card:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.wechat-file-card:active {
+  transform: scale(0.98);
+}
+
+.file-info-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.file-title-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: inherit;
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.file-size-meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--color-gray-500);
+}
+
+.file-icon-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 6px;
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
+  flex-shrink: 0;
 }
 
-.image-thumb-img {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-  border-radius: 4px;
-}
-
-.image-hover-glass-mask {
+.file-download-badge {
   display: none;
+}
+
+/* ---- 气泡文字与排印 ---- */
+.bubble-content-text {
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.bubble-content-text .text-message.markdown-rendered p {
+  margin: 0.2em 0;
+}
+
+.bubble-content-text .text-message.markdown-rendered code {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+}
+
+@media (prefers-color-scheme: dark) {
+  .bubble-content-text .text-message.markdown-rendered code {
+    background: rgba(255, 255, 255, 0.12);
+  }
+}
+
+/* 时间元数据微标 */
+.bubble-meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-top: 3px;
+  user-select: none;
+}
+
+.bubble-time {
+  font-size: 11px;
+  font-weight: 400;
+  opacity: 0.65;
+  font-variant-numeric: tabular-nums;
+}
+
+.bubble-check-icon {
+  display: inline-flex;
+  align-items: center;
+  opacity: 0.7;
+}
+
+/* 悬浮操作图标 */
+.bubble-action-trigger {
+  opacity: 0;
+  color: inherit;
+  padding: 0 2px;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 2px;
+  transition: opacity 0.12s ease;
+  cursor: pointer;
+}
+
+.message-bubble:hover .bubble-action-trigger {
+  opacity: 0.65;
+}
+
+/* 微信经典黑色胶囊悬浮操作菜单 */
+.wechat-popover-menu {
+  position: absolute;
+  top: -34px;
+  background: #24292f;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  padding: 2px 4px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  z-index: 50;
+  white-space: nowrap;
+  animation: popoverFadeIn 0.12s ease;
+}
+
+.wechat-popover-menu.right { right: 0; }
+.wechat-popover-menu.left { left: 0; }
+
+.popover-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+}
+
+.popover-menu-item:hover,
+.popover-menu-item:active {
+  background: rgba(255, 255, 255, 0.15);
 }
 
 /* 全屏 Lightbox */
@@ -506,12 +474,12 @@
 }
 
 .image-lightbox-toolbar {
-  height: 50px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.5);
   color: #ffffff;
   padding-top: var(--safe-top);
 }
@@ -535,6 +503,8 @@
   color: #ffffff;
   padding: 6px;
   border-radius: 4px;
+  background: transparent;
+  border: none;
 }
 
 .lightbox-btn:active {
@@ -555,7 +525,7 @@
   object-fit: contain;
 }
 
-/* 消息高亮 */
+/* 消息定位高亮 */
 .message-highlight {
   animation: wechatPulse 2.4s ease-in-out !important;
 }

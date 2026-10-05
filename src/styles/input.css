@@ -1,6 +1,6 @@
 /* ============================================
-   Input Area - WeChat Classic & Mobile Ergonomics
-   微信经典输入架构 · 移动端无缝沉浸 · 触控舒适
+   Input Area - WeChat & Telegram Modern Ergonomics
+   微信经典输入架构 · 极致平滑触控 · 移除生硬滚动槽 · 纯净视觉质感
    ============================================ */
 
 /* 底部输入栏容器 */
@@ -17,6 +17,7 @@
   flex-direction: column;
   gap: 6px;
   user-select: none;
+  transition: background 0.15s ease;
 }
 
 /* AI 伴随模式微弱提示标签 */
@@ -33,6 +34,11 @@
   color: var(--color-ai-purple);
   font-weight: 500;
   cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.wechat-ai-bar:hover {
+  background: rgba(124, 58, 237, 0.15);
 }
 
 .wechat-ai-bar .ai-close-btn {
@@ -41,7 +47,7 @@
   opacity: 0.6;
 }
 
-/* 上传流线进度条 */
+/* 极简上传进度条 */
 .wechat-upload-strip {
   display: flex;
   align-items: center;
@@ -50,7 +56,7 @@
   background: var(--color-primary-subtle);
   border-radius: var(--radius-xs);
   font-size: var(--text-2xs);
-  color: var(--color-primary-dark);
+  color: var(--color-primary);
   position: relative;
   overflow: hidden;
 }
@@ -86,79 +92,101 @@
 
 /* 辅助图标按键 (触控舒适区) */
 .input-tool-btn {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  color: var(--color-gray-600);
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  color: var(--color-gray-500);
+  background: transparent;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  cursor: pointer;
   transition: all var(--duration-fast);
 }
 
 .input-tool-btn:hover {
-  background: var(--color-gray-200);
+  background: rgba(0, 0, 0, 0.05);
   color: var(--color-gray-900);
 }
 
 .input-tool-btn:active {
-  background: var(--color-gray-300);
   transform: scale(0.94);
 }
 
-/* 输入框包装盒 (微信经典纯白微圆角) */
+@media (prefers-color-scheme: dark) {
+  .input-tool-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+  }
+}
+
+/* 输入框包装盒 (微信与 Telegram 原生微圆角) */
 .input-textarea-wrapper {
   flex: 1;
   min-height: 38px;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
-  border-radius: 4px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
-  padding: 7px 10px;
-  transition: border-color var(--duration-fast);
+  padding: 8px 12px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  box-shadow: none !important;
 }
 
 .input-textarea-wrapper:focus-within {
-  border-color: var(--color-primary);
+  border-color: rgba(7, 193, 96, 0.45);
 }
 
 .input-textarea-wrapper textarea {
   width: 100%;
   min-height: 22px;
   max-height: 120px;
-  resize: none;
+  resize: none !important;
   font-family: inherit;
-  font-size: 16px; /* 16px 完美防止移动端 iOS 聚焦时页面放大 */
-  line-height: 1.4;
+  font-size: 15px;
+  line-height: 1.45;
   color: var(--color-gray-900);
   background: transparent !important;
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
+  caret-color: var(--color-primary);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.input-textarea-wrapper textarea::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .input-textarea-wrapper textarea::placeholder {
   color: var(--color-gray-400);
-  font-size: 15px;
+  font-size: 14px;
 }
 
-/* 微信经典发送按钮 (温润绿色) */
+/* 微信经典发送按钮 (温润玉绿，坚实耐看) */
 .input-send-btn {
   height: 38px;
   padding: 0 16px;
-  border-radius: 4px;
+  border-radius: 6px;
   background: var(--color-primary);
   color: #ffffff;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  border: none;
+  cursor: pointer;
   transition: all var(--duration-fast);
   white-space: nowrap;
+  letter-spacing: 0.2px;
 }
 
 .input-send-btn:hover {
@@ -167,35 +195,26 @@
 
 .input-send-btn:active {
   background: var(--color-primary-active);
-  transform: scale(0.97);
+  transform: scale(0.96);
 }
 
 /* 深色模式下的输入栏 */
 @media (prefers-color-scheme: dark) {
   .wechat-input-container {
-    background: #191919;
+    background: #181b20;
     border-top-color: rgba(255, 255, 255, 0.08);
   }
 
   .input-textarea-wrapper {
-    background: #262626;
+    background: #20242b;
     border-color: rgba(255, 255, 255, 0.08);
   }
 
   .input-textarea-wrapper textarea {
-    color: #f0f0f0;
+    color: #f3f4f6;
   }
 
   .input-textarea-wrapper textarea::placeholder {
-    color: #666666;
-  }
-
-  .input-tool-btn {
-    color: #a6a6a6;
-  }
-
-  .input-tool-btn:hover {
-    background: #2b2b2b;
-    color: #ffffff;
+    color: rgba(255, 255, 255, 0.35);
   }
 }

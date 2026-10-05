@@ -1,7 +1,8 @@
 import { memo, useState, useCallback, useRef, useEffect } from 'react'
 import { parseAiContent } from '@/lib/aiContent'
-import { formatTime } from '@/lib/utils'
+import { formatTime, isImageFile } from '@/lib/utils'
 import { useUiStore } from '@/store/uiStore'
+
 import { MarkdownContent } from './MarkdownContent'
 import { FileMessage } from './FileMessage'
 import { ThinkingMessage } from './ThinkingMessage'
@@ -122,9 +123,13 @@ export const MessageItem = memo(function MessageItem({ message, currentDeviceId 
   }
 
   const isOwn = message.device_id === currentDeviceId
+  const isImage = message.type === 'file' && isImageFile(message.mime_type)
 
   return (
-    <div className={`message-row ${isOwn ? 'own-row' : 'other-row'}`} data-message-id={message.id}>
+    <div
+      className={`message-row ${isOwn ? 'own-row' : 'other-row'}${isImage ? ' media-row' : ''}`}
+      data-message-id={message.id}
+    >
       {!isOwn && (
         <div className="message-avatar-box other" title="协同设备">
           <IconMonitor size={16} />
@@ -132,7 +137,12 @@ export const MessageItem = memo(function MessageItem({ message, currentDeviceId 
       )}
 
       <div className="message-col">
-        <div className={`message-bubble ${isOwn ? 'own-bubble' : 'other-bubble'}`} ref={menuRef}>
+        <div
+          className={`message-bubble ${
+            isImage ? 'media-bubble' : isOwn ? 'own-bubble' : 'other-bubble'
+          }`}
+          ref={menuRef}
+        >
           {message.type === 'file' ? (
             <FileMessage message={message} isOwn={isOwn} />
           ) : (
@@ -148,17 +158,19 @@ export const MessageItem = memo(function MessageItem({ message, currentDeviceId 
                 <IconCheck size={11} />
               </span>
             )}
-            <button
-              type="button"
-              className="bubble-action-trigger"
-              title="操作"
-              onClick={() => setMenuOpen(!menuOpen)}
-            >
-              <IconMoreHorizontal size={13} />
-            </button>
+            {!isImage && (
+              <button
+                type="button"
+                className="bubble-action-trigger"
+                title="操作"
+                onClick={() => setMenuOpen(!menuOpen)}
+              >
+                <IconMoreHorizontal size={13} />
+              </button>
+            )}
           </div>
 
-          {menuOpen && (
+          {menuOpen && !isImage && (
             <div className={`wechat-popover-menu ${isOwn ? 'right' : 'left'}`}>
               <button type="button" className="popover-menu-item" onClick={handleCopy}>
                 <IconCopy size={13} />

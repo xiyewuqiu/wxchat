@@ -149,32 +149,44 @@
   opacity: 0.5;
 }
 
-/* 顶部操作按键 */
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
 }
 
 .header-action-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-sm);
-  color: var(--color-gray-700);
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  color: var(--color-gray-500);
+  background: transparent;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
   transition: all var(--duration-fast);
 }
 
 .header-action-btn:hover {
-  background: var(--color-gray-200);
+  background: rgba(0, 0, 0, 0.05);
   color: var(--color-gray-900);
 }
 
 .header-action-btn:active {
-  background: var(--color-gray-300);
-  transform: scale(0.96);
+  transform: scale(0.94);
+}
+
+@media (prefers-color-scheme: dark) {
+  .header-action-btn {
+    color: rgba(255, 255, 255, 0.65);
+  }
+
+  .header-action-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+  }
 }
 
 .ai-mode-btn {
@@ -182,19 +194,22 @@
   padding: 0 8px;
   gap: 4px;
   color: var(--color-gray-600);
-  background: var(--color-gray-100);
-  font-weight: 600;
+  background: rgba(124, 58, 237, 0.08);
+  font-weight: 500;
   font-size: var(--text-xs);
+  border: 1px solid rgba(124, 58, 237, 0.15);
 }
 
 .ai-mode-btn.is-active {
   background: var(--color-ai-purple);
   color: #ffffff;
+  border-color: var(--color-ai-purple);
 }
 
 .desktop-only {
   display: flex;
 }
+
 
 @media (max-width: 480px) {
   .desktop-only {
@@ -399,25 +414,26 @@
 /* 深色模式外壳 */
 @media (prefers-color-scheme: dark) {
   .chat-viewport-wrapper {
-    background: #000000;
+    background: #0a0c10;
   }
 
   .app {
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .welcome-hero-card {
-    background: #191919;
-    border-color: rgba(255, 255, 255, 0.06);
+    background: #191c22;
+    border-color: rgba(255, 255, 255, 0.08);
   }
 
   .quick-pill-card {
-    background: #222222;
-    border-color: rgba(255, 255, 255, 0.05);
+    background: #21252d;
+    border-color: rgba(255, 255, 255, 0.06);
   }
 
   .quick-pill-card:hover {
-    background: #2a2a2a;
+    background: #292f39;
   }
 }
+
