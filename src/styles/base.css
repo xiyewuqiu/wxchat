@@ -1,5 +1,5 @@
 /* ============================================
-   Base Reset & Foundation
+   Base Reset & Modern Foundation
    ============================================ */
 
 *,
@@ -28,7 +28,7 @@ html, body {
   background: var(--bg-app);
   color: var(--color-gray-900);
   font-size: 16px;
-  line-height: 1.5;
+  line-height: var(--leading-normal);
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
@@ -47,6 +47,14 @@ button {
   touch-action: manipulation;
   padding: 0;
   line-height: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+button:active {
+  transform: scale(0.97);
 }
 
 input, textarea, select {
@@ -76,29 +84,48 @@ img {
 
 /* ---- Text Selection ---- */
 ::selection {
-  background: rgba(7, 193, 96, 0.2);
+  background: var(--color-primary-200);
   color: inherit;
 }
 
 /* ---- Focus ---- */
 :focus { outline: none; }
 
-:focus-visible {
+button:focus-visible, a:focus-visible {
   outline: 2px solid var(--color-primary);
-  outline-offset: 1px;
+  outline-offset: 2px;
 }
 
-/* ---- Scrollbar (thin, unobtrusive) ---- */
-::-webkit-scrollbar { width: 3px; }
-::-webkit-scrollbar-track { background: transparent; }
+input:focus-visible, textarea:focus-visible, select:focus-visible {
+  outline: none;
+}
+
+/* ---- Modern Sleek Scrollbar ---- */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.15);
-  border-radius: 4px;
+  background: rgba(100, 116, 139, 0.2);
+  border-radius: var(--radius-full);
+  transition: background var(--duration-fast);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.38);
 }
 
 @media (prefers-color-scheme: dark) {
   ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.15);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.28);
   }
 }
 
@@ -114,7 +141,7 @@ input, textarea,
   -webkit-touch-callout: default;
 }
 
-/* ---- Utility ---- */
+/* ---- Accessibility ---- */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -124,4 +151,39 @@ input, textarea,
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   border: 0;
+}
+
+/* ---- Global Micro-Animations ---- */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 12px var(--color-primary-glow);
+  }
+  50% {
+    box-shadow: 0 0 24px var(--color-primary-glow);
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes floatGentle {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
 }

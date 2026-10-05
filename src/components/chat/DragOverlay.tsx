@@ -1,100 +1,74 @@
-import { useEffect, useState, type DragEvent } from 'react'
-import { getFileTypeCategory, getFileIconByName, getFileIcon } from '@/lib/utils'
-import { useUiStore } from '@/store/uiStore'
+import { useEffect, useRef, useState } from 'react'
 
 interface DragOverlayProps {
   onFiles: (files: File[]) => void
 }
 
-/** 全屏拖拽上传层：实时显示拖入文件的数量与类型 */
+/** 拖拽覆盖层：全屏毛玻璃流光遮罩 + 动态脉冲卡片 */
 export function DragOverlay({ onFiles }: DragOverlayProps) {
-  const dragActive = useUiStore((state) => state.dragActive)
-  const setDragActive = useUiStore((state) => state.setDragActive)
-  const [summary, setSummary] = useState<{ icons: string[]; count: number; type: string }>({
-    icons: [],
-    count: 0,
-    type: '',
-  })
+  const [isDragging, setIsDragging] = useState(false)
+  const dragCounterRef = useRef(0)
 
   useEffect(() => {
-    let depth = 0
-    let files: File[] = []
-
-    const reset = () => {
-      depth = 0
-      setDragActive(false)
-    }
-
-    const handleDragEnter = (event: DragEvent | globalThis.DragEvent) => {
+    const handleDragEnter = (event: DragEvent) => {
       event.preventDefault()
-      if (!('dataTransfer' in event) || !event.dataTransfer) return
-      if (!event.dataTransfer.types.includes('Files')) return
-
-      depth++
-      files = Array.from(event.dataTransfer.files ?? [])
-
-      const icons: string[] = []
-      const types = new Set<string>()
-      for (const file of files.slice(0, 3)) {
-        icons.push(getFileIcon(file.type, file.name) || getFileIconByName(file.name))
+      dragCounterRef.current += 1
+      if (event.dataTransfer?.types?.includes('Files')) {
+        setIsDragging(true)
       }
-      for (const file of files) types.add(getFileTypeCategory(file.type, file.name))
-
-      setSummary({
-        icons,
-        count: files.length,
-        type: types.size === 1 ? Array.from(types)[0] : types.size > 1 ? '多种类型' : '',
-      })
-      setDragActive(true)
     }
 
-    const handleDragOver = (event: globalThis.DragEvent) => {
+    const handleDragLeave = (event: DragEvent) => {
       event.preventDefault()
-      if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy'
+      dragCounterRef.current -= 1
+      if (dragCounterRef.current <= 0) {
+        dragCounterRef.current = 0
+        setIsDragging(false)
+      }
     }
 
-    const handleDragLeave = (event: globalThis.DragEvent) => {
+    const handleDragOver = (event: DragEvent) => {
       event.preventDefault()
-      depth--
-      if (depth <= 0) reset()
     }
 
-    const handleDrop = (event: globalThis.DragEvent) => {
+    const handleDrop = (event: DragEvent) => {
       event.preventDefault()
-      const dropped = Array.from(event.dataTransfer?.files ?? [])
-      reset()
-      if (dropped.length > 0) onFiles(dropped)
+      dragCounterRef.current = 0
+      setIsDragging(false)
+
+      const files = Array.from(event.dataTransfer?.files ?? [])
+      if (files.length > 0) {
+        onFiles(files)
+      }
     }
 
-    document.addEventListener('dragenter', handleDragEnter)
-    document.addEventListener('dragover', handleDragOver)
-    document.addEventListener('dragleave', handleDragLeave)
-    document.addEventListener('drop', handleDrop)
+    window.addEventListener('dragenter', handleDragEnter)
+    window.addEventListener('dragleave', handleDragLeave)
+    window.addEventListener('dragover', handleDragOver)
+    window.addEventListener('drop', handleDrop)
 
     return () => {
-      document.removeEventListener('dragenter', handleDragEnter)
-      document.removeEventListener('dragover', handleDragOver)
-      document.removeEventListener('dragleave', handleDragLeave)
-      document.removeEventListener('drop', handleDrop)
-      document.body.classList.remove('dragging')
+      window.removeEventListener('dragenter', handleDragEnter)
+      window.removeEventListener('dragleave', handleDragLeave)
+      window.removeEventListener('dragover', handleDragOver)
+      window.removeEventListener('drop', handleDrop)
     }
-  }, [onFiles, setDragActive])
+  }, [onFiles])
 
-  useEffect(() => {
-    document.body.classList.toggle('dragging', dragActive)
-  }, [dragActive])
-
-  const { icons, count, type } = summary
-  const iconText = count === 0 ? '📁' : icons.slice(0, 3).join(' ')
+  if (!isDragging) return null
 
   return (
-    <div className={`drag-overlay${dragActive ? ' active' : ''}`} id="dragOverlay">
-      <div className="drag-content">
-        <div className="drag-icon">{iconText}</div>
-        <div className="drag-text">
-          {count > 1 ? `拖拽 ${count} 个${type}文件到此处上传` : `拖拽${type}文件到此处上传`}
+    <div className="drag-overlay active" role="region" aria-label="文件拖放区域">
+      <div className="drag-content-card">
+        <div className="drag-icon-glow">
+          <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" strokeWidth="1.8">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" y1="3" x2="12" y2="15" />
+          </svg>
         </div>
-        <div className="drag-hint">{count > 1 ? '支持批量上传' : '支持多文件同时上传'}</div>
+        <h3 className="drag-main-title">松开立即传输到云端</h3>
+        <p className="drag-sub-hint">支持任意格式文件、高清照片、视频与压缩包</p>
       </div>
     </div>
   )

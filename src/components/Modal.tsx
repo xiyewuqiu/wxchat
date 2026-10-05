@@ -8,8 +8,8 @@ interface ModalProps {
   cardClassName?: string
 }
 
-/** 通用模态框：支持遮罩点击与 ESC 关闭 */
-export function Modal({ open, onClose, children, cardClassName = 'modal-card' }: ModalProps) {
+/** 通用高质感模态框：支持磨砂玻璃背景、ESC 监听与平滑弹性缩放动画 */
+export function Modal({ open, onClose, children, cardClassName = 'glass-dialog-card' }: ModalProps) {
   useEffect(() => {
     if (!open) return
     const handleKeyDown = (event: KeyboardEvent) => {

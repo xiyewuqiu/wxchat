@@ -9,16 +9,16 @@ import { useGlobalCommands } from '@/hooks/useGlobalCommands'
 import { useClipboardPaste } from '@/hooks/useClipboardPaste'
 import { usePwa } from '@/hooks/usePwa'
 import { useComposer } from '@/hooks/useComposer'
+import { ChatHeader } from '@/components/chat/ChatHeader'
 import { MessageList } from '@/components/chat/MessageList'
 import { InputBar } from '@/components/chat/InputBar'
 import { DragOverlay } from '@/components/chat/DragOverlay'
 import { FunctionMenu, type MenuAction } from '@/components/chat/FunctionMenu'
 import { ImageGenModal } from '@/components/chat/ImageGenModal'
 import { SearchModal } from '@/components/chat/SearchModal'
-import { ConnectionStatus } from '@/components/chat/ConnectionStatus'
 import { UpdateBanner } from '@/components/chat/UpdateBanner'
 
-/** 聊天主页：编排消息、输入、实时通信与各功能弹层 */
+/** 聊天主页：顶级毛玻璃排版、全功能操作与多端自适应 */
 export function ChatPage() {
   const navigate = useNavigate()
   const deviceId = useMemo(() => getDeviceId(), [])
@@ -60,8 +60,9 @@ export function ChatPage() {
 
   const handleSubmit = async () => {
     if (!input.trim()) return
+    const textToSend = input
     setInput('')
-    await compose(input)
+    await compose(textToSend)
   }
 
   const handleMenuAction = async (action: MenuAction) => {
@@ -85,7 +86,7 @@ export function ChatPage() {
         break
 
       case 'emoji': {
-        const emojis = ['😊', '👍', '❤️', '😂', '🎉', '👏', '🔥', '💯', '🥰', '😍', '🤔', '😅']
+        const emojis = ['😊', '👍', '❤️', '😂', '🎉', '👏', '🔥', '💯', '🥰', '😍', '🤔', '😅', '🚀', '✨', '⚡']
         setInput((value) => value + emojis[Math.floor(Math.random() * emojis.length)])
         break
       }
@@ -96,8 +97,8 @@ export function ChatPage() {
 
       case 'aiChat': {
         const enabled = toggleAiMode()
-        toast(enabled ? 'AI模式已启用' : 'AI模式已关闭', enabled ? 'success' : 'info')
-        if (enabled) setInput((value) => value || '🤖 ')
+        toast(enabled ? 'AI 伴随模式已开启' : '已返回常规传输模式', enabled ? 'success' : 'info')
+        if (enabled && !input) setInput('🤖 ')
         break
       }
 
@@ -105,9 +106,18 @@ export function ChatPage() {
         setImageGenOpen(true)
         break
 
-      case 'clearChat':
-        await useChatStore.getState().clearAll()
+      case 'clearChat': {
+        const confirmed = await askConfirm({
+          title: '清空聊天记录',
+          message: '确定要清空全部消息和传输记录吗？此操作不可逆，所有设备均将同步删除。',
+          confirmText: '清空所有记录',
+        })
+        if (confirmed !== null) {
+          await useChatStore.getState().clearAll()
+          toast('聊天记录已清空', 'success')
+        }
         break
+      }
 
       case 'pwaManage':
         setInput('/pwa')
@@ -115,9 +125,9 @@ export function ChatPage() {
 
       case 'logout': {
         const confirmed = await askConfirm({
-          title: '登出确认',
-          message: '确定要登出吗？登出后需要重新输入密码才能访问。',
-          confirmText: '登出',
+          title: '退出登录确认',
+          message: '确定要退出当前会话吗？退出后需要重新输入密码。',
+          confirmText: '退出登录',
         })
         if (confirmed !== null) {
           logout()
@@ -129,61 +139,64 @@ export function ChatPage() {
   }
 
   return (
-    <div className="app">
-      <UpdateBanner />
-      <ConnectionStatus />
+    <div className="chat-viewport-wrapper">
+      <div className="app">
+        <UpdateBanner />
+        <ChatHeader currentDeviceId={deviceId} />
 
-      <main className="app-main">
-        <div className="chat-container">
-          <MessageList
-            currentDeviceId={deviceId}
-            highlightMessageId={highlightId}
-            onHighlightDone={() => setHighlightId(null)}
-          />
+        <main className="app-main">
+          <div className="chat-container">
+            <MessageList
+              currentDeviceId={deviceId}
+              highlightMessageId={highlightId}
+              onHighlightDone={() => setHighlightId(null)}
+              onQuickPrompt={(text) => setInput(text)}
+            />
 
-          <InputBar
-            value={input}
-            onChange={setInput}
-            onSubmit={handleSubmit}
-            onPickFiles={() => {
-              if (fileInputRef.current) {
-                fileInputRef.current.accept = '*/*'
-                fileInputRef.current.click()
-              }
-            }}
-          />
-        </div>
-      </main>
+            <InputBar
+              value={input}
+              onChange={setInput}
+              onSubmit={handleSubmit}
+              onPickFiles={() => {
+                if (fileInputRef.current) {
+                  fileInputRef.current.accept = '*/*'
+                  fileInputRef.current.click()
+                }
+              }}
+            />
+          </div>
+        </main>
 
-      <input
-        ref={fileInputRef}
-        type="file"
-        multiple
-        style={{ display: 'none' }}
-        onChange={(event) => {
-          handleFiles(Array.from(event.target.files ?? []))
-          event.target.value = ''
-        }}
-      />
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple
+          style={{ display: 'none' }}
+          onChange={(event) => {
+            handleFiles(Array.from(event.target.files ?? []))
+            event.target.value = ''
+          }}
+        />
 
-      <input
-        ref={cameraInputRef}
-        type="file"
-        accept="image/*"
-        capture="environment"
-        style={{ display: 'none' }}
-        onChange={(event) => {
-          handleFiles(Array.from(event.target.files ?? []))
-          event.target.value = ''
-        }}
-      />
+        <input
+          ref={cameraInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          style={{ display: 'none' }}
+          onChange={(event) => {
+            handleFiles(Array.from(event.target.files ?? []))
+            event.target.value = ''
+          }}
+        />
 
-      {/* 拖拽监听在挂载时绑定，因此始终渲染 */}
-      <DragOverlay onFiles={handleFiles} />
+        {/* 拖拽监听与全屏浮层 */}
+        <DragOverlay onFiles={handleFiles} />
 
-      <FunctionMenu onAction={handleMenuAction} />
-      <ImageGenModal />
-      <SearchModal onLocate={setHighlightId} />
+        <FunctionMenu onAction={handleMenuAction} />
+        <ImageGenModal />
+        <SearchModal onLocate={setHighlightId} />
+      </div>
     </div>
   )
 }

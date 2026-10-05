@@ -3,8 +3,7 @@ import { Modal } from './Modal'
 import { useUiStore } from '@/store/uiStore'
 
 /**
- * 全局确认框，替代 window.confirm / prompt。
- * 返回值：取消为 null；确定时返回空串；需要输入时返回用户输入内容。
+ * 全局确认对话框：极致现代毛玻璃排版、图标提示与微交互。
  */
 export function ConfirmDialog() {
   const confirm = useUiStore((state) => state.confirm)
@@ -22,31 +21,48 @@ export function ConfirmDialog() {
     resolveConfirm(value.trim())
   }
 
+  const isDanger = confirm.confirmText?.includes('退出') || confirm.confirmText?.includes('清空') || confirm.confirmText?.includes('删除')
+
   return (
-    <Modal open onClose={() => resolveConfirm(null)}>
-      <div className="modal-title">{confirm.title}</div>
-      <div className="modal-message">{confirm.message}</div>
+    <Modal open onClose={() => resolveConfirm(null)} cardClassName="confirm-dialog-card">
+      <div className="confirm-icon-wrapper">
+        <span className={`confirm-bubble-icon ${isDanger ? 'is-danger' : 'is-info'}`}>
+          {isDanger ? '⚠️' : '💬'}
+        </span>
+      </div>
+
+      <div className="confirm-content-center">
+        <h3 className="confirm-title">{confirm.title}</h3>
+        <p className="confirm-message">{confirm.message}</p>
+      </div>
 
       {confirm.requireInput && (
-        <input
-          autoFocus
-          className="modal-input"
-          value={value}
-          placeholder={confirm.inputPlaceholder}
-          onChange={(event) => setValue(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter') handleConfirm()
-          }}
-        />
+        <div className="confirm-input-row">
+          <input
+            autoFocus
+            className="confirm-input"
+            value={value}
+            placeholder={confirm.inputPlaceholder || '请输入确认内容...'}
+            onChange={(event) => setValue(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') handleConfirm()
+            }}
+          />
+        </div>
       )}
 
-      <div className="modal-actions">
-        <button type="button" className="modal-btn-secondary" onClick={() => resolveConfirm(null)}>
-          {confirm.cancelText ?? '取消'}
-        </button>
+      <div className="confirm-actions-row">
         <button
           type="button"
-          className="modal-btn-primary"
+          className="confirm-btn-secondary"
+          onClick={() => resolveConfirm(null)}
+        >
+          {confirm.cancelText ?? '取消'}
+        </button>
+
+        <button
+          type="button"
+          className={`confirm-btn-primary${isDanger ? ' is-danger' : ''}`}
           disabled={!!confirm.requireInput && !value.trim()}
           onClick={handleConfirm}
         >

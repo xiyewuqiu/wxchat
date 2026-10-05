@@ -31,7 +31,10 @@ function highlight(text: string, query: string): string {
   if (!query) return escaped
   const pattern = escapeHtml(regexEscape(query))
   try {
-    return escaped.replace(new RegExp(`(${pattern})`, 'gi'), `<mark class="${SEARCH_CONFIG.HIGHLIGHT_CLASS}">$1</mark>`)
+    return escaped.replace(
+      new RegExp(`(${pattern})`, 'gi'),
+      `<mark class="${SEARCH_CONFIG.HIGHLIGHT_CLASS}">$1</mark>`,
+    )
   } catch {
     return escaped
   }
@@ -87,7 +90,7 @@ function loadHistory(): string[] {
   }
 }
 
-/** 搜索弹窗：防抖搜索、类型/时间筛选、历史记录、结果定位 */
+/** 全文检索中枢：Spotlight 级体验、分类筛选胶囊、历史记录云与精准定位 */
 export function SearchModal({ onLocate }: SearchModalProps) {
   const open = useUiStore((state) => state.searchOpen)
   const setOpen = useUiStore((state) => state.setSearchOpen)
@@ -101,7 +104,6 @@ export function SearchModal({ onLocate }: SearchModalProps) {
   const [error, setError] = useState<string | null>(null)
   const [history, setHistory] = useState<string[]>([])
   const [suggestions, setSuggestions] = useState<string[]>([])
-  const [showFilters, setShowFilters] = useState(false)
 
   useEffect(() => {
     if (open) setHistory(loadHistory())
@@ -116,7 +118,10 @@ export function SearchModal({ onLocate }: SearchModalProps) {
     (keyword: string) => {
       const trimmed = keyword.trim()
       if (!trimmed) return
-      const next = [trimmed, ...loadHistory().filter((item) => item !== trimmed)].slice(0, SEARCH_CONFIG.HISTORY_LIMIT)
+      const next = [trimmed, ...loadHistory().filter((item) => item !== trimmed)].slice(
+        0,
+        SEARCH_CONFIG.HISTORY_LIMIT,
+      )
       persistHistory(next)
     },
     [persistHistory],
@@ -135,7 +140,7 @@ export function SearchModal({ onLocate }: SearchModalProps) {
         setTotal(response.total)
         addHistory(trimmed)
       } catch (searchError) {
-        setError((searchError as Error).message || '搜索失败')
+        setError((searchError as Error).message || '搜索执行失败')
         setResults([])
         setTotal(0)
       } finally {
@@ -145,7 +150,7 @@ export function SearchModal({ onLocate }: SearchModalProps) {
     [addHistory],
   )
 
-  // 输入防抖
+  // 输入防抖触发
   useEffect(() => {
     if (!open || query.trim().length < SEARCH_CONFIG.MIN_QUERY_LENGTH) {
       return
@@ -154,14 +159,14 @@ export function SearchModal({ onLocate }: SearchModalProps) {
     return () => clearTimeout(timer)
   }, [query, filters, open, runSearch])
 
-  // 打开时预取搜索建议，用于补充历史为空的情况
+  // 预取搜索建议
   useEffect(() => {
     if (!open || query.trim().length < 2) return
     let active = true
     const timer = setTimeout(async () => {
-      const suggestions = await getSuggestions(query)
-      if (active) setSuggestions(suggestions)
-    }, 400)
+      const list = await getSuggestions(query)
+      if (active) setSuggestions(list)
+    }, 350)
     return () => {
       active = false
       clearTimeout(timer)
@@ -170,7 +175,7 @@ export function SearchModal({ onLocate }: SearchModalProps) {
 
   const mergedSuggestions = useMemo(() => {
     const set = new Set([...suggestions, ...history])
-    return Array.from(set).slice(0, 10)
+    return Array.from(set).slice(0, 8)
   }, [history, suggestions])
 
   const close = () => {
@@ -188,13 +193,22 @@ export function SearchModal({ onLocate }: SearchModalProps) {
   return (
     <div className="search-modal show" role="dialog" aria-modal="true">
       <div className="search-modal-overlay" onClick={close} />
-      <div className="search-modal-content">
-        <div className="search-header">
-          <div className="search-input-container">
+
+      <div className="search-spotlight-card">
+        {/* 顶部搜索框 */}
+        <div className="spotlight-header">
+          <div className="spotlight-input-box">
+            <span className="spotlight-search-icon">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </span>
+
             <input
               autoFocus
-              className="search-input"
-              placeholder="🔍 搜索消息和文件..."
+              className="spotlight-input"
+              placeholder="搜索任何文本消息、文件名称或 AI 对话..."
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               onKeyDown={(event) => {
@@ -202,193 +216,179 @@ export function SearchModal({ onLocate }: SearchModalProps) {
                 if (event.key === 'Escape') close()
               }}
             />
+
             {query && (
-              <button type="button" className="search-clear-btn" onClick={() => setQuery('')}>
-                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-                  <path
-                    fill="currentColor"
-                    d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
-                  />
-                </svg>
+              <button type="button" className="spotlight-clear-btn" onClick={() => setQuery('')}>
+                ×
               </button>
             )}
           </div>
-          <button type="button" className="search-close-btn" onClick={close}>
-            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-              <path
-                fill="currentColor"
-                d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
-              />
-            </svg>
+
+          <button type="button" className="spotlight-esc-pill" onClick={close} title="关闭搜索">
+            Esc
           </button>
         </div>
 
-        <div className={`search-filters${showFilters ? ' expanded' : ''}`}>
-          <div className="search-filter-group">
-            <label htmlFor="searchTypeFilter">类型:</label>
-            <select
-              id="searchTypeFilter"
-              value={filters.type}
-              onChange={(event) => setFilters({ ...filters, type: event.target.value as SearchFilters['type'] })}
+        {/* 快捷过滤药丸组 */}
+        <div className="spotlight-filter-bar">
+          <div className="filter-pill-group">
+            <button
+              type="button"
+              className={`filter-pill ${filters.type === 'all' ? 'active' : ''}`}
+              onClick={() => {
+                const next: SearchFilters = { ...filters, type: 'all' }
+                setFilters(next)
+                if (hasQuery) void runSearch(query, next)
+              }}
             >
-              <option value="all">全部</option>
-              <option value="text">文本</option>
-              <option value="file">文件</option>
-            </select>
+              全部类型
+            </button>
+            <button
+              type="button"
+              className={`filter-pill ${filters.type === 'text' ? 'active' : ''}`}
+              onClick={() => {
+                const next: SearchFilters = { ...filters, type: 'text' }
+                setFilters(next)
+                if (hasQuery) void runSearch(query, next)
+              }}
+            >
+              💬 文本
+            </button>
+            <button
+              type="button"
+              className={`filter-pill ${filters.type === 'file' ? 'active' : ''}`}
+              onClick={() => {
+                const next: SearchFilters = { ...filters, type: 'file' }
+                setFilters(next)
+                if (hasQuery) void runSearch(query, next)
+              }}
+            >
+              📁 文件
+            </button>
           </div>
 
-          <div className="search-filter-group">
-            <label htmlFor="searchFileTypeFilter">文件类型:</label>
+          <div className="filter-dropdown-group">
             <select
-              id="searchFileTypeFilter"
-              value={filters.fileType}
-              onChange={(event) => setFilters({ ...filters, fileType: event.target.value as SearchFilters['fileType'] })}
-            >
-              <option value="all">全部</option>
-              <option value="image">图片</option>
-              <option value="video">视频</option>
-              <option value="audio">音频</option>
-              <option value="document">文档</option>
-              <option value="archive">压缩包</option>
-              <option value="text">文本</option>
-              <option value="code">代码</option>
-            </select>
-          </div>
-
-          <div className="search-filter-group">
-            <label htmlFor="searchTimeFilter">时间:</label>
-            <select
-              id="searchTimeFilter"
+              className="filter-select-pill"
               value={filters.timeRange}
-              onChange={(event) => setFilters({ ...filters, timeRange: event.target.value as SearchFilters['timeRange'] })}
+              onChange={(e) => {
+                const next: SearchFilters = { ...filters, timeRange: e.target.value as SearchFilters['timeRange'] }
+                setFilters(next)
+                if (hasQuery) void runSearch(query, next)
+              }}
             >
-              <option value="all">全部时间</option>
+              <option value="all">不限时间</option>
               <option value="today">今天</option>
               <option value="yesterday">昨天</option>
               <option value="week">最近一周</option>
               <option value="month">最近一月</option>
             </select>
           </div>
-
-          <button type="button" className="search-filter-toggle" onClick={() => setShowFilters((value) => !value)}>
-            筛选 <span className="toggle-icon">{showFilters ? '▲' : '▼'}</span>
-          </button>
         </div>
 
+        {/* 历史记录标签云 */}
         {!hasQuery && mergedSuggestions.length > 0 && (
-          <div className="search-suggestions">
-            <div className="suggestions-header">
-              <span>搜索建议</span>
+          <div className="spotlight-history-section">
+            <div className="history-header">
+              <span className="history-title">最近搜索与常用检索词</span>
               <button
                 type="button"
-                className="clear-history-btn"
+                className="history-clear-link"
                 onClick={() => {
                   persistHistory([])
-                  toast('搜索历史已清除', 'success')
+                  toast('已清空搜索历史', 'info')
                 }}
               >
                 清除历史
               </button>
             </div>
-            <div className="suggestions-list">
+            <div className="history-tags-cloud">
               {mergedSuggestions.map((item) => (
                 <button
                   key={item}
                   type="button"
-                  className="suggestion-item"
+                  className="history-tag-pill"
                   onClick={() => {
                     setQuery(item)
                     void runSearch(item, filters)
                   }}
                 >
-                  <div className="suggestion-icon">🕒</div>
-                  <div className="suggestion-text">{item}</div>
+                  <span className="tag-icon">🕒</span>
+                  <span>{item}</span>
                 </button>
               ))}
             </div>
           </div>
         )}
 
-        <div className="search-results">
+        {/* 结果呈现区 */}
+        <div className="spotlight-results-area">
           {showWelcome && (
-            <div className="search-status">
-              <div className="search-welcome">
-                <div className="search-welcome-icon">🔍</div>
-                <div className="search-welcome-text">输入关键词开始搜索</div>
-                <div className="search-welcome-tips">
-                  <div>• 支持消息内容和文件名搜索</div>
-                  <div>• 可按文件类型和时间筛选</div>
-                  <div>• 支持模糊匹配和关键词高亮</div>
-                </div>
-              </div>
+            <div className="spotlight-welcome-state">
+              <div className="welcome-spotlight-icon">🔍</div>
+              <h4 className="welcome-spotlight-title">即时搜索消息与文件</h4>
+              <p className="welcome-spotlight-hint">键入关键词即可秒级模糊匹配上下文，支持高亮与一键滚动定位</p>
             </div>
           )}
 
           {loading && (
-            <div className="search-status">
-              <div className="search-loading">
-                <div className="loading-spinner" />
-                <div className="loading-text">正在搜索 "{query}"...</div>
-              </div>
+            <div className="spotlight-loading-state">
+              <span className="btn-spinner" />
+              <span className="spotlight-loading-text">正在检索相关记录...</span>
             </div>
           )}
 
           {!loading && error && (
-            <div className="search-status">
-              <div className="search-error">
-                <div className="error-icon">⚠️</div>
-                <div className="error-text">搜索失败: {error}</div>
-                <button type="button" className="retry-btn" onClick={() => void runSearch(query, filters)}>
-                  重试
-                </button>
-              </div>
+            <div className="spotlight-error-state">
+              <span>⚠️ {error}</span>
+              <button type="button" className="spotlight-retry-btn" onClick={() => void runSearch(query, filters)}>
+                重试
+              </button>
             </div>
           )}
 
           {!loading && !error && hasQuery && (
-            <div className="search-results-list">
-              <div className="search-results-stats">
-                找到 {total} 条相关结果 {query ? `(搜索: "${query}")` : ''}
+            <div className="spotlight-list-container">
+              <div className="spotlight-stats-bar">
+                <span>找到 {total} 条匹配结果</span>
+                <span className="stats-query-badge">"{query}"</span>
               </div>
 
               {results.length === 0 && (
-                <div className="search-no-results">
-                  <div className="no-results-icon">🔍</div>
-                  <div className="no-results-text">没有找到相关结果</div>
-                  <div className="no-results-tips">试试其他关键词或调整筛选条件</div>
+                <div className="spotlight-empty-state">
+                  <span className="empty-state-icon">🍃</span>
+                  <span>未找到与 "{query}" 相关的记录</span>
                 </div>
               )}
 
               {results.map((result) => (
-                <button
+                <div
                   key={result.id}
-                  type="button"
-                  className="search-result-item"
+                  className="spotlight-item-card"
                   onClick={() => {
                     close()
                     onLocate(result.id)
                   }}
                 >
-                  <div className="result-icon">{result.icon}</div>
-                  <div className="result-content">
-                    <div className="result-header">
-                      <div className="result-type-info">
+                  <div className="item-card-icon">{result.icon}</div>
+                  <div className="item-card-content">
+                    <div className="item-card-header">
+                      <div className="item-tags">
                         {result.type === 'ai' && (
-                          <span className={`result-type-tag ${result.aiKind === 'thinking' ? 'ai-thinking' : 'ai-response'}`}>
-                            {result.aiKind === 'thinking' ? 'AI思考' : 'AI回答'}
-                          </span>
+                          <span className="badge-tag ai">{result.aiKind === 'thinking' ? 'AI 思考' : 'AI 回答'}</span>
                         )}
-                        {result.type === 'file' && <span className="result-type-tag file">文件</span>}
-                        {result.fileSize && <span className="file-size">{result.fileSize}</span>}
+                        {result.type === 'file' && <span className="badge-tag file">文件</span>}
+                        {result.fileSize && <span className="badge-size">{result.fileSize}</span>}
                       </div>
-                      <div className="result-time">{result.time}</div>
+                      <span className="item-time">{result.time}</span>
                     </div>
+
                     <div
-                      className="result-text"
+                      className="item-card-text"
                       dangerouslySetInnerHTML={{ __html: highlight(result.text, query) }}
                     />
                   </div>
-                </button>
+                </div>
               ))}
             </div>
           )}
